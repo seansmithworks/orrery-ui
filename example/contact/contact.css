@@ -102,7 +102,7 @@
   border: none;
   border-radius: 9999px;
   background: var(--orrery-iris-accent);
-  color: #ffffff;
+  color: var(--orrery-iris-surface-elevated);
   font-size: 14px;
   font-weight: 600;
   cursor: pointer;
