@@ -2,21 +2,25 @@
 
 A small control that opens into a sheet. One React component, used a few different ways.
 
-Iris is the first part of Orrery, a set of React components. Install it on its own as `@orrery-ui/iris`, or get the whole set with `orrery-ui`.
+Iris is the first component in Orrery. Install it as `@orrery-ui/iris`, or as `orrery-ui`, which re-exports it.
 
 ## What it is
 
-Iris starts as something small on the page: a floating button, a regular button, a thumbnail, or a link in a paragraph. Click it and it grows into a modal sheet. Close it and it shrinks back to where it came from. You bring the content. Iris handles the morph and the modal behavior around it.
+Iris starts as something small: a floating button, a thumbnail, or a link in a paragraph. Tap or click the button and it grows into a sheet. Close it and it shrinks back to where it came from. You bring the content. Iris handles the morph.
+
+Sheets are real modals. Focus stays inside, the rest of the page goes inert, and Escape closes it.
 
 ## Ways to use it
 
-- **Floating launcher.** A circle pinned to a corner of the screen. People can drag it to another corner, and it can remember where they left it. Good for contact, help, or a persistent menu.
-- **Inline button.** A rectangle button in your layout, like a search field, that opens into a full sheet.
+- **Floating launcher.** A button pinned to one of seven spots on the screen: a corner, top or bottom center, or dead center. It's a circle by default. People can drag it somewhere else, and it remembers where they left it. Good for contact, help, or a persistent menu.
+- **Button.** A rectangle with a label, like a search field, that opens into a full sheet. It's pinned to the screen like the launcher. Set `draggable={false}` to keep it in place. Placing it inside your page layout isn't supported yet.
 - **Media card.** A thumbnail or app icon that opens into a sheet sized to the image or video.
-- **Link preview.** A text link that opens a card with a live preview of the page it points to.
+- **Link preview.** A text link that shows a live preview of the page it points to. It opens on hover, keyboard focus, or a long press on touch. Use it for pages on your own site that allow framing.
 - **Your own pattern.** The morph's progress is exposed through `useIris()`, so you can drive your own effects off the same motion.
 
-Each one has a section under [Usage](#usage) and a live demo at [seansmithdesign.com/lab/orrery](https://www.seansmithdesign.com/lab/orrery).
+Style it with `--orrery-iris-*` CSS variables or pick a motion preset. Reduced motion is respected. To own the code outright, copy the source into your project with `npx @orrery-ui/iris add`.
+
+Code for each pattern is under [Usage](#usage). The live demo at [seansmithdesign.com/lab/orrery](https://www.seansmithdesign.com/lab/orrery) shows the launcher, buttons, media and link preview.
 
 Browser and platform limits: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md).
 
@@ -187,9 +191,9 @@ Pasted as-is, this renders a solid-colored trigger at the bottom-center
 viewport anchor: drag it to re-anchor at any of the seven anchors, tap it to
 morph it into the sheet shown above.
 
-Ten exports total: nine components (`Root`, `Trigger`, `Sheet`, `Shared`,
+Eleven exports total: nine components (`Root`, `Trigger`, `Sheet`, `Shared`,
 `Media`, `Content`, `Item`, `Close`, `Shadow`) plus the `useIris()`
-hook. That is the whole surface area.
+hook and the `presets` object. That is the whole surface area.
 
 A Root that mounts open (`defaultOpen`, or `open` already `true`) renders the sheet at rest, with no morph and no entrance on its content or close button; every later close and open animates.
 
@@ -335,9 +339,9 @@ rebuilds a trailing-paper close mask from *outside* the package using only
 this hatch.
 
 ```tsx
-function usePKG() {
-  return useIris();
-  // { open, setOpen, anchor, setAnchor, isDragging, triggerSize, collapseProgress, triggerRect, sheetRect }
+function Example() {
+  const iris = useIris();
+  // iris: { open, setOpen, anchor, setAnchor, isDragging, triggerSize, collapseProgress, triggerRect, sheetRect }
 }
 ```
 
@@ -860,9 +864,9 @@ package ships none.
 
 ## Known issues / status
 
-- **Nothing consumes this package yet, including Sean's own site.** It is a
-  clean-room extraction that has been gate-tested (see Development below) but
-  not battle-tested in production.
+- **Early release.** Published on npm as `@orrery-ui/iris` and `orrery-ui`
+  (0.1.1). It is a clean-room extraction that has been gate-tested (see
+  Development below) but not battle-tested in production.
 - **Resize-mid-close transient.** Resizing the viewport while the sheet is
   closing produces a roughly 300-370px position-only desync between the
   shadow and the surface (`|Δheight|` stays around 2.5px). It is bounded and
