@@ -1,21 +1,22 @@
-# trigger→sheet
+# Orrery Iris
 
-A draggable trigger that morphs into a modal sheet.
+A small control that opens into a sheet. One React component, used a few different ways.
+
+Iris is the first part of Orrery, a set of React components. Install it on its own as `@orrery-ui/iris`, or get the whole set with `orrery-ui`.
 
 ## What it is
 
-A persistent circular control that sits at one of seven viewport anchors (the
-corners, top-center and bottom-center, plus dead center), can be dragged and re-anchored,
-and morphs into a modal sheet via a `layoutId` FLIP transition. It is a
-generic React primitive with a compound-component API: you supply all
-content, the package owns the morph.
+Iris starts as something small on the page: a floating button, a regular button, a thumbnail, or a link in a paragraph. Click it and it grows into a modal sheet. Close it and it shrinks back to where it came from. You bring the content. Iris handles the morph and the modal behavior around it.
 
-There is no canonical design-system name for this pattern. Material has
-SpeedDial, a FAB that expands into a radial menu of actions. Apple and Radix
-both have sheets, but theirs enter from a screen edge rather than growing out
-of a persistent trigger. Nobody has standardized "trigger morphs into
-surface," so Orrery Iris (`Iris`) names the shape directly rather than
-reaching for an existing term.
+## Ways to use it
+
+- **Floating launcher.** A circle pinned to a corner of the screen. People can drag it to another corner, and it can remember where they left it. Good for contact, help, or a persistent menu.
+- **Inline button.** A rectangle button in your layout, like a search field, that opens into a full sheet.
+- **Media card.** A thumbnail or app icon that opens into a sheet sized to the image or video.
+- **Link preview.** A text link that opens a card with a live preview of the page it points to.
+- **Your own pattern.** The morph's progress is exposed through `useIris()`, so you can drive your own effects off the same motion.
+
+Each one has a section under [Usage](#usage) and a live demo at [seansmithdesign.com/lab/orrery](https://www.seansmithdesign.com/lab/orrery).
 
 Browser and platform limits: [docs/KNOWN-ISSUES.md](docs/KNOWN-ISSUES.md).
 
