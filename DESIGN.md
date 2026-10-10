@@ -10,6 +10,8 @@ colors:
   borderWidth: "1px (trigger ring; Shared inset derives from it)"
   textPrimary: "#1d1d1f"
   accent: "#1d1d1f"
+  # Dark recipe default accent (Sean, 2026-10-10; README dark recipe, canvas --cv-accent)
+  accentDark: "#f5f5f7"
   # Example pages (match the package defaults, example/example.css)
   exampleBackground: "#f5f5f7"
   exampleSurface: "#fafafa"
@@ -92,6 +94,8 @@ A bare disc that becomes a sheet. Everything else on screen is quiet so the morp
 | Text | `#1d1d1f` | `#1d1d1f` | `#1a1610` |
 | Accent (focus ring only) | `#1d1d1f` | `#1d1d1f` | `#1a1610` |
 | Page background | consumer's | `#f5f5f7` | consumer's |
+
+Dark recipe: the package's default dark accent is `#f5f5f7` (Sean, 2026-10-10), matching the README dark recipe and the canvas `--cv-accent`. The sun orange `#ffb37b` is a seansmithdesign.com docs-site (Night theme) value only, never a package default.
 
 Consumers override with `--orrery-iris-*` custom properties. Never add a hex to `src/styles.module.css` that is not a `var()` fallback.
 
