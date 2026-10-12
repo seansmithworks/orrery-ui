@@ -6,12 +6,12 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/seansmithworks/vista-sheet.git",
+    "url": "git+https://github.com/seansmithworks/orrery-ui.git",
     "directory": "packages/orrery-ui"
   },
-  "homepage": "https://github.com/seansmithworks/vista-sheet#readme",
+  "homepage": "https://github.com/seansmithworks/orrery-ui#readme",
   "bugs": {
-    "url": "https://github.com/seansmithworks/vista-sheet/issues"
+    "url": "https://github.com/seansmithworks/orrery-ui/issues"
   },
   "sideEffects": [
     "**/*.css"

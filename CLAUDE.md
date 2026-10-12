@@ -1,4 +1,4 @@
-# disc-sheet (package: @seansmithworks/vista-sheet)
+# orrery-ui (package: @orrery-ui/iris)
 
 `DESIGN.md` is the source of truth for every design value and for the motion principles the morph must obey. Read it before touching `src/styles.module.css`, `src/motion.ts`, or any example page.
 

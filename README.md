@@ -52,8 +52,8 @@ To test an unreleased branch, install straight from GitHub. Add `#<branch>`
 (or a tag or commit) to pick the ref; without it you get the default branch:
 
 ```bash
-npm install github:seansmithworks/vista-sheet
-npm install github:seansmithworks/vista-sheet#explore/link-preview
+npm install github:seansmithworks/orrery-ui
+npm install github:seansmithworks/orrery-ui#explore/link-preview
 npm install react react-dom motion@14
 ```
 
