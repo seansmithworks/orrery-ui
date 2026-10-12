@@ -1,8 +1,8 @@
 import { defineConfig, devices } from "@playwright/test";
 
-// Opt-in cross-browser run: `npm run test:browsers` sets VISTA_BROWSERS=all.
+// Opt-in cross-browser run: `npm run test:browsers` sets ORRERY_BROWSERS=all.
 // Default (`npm run test:geometry`) stays chromium + webkit-squircle.
-const ALL = process.env.VISTA_BROWSERS === "all";
+const ALL = process.env.ORRERY_BROWSERS === "all";
 const PORT = Number(process.env.PW_PORT ?? 4873);
 
 /**
@@ -47,7 +47,7 @@ export default defineConfig({
       testIgnore: /squircle-webkit\.spec\.ts$/,
     },
     // Default run: WebKit runs only the squircle fallback spec so suite runtime doesn't double.
-    // Under VISTA_BROWSERS=all the full-suite "webkit" project below replaces it.
+    // Under ORRERY_BROWSERS=all the full-suite "webkit" project below replaces it.
     ...(ALL
       ? [
           {

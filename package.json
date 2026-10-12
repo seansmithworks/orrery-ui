@@ -6,11 +6,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/seansmithworks/vista-sheet.git"
+    "url": "git+https://github.com/seansmithworks/orrery-ui.git"
   },
-  "homepage": "https://github.com/seansmithworks/vista-sheet#readme",
+  "homepage": "https://github.com/seansmithworks/orrery-ui#readme",
   "bugs": {
-    "url": "https://github.com/seansmithworks/vista-sheet/issues"
+    "url": "https://github.com/seansmithworks/orrery-ui/issues"
   },
   "keywords": [
     "react",
@@ -85,7 +85,7 @@
     "typecheck": "tsc -p tsconfig.types.json",
     "test": "vitest run",
     "test:geometry": "playwright test -c example/playwright.config.ts",
-    "test:browsers": "VISTA_BROWSERS=all playwright test -c example/playwright.config.ts",
+    "test:browsers": "ORRERY_BROWSERS=all playwright test -c example/playwright.config.ts",
     "audit:vars": "node scripts/audit-css-vars.mjs",
     "perf": "node scripts/perf-morph.mjs",
     "assert:client-banner": "node -e \"if (require('fs').readFileSync('dist/index.js','utf8').split('\\n')[0] !== '\\\"use client\\\";') { console.error('dist/index.js is missing the \\\"use client\\\" banner on line 1'); process.exit(1); }\"",
