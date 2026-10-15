@@ -37,7 +37,7 @@ All headless. A full project takes about 9 minutes. Playwright's WebKit is the S
 | Dia corner mismatch | Dia | Shadow tighter than the sheet; not reproducible in Chrome 154 | None | parked, needs a console check in Dia |
 | `motion` 12, 13 and 14 supported | All | Peer range is `^12 \|\| ^13 \|\| ^14`. `geometry.spec.ts` passed 137/137 on 12.43.0, 13.5.1 and 14.0.0 (2026-10-07). `npm run perf` passed on 12.43.0 and 14.0.0; on 13.5.1 the first run failed under heavy load (raster 97.0ms vs 93.3ms limit, load average ~110), then passed 3 of 3 sequential reruns on a quiet machine (raster median 70.0 / 38.9 / 62.7ms, dropped frames median 1 / 1 / 1, longest interval 16.7ms each) | None | resolved |
 | iOS home-page disc offset | iOS Simulator (iPhone 18 Pro, iOS 27) | The bottom-centre disc on `/` sits about 170px above the bottom edge, over the floating toolbar. Evidence: [docs/known-issues/ios-disc-offset.png](known-issues/ios-disc-offset.png). Cause not investigated | None | open |
-| Nothing consumes the package yet | n/a | Gate-tested, not battle-tested | n/a | open |
+| One consumer so far | n/a | Gate-tested, not battle-tested. seansmithdesign.com uses it for the menu on its Solar pages | n/a | open |
 
 ## Firefox run, 2026-10-08
 

@@ -867,6 +867,7 @@ package ships none.
 - **Early release.** Published on npm as `@orrery-ui/iris` and `orrery-ui`
   (0.1.1). It is a clean-room extraction that has been gate-tested (see
   Development below) but not battle-tested in production.
+  Sean's own site, seansmithdesign.com, uses it for the menu on its Solar pages.
 - **Resize-mid-close transient.** Resizing the viewport while the sheet is
   closing produces a roughly 300-370px position-only desync between the
   shadow and the surface (`|Δheight|` stays around 2.5px). It is bounded and
