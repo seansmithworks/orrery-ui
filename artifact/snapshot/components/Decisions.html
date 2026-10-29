@@ -1,0 +1,38 @@
+<!-- @dsCard group="Content" height=730 subtitle="One raised sheet for every ask: decision, ask, options, checkable" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>One raised sheet for every ask: decision, ask, options, checkable</title>
+<style>
+body { padding: var(--space-24); }
+</style>
+</head>
+<body class="body">
+<section class="os-decisions os-lift" aria-labelledby="dec-h">
+  <div class="os-decisions-head">
+    <h2 class="os-sh heading" id="dec-h">Decisions you own</h2>
+  </div>
+  <ol>
+    <li class="os-dec">
+      <span class="os-dec-n data">01</span>
+      <div><div class="subhead">Name</div><p class="os-dec-why body-sm">Keeping it avoids a reference migration; "mild-to-wild" is added as a trigger.</p></div>
+      <div class="os-inset"><div class="os-rec-v body-sm"><strong>Recommended:</strong> Keep <code>design-shotfun</code></div></div>
+    </li>
+    <li class="os-dec">
+      <span class="os-dec-n data">02</span>
+      <div><div class="subhead">Pick the first real pass to arm on</div><p class="os-dec-why body-sm">It needs a Pencil or HTML brief, and none is queued yet.</p></div>
+    </li>
+    <li class="os-dec">
+      <span class="os-dec-n data">03</span>
+      <fieldset class="os-choices"><legend class="subhead">Default count</legend>
+        <label class="os-choice"><input type="radio" name="count" value="10" checked><span><span class="subhead">10</span><span class="body-sm">Two cards per tier; your shortest pass.</span></span><span class="os-chip os-chip--outline label">My pick</span></label>
+        <label class="os-choice"><input type="radio" name="count" value="20"><span><span class="subhead">20</span><span class="body-sm">Four per tier; the middle of your range.</span></span></label>
+      </fieldset>
+    </li>
+    <li class="os-dec">
+      <label class="os-check"><input type="checkbox" id="c-read"><span><strong>Read the unedited refutation.</strong> It sits beside the run, next to the draft plan.</span></label>
+    </li>
+  </ol>
+</section>
+<script>/* static preview: CSS-only system */</script>
+</body>
+</html>

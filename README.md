@@ -1018,3 +1018,7 @@ visibly blurred content undercounts.
 
 
 MIT. See `LICENSE` for the full text.
+
+## Also in this repo
+
+[`artifact/`](artifact/) is a design system for Claude Artifact pages, packaged as a Claude Code skill.
