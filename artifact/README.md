@@ -4,10 +4,10 @@ A design system for Claude Artifact pages: white page, flat grey layers, answer 
 
 ## Install
 
-Copy or symlink this folder to `~/.claude/skills/artifact-house-style/`:
+Copy or symlink this folder to `skills/artifact-house-style` inside your Claude config directory (`$HOME/.claude`):
 
 ```sh
-ln -s "$(pwd)/artifact" ~/.claude/skills/artifact-house-style
+ln -s "$(pwd)/artifact" "$HOME/.claude/skills/artifact-house-style"
 ```
 
 ## Build a page
