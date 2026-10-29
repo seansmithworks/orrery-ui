@@ -1,53 +1,54 @@
 ---
 name: artifact-house-style
-description: Use when building or publishing an interactive or visual HTML Artifact page (tool, tuner, gallery, comparison, dashboard, spike, prototype, review board) or when asked for "house style". Builds it from the Orrery Artifact design system (white page, grey layers, answer first, no hue). Plans, specs, memos and reports go to Claude Docs, not here. Not for product UI inside a project that has its own DESIGN.md, and not for slides, decks or Design canvases, which use the Design System natively.
+description: Use when building or publishing an interactive or visual HTML Artifact page (tool, tuner, gallery, comparison, dashboard, spike, prototype, review board) or when asked for "house style". Composes the page from the Orrery Artifact tokens and primitives (white page, grey layers, answer first, no hue) and gates it on the checker. Plans, specs, memos and reports go to Claude Docs, not here. Not for product UI in a project with its own DESIGN.md, nor slides, decks or Design canvases.
 ---
 
-# Artifact house style (Orrery Artifact)
+# Artifact house style (Orrery Artifact), v5
 
-Every Orrery Artifact page uses this system, release v4.3.1 (`snapshot/VERSION`). It works from a local snapshot, so subagents can use it.
+Compose the page for what it shows. Four layers, in order of authority.
+
+1. **Tokens** (required): `snapshot/tokens.json`, emitted by `python3 -I head.py` into one `<style>` (replace `<!--HEAD-->` in `template.html`). The only source of values: write `var(--name)`, never a literal.
+2. **Primitives** (required vocabulary): read `snapshot/README.md` before writing. Surfaces and layers with the one lift, text roles, chips with fixed meanings, controls and their states, the grid, menus and overlays that stay inside the window with an 8px gutter.
+3. **Rules** (hard, enforced by `check/`): below.
+4. **Examples** (optional): the five page modes and `snapshot/components/*.html` are shown, never required, never copied as-is. Use the `os-` primitives for standard elements (tables, lists, chips, controls); write your own markup for layouts and anything the primitives don't cover, matching their spacing, rules and type roles.
 
 ## Routing boundary
 
-- **Claude Docs** (`claude.ai Claude Docs` connector): plans, specs, architecture docs, memos, status/research reports, anything the owner reads, comments on, or edits. Default; do not build these here.
-- **Orrery Artifact (this skill):** interactive or visual pages: tools/tuners, galleries, comparisons, dashboards that aren't the Dashboard type, spikes, prototypes, review boards.
+- **Claude Docs**: plans, specs, architecture docs, memos, status/research reports, anything the owner reads, comments on, or edits. Default; do not build these here.
+- **Orrery Artifact (this skill)**: interactive or visual pages: tools/tuners, galleries, comparisons, dashboards that aren't the Dashboard type, spikes, prototypes, review boards.
 
-## Build
+## Gate
 
-1. Copy `template.html`.
-2. Run `python3 -I head.py` and replace `<!--HEAD-->` with its output.
-3. Read `snapshot/README.md` (mode choice, anatomy, class index) before writing markup.
-4. Copy component markup from `snapshot/components/<Name>.html`. Do not write component markup from memory.
-5. Fill the template. Answer first: the `lead` is the decision, one sentence.
+Before publishing: `node check/check.mjs page.html`. Publish only on exit 0. For user-supplied colors (swatch, picker), put `data-orrery-exempt="token-colors literal-values"` and `data-orrery-why="…"` on the smallest element that shows them (max 5 per page; why ≥15 characters and ≥3 words), never a page wrapper. Exemptable rules: `token-colors`, `literal-values` (inline styles only), `contrast`.
 
 ## Rules
 
-- Rail is the default mode. Switch mode only by the README's content rules, via `data-mode` on `<body>`. In rail the front scrolls with the page and the toc (`nav.os-toc--side`, a direct child of `.os-doc`) runs as a row above the evidence.
-- A page that collects answers (checkboxes, choices, notes) uses memo mode, one `.os-sec` per question.
-- A page that is mainly images or mockups to inspect uses `data-mode="gallery"`: one `figure.os-plate` per image, each about one screen, the image linking to its full-size file.
-- `h1.title` is the only required piece. The toc appears in rail and gallery modes only, with 4 or more sections, using the `h2` text verbatim. When rebuilding a page, keep its section heads verbatim unless one carries status or metadata, which moves to the lead or footer.
-- Everything that waits on the reader goes in `.os-decisions` as `li.os-dec`: decision (with `.os-inset`), ask or to-do (no inset), options (`fieldset.os-choices` or `ul.os-list`), or checkable (`label.os-check`). Head in the source's words, else "Waiting on you".
-- Chips have fixed meanings, quiet to loud: `--outline` settled (done, pass, ready), `--fill` neutral tag (PR #, counts not already in view), `--dashed` absent or pending (next, not started, optional), `--strong` needs attention (you, running, partial), `--solid` blocked (blocker, fail) and nothing else. Chip-led rows use `.os-list--status`.
-- Never paste token values; use `var(--name)` or a class.
-- Never invent `os-` classes; every one is in the README class index. A one-page need may use a second `<style>` labelled `page-local`: tokens only, no shadow, no new `os-` prefix.
-- One shadow per page: `.os-lift` on `.os-decisions`. Never add a second.
-- `text-muted` never on layer-2 (insets, callouts, filled chips, code, controls, the checked choice tile).
-- No hue and no status colors; status is a word in a chip. No emoji, no icons.
-- Script only for form state. A page may carry a script only to save or restore what the reader enters, and it may only toggle native state and attributes. Styling and theme never use script: dark mode comes from `prefers-color-scheme` in the head.py output, and `[data-theme]` on `<html>` stays a manual override only.
+- Answer first on any page that answers something: the `lead` is the decision or state, one sentence, before anything else.
+- No hue and no status colors; every color is a token. Status is a word in a chip.
+- Chips have fixed meanings, quiet to loud: `outline` settled (done, pass, ready), `fill` neutral tag (PR #, counts not in view), `dashed` absent or pending (next, not started, optional), `strong` needs attention (you, running, partial), `solid` blocked (blocker, fail) and nothing else.
+- One shadow per page, the lift, and none in dark. Never a second.
+- `text-muted` never on layer-2 (insets, callouts, filled chips, code, controls, the checked choice).
+- Text and focus rings meet contrast; the page works at 375px with a 16px gutter and no horizontal scroll.
+- Menus, popovers and dialogs stay inside the window with an 8px gutter.
+- No edge bands: no side stripe or bar on any block, quote, callout or row.
+- No emoji, no icon fonts, no icons; words, mono labels and → ← only.
+- Don't invent new `os-` classes; use page-local names (tokens only, `var(--…)`).
+- Decisions sheet (`.os-decisions.os-lift`): required only when the page asks the reader to decide something; otherwise optional.
+- Script is allowed for interaction and state. Styling and theme never come from script: dark mode is `prefers-color-scheme` from head.py; `[data-theme]` on `<html>` is a manual override only.
+- `h1.title` is the only required piece. A toc, if any, uses the `h2` text verbatim. When rebuilding a page, keep its section heads verbatim.
+- A page-local pattern reused on 2 or more pages is a candidate for promotion into primitives. Note it in your report; a human or reviewer promotes it.
 
 ## Labels
+
 - No eyebrow or kicker: nothing sits above a title or heading to categorize, date or restate it.
 - Say it once: status goes in the lead sentence; date, branch and source go in the footer line, never a meta line, key-value rows or a chip.
-- A label, chip or count stays only if the reader acts on it or it holds data nothing beside it holds. A chip marks the exception row, never every row; no count of items already in view.
+- A label, chip or count stays only if the reader acts on it or it holds data nothing beside it holds. A chip marks the exception row, never every row; no count of what is in view.
 - Mono caps (`label`) is for data only: table and tally headers, scale steps, row keys, the toc. Never a kicker, a header over a note, or a sentence.
-- Section headings only where the reader jumps or would misread the block; no numerals on headings or index cards. Add no label the source and the previews don't supply.
+- Section headings only where the reader jumps or would misread the block; no numerals on headings or index cards. Add no label the source doesn't supply.
 
-## Artifact contract (still applies)
+## Artifact contract
 
-- `<title>` is a 2-4 word name.
-- `body` has an explicit background (head.py sets it).
-- External stylesheets only from Google Fonts. This system loads none.
-- Works at 375px with a 16px gutter, no horizontal scroll.
+- `<title>` is a 2-4 word name; `body` has an explicit background (head.py sets it); external stylesheets only from Google Fonts (this system loads none).
 
 ## Precedence
 

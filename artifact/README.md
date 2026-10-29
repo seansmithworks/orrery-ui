@@ -1,26 +1,24 @@
-# Orrery Artifact design system
+# Artifact house style
 
-A design system for Claude Artifact pages: white page, flat grey layers, answer first, no hue. Packaged as a Claude Code skill (`SKILL.md`) with a local snapshot of tokens, CSS and component markup, so subagents can build pages without network access.
+A design system for Claude Artifact pages: a white page, flat grey layers, the
+answer first, no hue. Four layers: tokens, primitives, hard rules, and optional
+examples. `SKILL.md` is the agent entry point; `snapshot/README.md` is the
+primitives reference.
 
-## Install
+## Install as a Claude Code skill
 
-Copy or symlink this folder to `skills/artifact-house-style` inside your Claude config directory (`$HOME/.claude`):
-
-```sh
-ln -s "$(pwd)/artifact" "$HOME/.claude/skills/artifact-house-style"
-```
+Copy or symlink this folder to `$HOME/.claude/skills/artifact-house-style/`.
 
 ## Build a page
 
-1. Copy `template.html`.
-2. Run `python3 -I head.py` and replace `<!--HEAD-->` with its output.
-3. Read `snapshot/README.md` for mode choice, anatomy and the class index.
-4. Copy markup from `snapshot/components/<Name>.html`.
+`python3 -I head.py` prints one `<style>` block from `snapshot/tokens.json`.
+Put it in place of `<!--HEAD-->` in `template.html`, then write the page with
+the `os-` primitives and `var(--name)` tokens.
 
-## Contents
+## Check a page
 
-- `SKILL.md`: when to use the system and its rules.
-- `template.html`, `head.py`: page skeleton and the `<style>` head.
-- `snapshot/`: `tokens.json`, `bundle.css`, component previews, version.
+`node check/check.mjs page.html` needs Playwright (`ORRERY_PLAYWRIGHT` or an
+installed `playwright` with a browser). Exit 0 means every rule passes. Scoped
+exemptions for user-supplied colors are in `check/README.md`.
 
-This folder is not part of the npm package. MIT, see the repository `LICENSE`.
+MIT, per the repository LICENSE.

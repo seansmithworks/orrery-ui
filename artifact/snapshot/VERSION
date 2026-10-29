@@ -1,2 +1,4 @@
 version: 1793135634-527e (v4.3: no content fill, label denoise, panel gap and rail toc fixes; published to the system Artifact 2026-10-27)
 docs: v4.3.1 doc fixes (README matches the Docs/Artifact split, neutral wording, dead hue rule and unbacked contrast claims removed; no token values or rendered CSS changed)
+hold: v5 rewrite diverges from the system Artifact; refresh would overwrite it
+docs: v5.0 (README restructured into tokens, primitives, rules, examples; components and modes optional; no token values or rendered CSS changed)
