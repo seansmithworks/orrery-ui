@@ -1,0 +1,115 @@
+<!-- @dsCard group="Page modes" height=1920 width=1280 subtitle="Default: the front flows with the page, the toc sits above the evidence" -->
+<!doctype html>
+<html lang="en">
+<head><meta charset="utf-8"><title>Default: the front flows with the page, the toc sits above the evidence</title>
+<style>.os-container { padding-bottom: var(--space-48); }</style>
+</head>
+<body class="body">
+<main class="os-container">
+<article class="os-doc">
+<div class="os-front">
+<div class="os-masthead">
+  <h1 class="title">Formalize the mild-to-wild pass</h1>
+</div>
+<section class="os-answer" aria-label="The answer">
+  <div>
+    <p class="lead">Make it a skill, not a plugin, and grow it out of <code>design-shotfun</code> rather than starting a new one.</p>
+    <p class="os-support">The mild→wilder ladder becomes shotfun's main mode. Each canvas tool (Pencil, Zoah, HTML) gets a short rules section inside the skill, not a plugin of its own. A plugin only makes sense later, for the public version.</p>
+  </div>
+</section>
+<section class="os-decisions os-lift" aria-labelledby="dec-h">
+  <div class="os-decisions-head">
+    <h2 class="os-sh heading" id="dec-h">Decisions you own</h2>
+  </div>
+  <ol>
+    <li class="os-dec">
+      <span class="os-dec-n data">01</span>
+      <div><div class="subhead">Name</div><p class="os-dec-why body-sm">Keeping it avoids a reference migration; "mild-to-wild" is added as a trigger.</p></div>
+      <div class="os-inset"><div class="os-rec-v body-sm"><strong>Recommended:</strong> Keep <code>design-shotfun</code></div></div>
+    </li>
+    <li class="os-dec">
+      <span class="os-dec-n data">02</span>
+      <div><div class="subhead">Pick the first real pass to arm on</div><p class="os-dec-why body-sm">It needs a Pencil or HTML brief, and none is queued yet.</p></div>
+    </li>
+  </ol>
+</section>
+</div>
+<nav class="os-toc os-toc--side label" aria-label="Sections">
+  <a href="#dec-h">Decisions you own</a>
+  <a href="#s-ladder">The ladder, as written into the skill</a>
+  <a href="#s-why">Why</a>
+  <a href="#s-plan">The plan</a>
+  <a href="#s-refuter">What the refuter changed</a>
+  <a href="#s-retro">The passes and the skills each used</a>
+</nav>
+<div class="os-evidence">
+<section class="os-sec" id="s-ladder">
+  <h2 class="os-sh heading">The ladder, as written into the skill</h2>
+  <ol class="os-scale" aria-label="Mild to wilder">
+  <li><b class="label">Mild</b><span class="caption">Same system and layout. One treatment axis moves.</span></li>
+  <li><b class="label">Medium</b><span class="caption">Same tokens, layout reworked.</span></li>
+  <li><b class="label">Bold</b><span class="caption">Tokens pushed to their edge. Scale and density go loud.</span></li>
+  <li><b class="label">Wild</b><span class="caption">Breaks one system rule and names it on the card.</span></li>
+  <li><b class="label">Wilder</b><span class="caption">Breaks the structure (IA, metaphor). Different layouts, not costumes.</span></li>
+</ol>
+<div class="os-scale-cap label"><span>← DESIGN.md is source of truth</span><span>allowed to break →</span></div>
+</section>
+<section class="os-sec" id="s-why">
+  <h2 class="os-sh heading">Why</h2>
+  <ul class="os-list">
+  <li><strong>You ran 9 passes in 3 weeks</strong>, 5 of them in the last 8 days, across seansmithdesign, ghostties, desk, vista-sheet and _experiments.</li>
+  <li><strong>Most passes ran freehand.</strong> Shotfun drove only 2 of 9. html-review-workflow and impeccable were read in 2 others.</li>
+  <li><strong>No written rubric existed, so each pass got re-briefed by hand.</strong> You retyped the brief, assigned tiers and rebuilt a gallery every time.</li>
+</ul>
+</section>
+<section class="os-sec" id="s-plan">
+  <h2 class="os-sh heading">The plan</h2>
+  <ol class="os-steps">
+  <li><div><strong>Extend shotfun with a Ladder mode</strong>, built through <code>/skill-forge</code>:
+    <ul class="body-sm">
+      <li><strong>Tiers use your words.</strong> Every card names the one rule it breaks.</li>
+      <li><strong>Count defaults to 10 split evenly</strong>, and you override freely.</li>
+      <li><strong>Two carry-forward modes</strong>: "push them all forward" and "ladder from #11".</li>
+      <li><strong>Outputs go to a durable gitignored folder</strong>, never <code>/tmp</code>.</li>
+    </ul></div></li>
+  <li><div><strong>Arm on your next real pass in Pencil or HTML.</strong> The evidence is cards with tier and <code>breaks</code> filled in.</div></li>
+  <li><div><strong>Measure with your picks, not a judge.</strong> Log rounds-to-pick and the pick's tier per run.</div></li>
+</ol>
+</section>
+<section class="os-sec" id="s-refuter">
+  <h2 class="os-sh heading">What the refuter changed</h2>
+  <div class="os-tally">
+  <div><b class="stat">20</b><span class="label">Findings</span></div>
+  <div><b class="stat">18</b><span class="label">Accepted</span></div>
+  <div><b class="stat">2</b><span class="label">Partly</span></div>
+  <div><b class="stat">Revise</b><span class="label">Verdict</span></div>
+</div>
+<ol class="os-ledger body-sm">
+  <li class="is-main"><b class="data">F2</b><div><span class="f">Shotfun holds incident-derived rules beyond its axes</span><span class="r">Extend, don't replace</span></div></li>
+  <li><b class="data">F1</b><div><span class="f">Arm target (Zoah) wasn't a supported medium</span><span class="r">Zoah rules added; arm moved to Pencil/HTML</span></div></li>
+  <li><b class="data">F3</b><div><span class="f">Draft deleted shotfun before the deciding test</span><span class="r">No deletion</span></div></li>
+  <li><b class="data">F4</b><div><span class="f">A/B judge would win by construction</span><span class="r">Measure your picks instead</span></div></li>
+  <li><b class="data">F9</b><div><span class="f">impeccable generate/overdrive overlap</span><span class="r">One routing line <span class="os-chip os-chip--strong label">Partly</span></span></div></li>
+</ol>
+</section>
+<section class="os-sec" id="s-retro">
+  <h2 class="os-sh heading">The passes and the skills each used</h2>
+  <div class="os-table-wrap">
+  <table class="os-table body-sm">
+    <thead class="label"><tr><th>Date</th><th>Repo</th><th>Subject</th><th>Count</th><th>Skills</th></tr></thead>
+    <tbody>
+      <tr><td class="data" data-l="Date">09-25</td><td data-l="Repo">seansmithdesign</td><td data-l="Subject">Billing / review tool</td><td class="data" data-l="Count">10</td><td data-l="Skills">none in pass</td></tr>
+      <tr class="is-hit"><td class="data" data-l="Date">09-27</td><td data-l="Repo">~/Code</td><td data-l="Subject">Shotfun options</td><td class="data" data-l="Count">10</td><td data-l="Skills">design-shotfun ✓</td></tr>
+      <tr><td class="data" data-l="Date">09-29</td><td data-l="Repo">ghostties</td><td data-l="Subject">vNext avenues</td><td class="data" data-l="Count">23+16</td><td data-l="Skills">html-review-workflow</td></tr>
+      <tr><td class="data" data-l="Date">10-11</td><td data-l="Repo">desk</td><td data-l="Subject">Mission Control R1–R6</td><td class="data" data-l="Count">43</td><td data-l="Skills">none (design)</td></tr>
+    </tbody>
+  </table>
+</div>
+</section>
+<p class="os-footer body-sm os-muted">Review trail kept locally: draft plan, refuter prompt and the unedited refutation.</p>
+</div>
+</article>
+</main>
+<script>/* static preview: CSS-only system */</script>
+</body>
+</html>
