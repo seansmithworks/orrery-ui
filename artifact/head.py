@@ -58,7 +58,7 @@ def apply_brand(tok, path):
         return o
 
     name = ext(b, "", ("name",)).get("name")
-    if not isinstance(name, str) or not NAME.match(name):
+    if not isinstance(name, str) or not NAME.fullmatch(name):
         fail("$extensions.com.orrery.name is required and must match ^[a-z0-9-]+$")
 
     base = {t["name"]: t["value"] for t in tok["color"]["tokens"]}
@@ -97,11 +97,11 @@ def apply_brand(tok, path):
             if node.get("$type", "fontFamily") != "fontFamily":
                 fail('font.sans.$type must be "fontFamily"')
             v = node.get("$value")
-            if not isinstance(v, list) or not v or not all(isinstance(n, str) and FONT.match(n) for n in v):
+            if not isinstance(v, list) or not v or not all(isinstance(n, str) and FONT.fullmatch(n) for n in v):
                 fail("font.sans.$value must be a non-empty array of names matching ^[A-Za-z0-9 -]+$")
             sans = ", ".join(f'"{n}"' if " " in n else n for n in v)
             url = ext(node, "font.sans.", ("googleFonts",)).get("googleFonts")
-            if url is not None and not (isinstance(url, str) and FONT_URL.match(url)):
+            if url is not None and not (isinstance(url, str) and FONT_URL.fullmatch(url)):
                 fail("font.sans googleFonts must be a https://fonts.googleapis.com/css2?... URL of plain characters")
     if not raw and sans is None:
         fail("sets nothing: define color.accent, color.on-accent or font.sans")
@@ -114,7 +114,7 @@ def apply_brand(tok, path):
             if not isinstance(v, str):
                 fail(f"{where}: value must be a string")
             m = ALIAS.match(v)
-            if not m and not HEX.match(v):
+            if not m and not HEX.fullmatch(v):
                 fail(f"{where}: {v!r} is neither #rrggbb nor a {{name}} alias")
             if m:
                 t = m.group(1)
@@ -136,7 +136,7 @@ def apply_brand(tok, path):
             fail(f"{where}: unknown alias target {{{t}}}")
         else:
             r = base[t].get(th) if isinstance(base[t], dict) else base[t]
-        if not isinstance(r, str) or not HEX.match(r):
+        if not isinstance(r, str) or not HEX.fullmatch(r):
             fail(f"{where}: alias {{{t}}} must point at a plain #rrggbb colour (no alias-to-alias)")
         return r.lower()
 
