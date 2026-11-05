@@ -32,12 +32,24 @@ import {
 import { usePersistedAnchor } from "./usePersistedAnchor";
 import styles from "./styles.module.css";
 
-/** Escape a consumer id for use inside a quoted CSS attribute selector. */
+/**
+ * Escape a consumer id for a double-quoted CSS string (attribute selector
+ * value). One pure function, no CSS.escape: that exists only in browsers, so
+ * using it would render different <style> text on server and client.
+ */
 function escapeAttr(value: string): string {
-  if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
-    return CSS.escape(value);
-  }
-  return value.replace(/["\\]/g, "\\$&");
+  return value.replace(/["\\\n\r\f]/g, (c) => {
+    switch (c) {
+      case "\n":
+        return "\\a ";
+      case "\r":
+        return "\\d ";
+      case "\f":
+        return "\\c ";
+      default:
+        return `\\${c}`;
+    }
+  });
 }
 
 /** "bottom-right" -> "Moved to bottom right." */
@@ -103,11 +115,10 @@ export function Root({
 
   const setOpen = useCallback(
     (next: boolean) => {
-      if (next === open) return;
       if (!isControlled) setUncontrolledOpen(next);
       onOpenChange?.(next);
     },
-    [isControlled, open, onOpenChange],
+    [isControlled, onOpenChange],
   );
 
   const [anchor, setAnchorState] = usePersistedAnchor(

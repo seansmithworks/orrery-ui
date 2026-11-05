@@ -37,15 +37,19 @@ describe("Root id handling", () => {
     await act(async () => root.unmount());
   });
 
-  it("escapes quotes in a consumer id inside the scoped size rule", async () => {
+  it("escapes a consumer id as a CSS string and still matches the attribute", async () => {
+    const id = 'a"b\\c:d';
     const root = createRoot(container);
-    await act(async () => root.render(tree('a"b]c')));
+    await act(async () => root.render(tree(id)));
     const css = Array.from(container.querySelectorAll("style"))
       .map((s) => s.textContent ?? "")
       .join("");
-    expect(css).toContain("--orrery-iris-trigger-size");
-    expect(css).not.toContain('"a"b]c"');
-    expect(css).toMatch(/\[data-orrery-iris-root="a\\+"b/);
+    // `"` and `\` escaped, `:` left alone.
+    expect(css).toContain('[data-orrery-iris-root="a\\"b\\\\c:d"]{');
+    // The CSS string unescapes back to the exact attribute value.
+    const el = container.querySelector("[data-orrery-iris-root]");
+    expect(el?.getAttribute("data-orrery-iris-root")).toBe(id);
+    expect(container.querySelector('[data-orrery-iris-root="a\\"b\\\\c:d"]')).toBe(el);
     await act(async () => root.unmount());
   });
 });
