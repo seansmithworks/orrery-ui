@@ -184,8 +184,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     const a = args[i];
     if (a === '--json') json = true;
     else if (a === '--theme') theme = args[++i];
-    else if (a === '--tokens') tokensFile = args[++i];
-    else if (a === '--brand') brandFile = args[++i];
+    else if (a === '--tokens' || a === '--brand') {
+      const v = args[++i];
+      if (!v || v.startsWith('--')) { console.error(`${a} needs a file`); process.exit(2); }
+      if (a === '--tokens') tokensFile = v; else brandFile = v;
+    }
     else if (a === '--widths') widths = args[++i].split(',').map(Number).filter(Boolean);
     else if (a.startsWith('--')) { console.error('unknown flag ' + a); process.exit(2); }
     else targets.push(a);
