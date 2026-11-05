@@ -136,3 +136,20 @@ Plan approved by Sean 2026-10-08 (strawmen accepted: keyboard + setAnchor move w
 - [ ] **annotie kit — already broken by the Iris rename** (owned by annotie thread). `kit/harness/capture.mjs` waits on `data-vista-sheet-part="trigger|close"` and the `vista-sheet-play:state` postMessage; main now emits `data-orrery-iris-part` / `orrery-iris-play:state`, so capture times out (15s). After the folder move, `kit/harness/build-cut.mjs` default `productDir` (= `~/Code/<runs folder name>` = `~/Code/vista-sheet`) also breaks: rename `runs/vista-sheet/` → `runs/orrery-ui/` or pass `--product-dir ~/Code/orrery-ui`. `kit/audio/vista-sheet-score.mjs` filename is internal (build-cut l.166/182) — rename optional. Gate: one capture + cut runs end to end. Matters for the launch video (item 38).
 - [ ] **Local folder move ~/Code/vista-sheet → ~/Code/orrery-ui** (Sean runs in Terminal, all sessions closed, Ghostties quit). Block in the 2026-10-12 wrap close-out: mv folder, mv `~/.claude/projects/-Users-seansmith-Code-vista-sheet` → `-Users-seansmith-Code-orrery-ui`, mv scope carry file, rm old session lock, rewrite Ghostties workspace.json rootPath/cwd, `qmd update && qmd embed`. After: fix "folder still ~/Code/vista-sheet" in project-facts.md and memory/project-docs-site-home.md.
 - [ ] Local branches `docs/orrery-ui-rename` in ~/Code/desk (4020bd9) and ~/Code/annotie (761bdc7), with worktrees at `.claude/worktrees/orrery-rename` in each — doc-only renames made from this thread by mistake ([[feedback-no-sibling-repo-edits]]). Sean: keep for now. Decide or kill: strawman = hand to each repo's thread to merge or drop.
+
+## Generative system: brand layer (added 2026-11-05)
+
+From the design-system video research (UI Collective "AI + Design Systems", DTCG multi-brand talk). Sean: "get this as close to ship ready as possible tonight."
+- [ ] **1. One brand stack — PR #14 open, reviewer APPROVE, awaits Sean (choices listed in PR).** House-style tokens in `artifact/` become the base tier; an opt-in brand file in W3C DTCG format overrides only the brand tier (accent, fonts, logo); head.py composes them and the checker validates both layers together. Stops at a PR for Sean.
+- [ ] **2. Token file + drift check for every project DESIGN.md.** Prose DESIGN.md alone is what the video warns against; give each project a machine-readable token file agents read, checked like `artifact/check/`.
+- [ ] **3. Watch the two brand videos** (CascadiaJS CYy0PrnJISI, Figma Schema DTCG XI8cjfw8rt8) before locking item 1's tier names.
+- [ ] **Handoff → agent-kit thread (orrery-brand):** after item 1 merges, make `BRAND.md` emit the brand-tier DTCG file that `artifact/head.py --brand` consumes, so client documents and Artifact pages share one stack. Owned by agent-kit; not edited from this thread.
+
+## Iris src review (read-only, 2026-11-05, main @ bc78f51)
+tsc clean; vitest 388/390. Fixes in PR #15 (R1, R2, R4–R7; R3 reverted after review — reviewer APPROVE). Main CI fix in PR #16 (CI green, reviewer APPROVE). Both await a merge: auto-merge was blocked by the permission classifier.
+- [ ] **R1 (major)** `src/Root.tsx:83` `id ?? useId()` calls a hook conditionally; toggling `id` between undefined and a value throws "Rendered more/fewer hooks".
+- [ ] R2 `src/Root.tsx:168` consumer `id` put unescaped into a CSS attribute selector; a `"` or `\` breaks the trigger-size rule (no injection). Fix with CSS.escape.
+- [ ] R3 `src/Root.tsx:95-101` `onOpenChange` fires again when the value didn't change (Close during exit).
+- [ ] R4–R7 simplifications: `Trigger.tsx:734` ternary; inline ref callbacks `Trigger.tsx:713`, `Media.tsx:181,198`; `useTriggerSize.ts:63-82` useCallback-as-initializer + JSON.stringify deps; `Shadow.tsx:64-69` constants inside component.
+- [ ] Shadow `apply()` reads getComputedStyle 4x per frame; possible perf win, unverified safe mid-morph.
+- [ ] `src/naming.test.ts` reports 62 vista-sheet stragglers on main, seen in `artifact/check/fixtures/*.html` (since PR #13). `Trigger.strictmode.test.tsx` timed out under load; re-run alone.
