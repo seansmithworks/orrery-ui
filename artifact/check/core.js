@@ -276,7 +276,14 @@
     const checkColor = (el, label, value, rule = "token-colors") => {
       const c = parseColor(value);
       if (!c || c[3] === 0) return;
-      if (!tokenOf(c)) add(rule, el, `${label} ${value} is not a token`);
+      if (!tokenOf(c)) return add(rule, el, `${label} ${value} is not a token`);
+      if (!opts.brand) return;
+      // branded run: a brand accent / on-accent value that equals no locked token may appear only in its two roles
+      const hits = tokenList.filter(([, t]) => eq(c, t)).map(([n]) => n);
+      if (hits.some((n) => n !== "accent" && n !== "on-accent")) return;
+      const fill = hits.includes("accent") && label === "background" && el.matches(".os-button");
+      const ink = hits.includes("on-accent") && label === "color" && el.closest(".os-button");
+      if (!fill && !ink) add(rule, el, `${label} ${value} brand accent outside its roles`);
     };
     const SIDES = ["top", "right", "bottom", "left"];
     const sidesOf = (s) =>

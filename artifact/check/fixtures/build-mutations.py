@@ -56,6 +56,10 @@ html_attr("adv-x1-html-exempt", VIOL, 'data-orrery-exempt="token-colors literal-
 html_attr("adv-x3-dot-why", VIOL, 'data-orrery-exempt="token-colors literal-values one-shadow fits-window no-edge-bands no-emoji-icons contrast" data-orrery-why="."')
 body("adv-y1-oversized-fixed-menu", '<button class="os-button label" aria-haspopup="menu" aria-expanded="false" onclick="this.setAttribute(\'aria-expanded\',\'true\');document.getElementById(\'m\').hidden=false">Open</button><div id="m" role="menu" hidden class="body" style="position:fixed;left:-500px;top:-500px;width:3000px;height:3000px;background:var(--layer-1)"><div style="position:absolute;left:-200px;top:100px">item</div></div>')
 
+# ---- brand layer: the accent hue used outside .os-button (built from the branded sink; only passes the gate unbranded as a token-colors failure)
+branded = (here / "kitchen-sink-branded.html").read_text()
+(out / "brand-accent-misplaced.html").write_text(branded.replace(MARK, f'<section class="os-sec" id="mutation">\n<p class="body" style="color: var(--accent)">Hued sentence.</p>\n</section>\n{MARK}', 1))
+
 body("adv-z4-contents-wrapper", '<div data-orrery-exempt="token-colors literal-values contrast" data-orrery-why="aaaa bbbb cccc dddd" style="display:contents"><div style="padding:300px 0;background:#fc0;color:#900"><p class="body">Large via display:contents</p></div></div>')
 
 (out / "non-orrery.html").write_text("""<!doctype html>

@@ -3,7 +3,17 @@ import pathlib, re, subprocess, sys
 
 skill = pathlib.Path(__file__).resolve().parents[2]
 snap = skill / "snapshot" / "components"
-head = subprocess.run([sys.executable, "-I", str(skill / "head.py")], check=True, capture_output=True, text=True).stdout.rstrip()
+# optional: --brand <file> --out <name> builds a branded sink beside the plain one
+brand = out_name = None
+argv = sys.argv[1:]
+while argv:
+    a = argv.pop(0)
+    if a == "--brand" and argv: brand = argv.pop(0)
+    elif a == "--out" and argv: out_name = argv.pop(0)
+    else: sys.exit("usage: build-kitchen-sink.py [--brand <file> --out <name>]")
+if bool(brand) != bool(out_name):
+    sys.exit("--brand and --out go together")
+head = subprocess.run([sys.executable, "-I", str(skill / "head.py")] + (["--brand", brand] if brand else []), check=True, capture_output=True, text=True).stdout.rstrip()
 page = (skill / "template.html").read_text().replace("<!--HEAD-->", head)
 
 def body(name):
@@ -27,6 +37,6 @@ i = main.index(marker)
 main = main[:i] + "\n".join(secs) + "\n" + main[i:]
 page = re.sub(r"<main.*</main>", lambda _: main, page, flags=re.S)
 page = page.replace("<title>TITLE (2-4 words)</title>", "<title>Kitchen sink</title>")
-out = skill / "check" / "fixtures" / "kitchen-sink.html"
+out = skill / "check" / "fixtures" / (out_name or "kitchen-sink.html")
 out.write_text(page)
 print(out, len(page))
