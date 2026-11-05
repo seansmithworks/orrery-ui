@@ -116,10 +116,16 @@ const RULES = [MORPH_SHEET, VISTA_SHEET, WICKET, ORRERY_SCOPE];
 const strip = (line: string, tokens: string[]) =>
   tokens.reduce((l, t) => l.split(t).join(""), line);
 
+// Separate systems with their own sample content, not package naming.
+// artifact/ is the published Orrery Artifact design-system snapshot; its
+// example tables use mock repo names and regenerate from upstream.
+const EXCLUDED_DIRS = ["artifact/"];
+
 function gitFiles(): string[] {
   return execFileSync("git", ["ls-files"], { cwd: ROOT, encoding: "utf8" })
     .split("\n")
-    .filter(Boolean);
+    .filter(Boolean)
+    .filter((f) => !EXCLUDED_DIRS.some((d) => f.startsWith(d)));
 }
 
 describe("old product names", () => {
