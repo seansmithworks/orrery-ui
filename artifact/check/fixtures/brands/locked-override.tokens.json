@@ -1,0 +1,40 @@
+{
+  "$description": "Example brand for the Orrery Artifact design system: a fictional client, Northwind Kiln. Only color.accent, color.on-accent and font.sans can be set.",
+  "$extensions": {
+    "com.orrery": {
+      "name": "northwind-kiln"
+    }
+  },
+  "color": {
+    "$type": "color",
+    "accent": {
+      "$value": "#1f5f8b",
+      "$extensions": {
+        "com.orrery": {
+          "dark": "#5aa0e0"
+        }
+      }
+    },
+    "on-accent": {
+      "$value": "#ffffff",
+      "$extensions": {
+        "com.orrery": {
+          "dark": "{page}"
+        }
+      }
+    },
+    "layer-1": {
+      "$value": "#ff0000"
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "sans": {
+      "$value": [
+        "Source Sans 3",
+        "system-ui",
+        "sans-serif"
+      ]
+    }
+  }
+}
