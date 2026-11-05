@@ -710,9 +710,7 @@ function ButtonTrigger({
 
   return (
     <motion.div
-      ref={(el) => {
-        wrapperRef.current = el;
-      }}
+      ref={wrapperRef}
       className={`${styles.dragWrapper} ${className ?? ""}`}
       // width/height come from .dragWrapper's CSS rule (var(--orrery-iris-
       // trigger-size)), not an inline write of `triggerSize` — an inline
@@ -731,7 +729,7 @@ function ButtonTrigger({
       // through the gap. Close only: while open, the invisible button would
       // sit over the sheet and swallow its clicks.
       data-orrery-iris-closing={sheetRect !== null && !open ? "" : undefined}
-      drag={draggable && !open ? true : false}
+      drag={draggable && !open}
       dragMomentum={false}
       dragElastic={reduceMotion ? 0 : 0.06}
       dragConstraints={{

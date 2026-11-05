@@ -45,6 +45,13 @@ function readRenderedCornerRadius(el: HTMLElement): number {
   return parseFloat(token) * (rect.width / (el.offsetWidth || rect.width || 1));
 }
 
+// Strawman (v0.2): how long, after the last collapseProgress/sheetDragY
+// "change", the DOM-read branch keeps sampling the surface instead of
+// falling back to the analytic curve. See the note at its read site.
+const SURFACE_READ_GRACE_MS = 300;
+const NEAR_REST_EPS = 0.02;
+const isInFlight = (p: number) => p > NEAR_REST_EPS && p < 1 - NEAR_REST_EPS;
+
 export function Shadow({ className, asChild, children }: ShadowProps) {
   const ctx = useIrisInternal("Shadow");
   const {
@@ -58,15 +65,9 @@ export function Shadow({ className, asChild, children }: ShadowProps) {
     layerEl,
   } = ctx;
   const elRef = useRef<HTMLElement | null>(null);
-  // Strawman (v0.2): how long, after the last collapseProgress/sheetDragY
-  // "change", the DOM-read branch below keeps sampling the surface instead
-  // of falling back to the analytic curve. See the note at its read site.
-  const SURFACE_READ_GRACE_MS = 300;
   // -Infinity, not 0: no tick has happened yet, so a page under 300ms old
   // is not "within grace" and the first apply uses the analytic radius.
   const lastActiveAtRef = useRef(-Infinity);
-  const NEAR_REST_EPS = 0.02;
-  const isInFlight = (p: number) => p > NEAR_REST_EPS && p < 1 - NEAR_REST_EPS;
 
   useEffect(() => {
     const apply = () => {

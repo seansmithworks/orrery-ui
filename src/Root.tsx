@@ -32,6 +32,14 @@ import {
 import { usePersistedAnchor } from "./usePersistedAnchor";
 import styles from "./styles.module.css";
 
+/** Escape a consumer id for use inside a quoted CSS attribute selector. */
+function escapeAttr(value: string): string {
+  if (typeof CSS !== "undefined" && typeof CSS.escape === "function") {
+    return CSS.escape(value);
+  }
+  return value.replace(/["\\]/g, "\\$&");
+}
+
 /** "bottom-right" -> "Moved to bottom right." */
 function defaultAnchorAnnouncement(anchor: AnchorId): string {
   return `Moved to ${anchor.replace("-", " ")}.`;
@@ -80,7 +88,8 @@ export function Root({
   // in index.ts never printed in that failure path. There is nothing to
   // guard with here; the README documents the actual (misleading, generic)
   // error a consumer will see instead.
-  const idBase = id ?? useId();
+  const generatedId = useId();
+  const idBase = id ?? generatedId;
 
   // A preview card morphs out of a text link: always the rectangle case.
   const shape = preview ? "rectangle" : shapeProp;
@@ -94,10 +103,11 @@ export function Root({
 
   const setOpen = useCallback(
     (next: boolean) => {
+      if (next === open) return;
       if (!isControlled) setUncontrolledOpen(next);
       onOpenChange?.(next);
     },
-    [isControlled, onOpenChange],
+    [isControlled, open, onOpenChange],
   );
 
   const [anchor, setAnchorState] = usePersistedAnchor(
@@ -165,7 +175,7 @@ export function Root({
   // Scoped by idBase so several Roots can't collide; deterministic from
   // props, so server and client render byte-identical CSS.
   const sizeRule = (vpW: number) =>
-    `[data-orrery-iris-root="${idBase}"]{--orrery-iris-trigger-size:${resolveTriggerSize(triggerSizeProp, vpW)}px}`;
+    `[data-orrery-iris-root="${escapeAttr(idBase)}"]{--orrery-iris-trigger-size:${resolveTriggerSize(triggerSizeProp, vpW)}px}`;
   const triggerSizeCss = `${sizeRule(0)}@media (min-width:${MD_BREAKPOINT}px){${sizeRule(MD_BREAKPOINT)}}@media (min-width:${XL_BREAKPOINT}px){${sizeRule(XL_BREAKPOINT)}}`;
 
   const [isDragging, setIsDragging] = useState(false);
