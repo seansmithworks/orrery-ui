@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 export interface TriggerSizeRamp {
   base: number;
@@ -60,13 +60,9 @@ export function useTriggerSize(
   // hydration mismatch. Always resolve at vpW=0 (the ramp's base / the fixed
   // number) so the client's first render matches SSR exactly; the resize
   // effect below promotes to the real size immediately after mount.
-  const initial = useCallback(
-    () => resolveTriggerSize(triggerSize, 0),
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- resolved once at mount, then kept live by the resize effect below
-    [],
+  const [size, setSize] = useState<number>(() =>
+    resolveTriggerSize(triggerSize, 0),
   );
-
-  const [size, setSize] = useState<number>(initial);
 
   useEffect(() => {
     const update = () =>
