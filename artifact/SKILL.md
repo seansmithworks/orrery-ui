@@ -21,10 +21,14 @@ Compose the page for what it shows. Four layers, in order of authority.
 
 Before publishing: `node check/check.mjs page.html`. Publish only on exit 0. For user-supplied colors (swatch, picker), put `data-orrery-exempt="token-colors literal-values"` and `data-orrery-why="…"` on the smallest element that shows them (max 5 per page; why ≥15 characters and ≥3 words), never a page wrapper. Exemptable rules: `token-colors`, `literal-values` (inline styles only), `contrast`.
 
+## Brand layer
+
+For a client page whose owner supplied a brand. Build the head with `python3 -I head.py --brand brands/<name>.tokens.json`. The brand file can override three slots: `color.accent`, `color.on-accent` and `font.sans`; anything else is rejected. Accent shows only on `.os-button` and the focus ring. Gate with `node check/check.mjs page.html --brand <same file>`.
+
 ## Rules
 
 - Answer first on any page that answers something: the `lead` is the decision or state, one sentence, before anything else.
-- No hue and no status colors; every color is a token. Status is a word in a chip.
+- No hue and no status colors, except a brand accent in its two roles; every color is a token. Status is a word in a chip.
 - Chips have fixed meanings, quiet to loud: `outline` settled (done, pass, ready), `fill` neutral tag (PR #, counts not in view), `dashed` absent or pending (next, not started, optional), `strong` needs attention (you, running, partial), `solid` blocked (blocker, fail) and nothing else.
 - One shadow per page, the lift, and none in dark. Never a second.
 - `text-muted` never on layer-2 (insets, callouts, filled chips, code, controls, the checked choice).

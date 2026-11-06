@@ -15,6 +15,10 @@ Copy or symlink this folder to `$HOME/.claude/skills/artifact-house-style/`.
 Put it in place of `<!--HEAD-->` in `template.html`, then write the page with
 the `os-` primitives and `var(--name)` tokens.
 
+## Brand a page
+
+A client brand is a DTCG token file (`$value`, `$type`, `$extensions`) that sets `color.accent`, `color.on-accent` and `font.sans`. Start from `brands/example.tokens.json`, then run `python3 -I head.py --brand brands/<name>.tokens.json`.
+
 ## Check a page
 
 `node check/check.mjs page.html` needs Playwright (`ORRERY_PLAYWRIGHT` or an

@@ -26,24 +26,33 @@ async function launchBrowser(pw) {
 }
 
 // Baseline = token VALUES (not the page's own :root) plus head.py's exact output for them.
-function loadBaseline(tokensFile) {
+// With a brand file, both come from head.py --brand, so a validation failure surfaces as head.py's own error line.
+function loadBaseline(tokensFile, brandFile) {
   const skill = path.join(here, '..');
   const file = path.resolve(tokensFile || path.join(skill, 'snapshot/tokens.json'));
-  const json = JSON.parse(fs.readFileSync(file, 'utf8'));
-  const first = json.color.themes[0].id;
-  const tokens = {};
-  for (const t of json.color.tokens) tokens[t.name] = typeof t.value === 'object' ? t.value : { [first]: t.value };
-  const args = ['-I', path.join(skill, 'head.py')];
+  const run = (args) => execFileSync('python3', ['-I', path.join(skill, 'head.py'), ...args], { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] });
+  const brandArgs = brandFile ? ['--brand', path.resolve(brandFile)] : [];
   let tmp;
+  const snapArgs = [];
   if (tokensFile) {
     tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'orrery-baseline-'));
     fs.copyFileSync(file, path.join(tmp, 'tokens.json'));
     fs.copyFileSync(path.join(skill, 'snapshot/bundle.css'), path.join(tmp, 'bundle.css'));
-    args.push('--snapshot', tmp);
+    snapArgs.push('--snapshot', tmp);
   }
-  const head = execFileSync('python3', args, { encoding: 'utf8' });
-  if (tmp) fs.rmSync(tmp, { recursive: true, force: true });
-  return { tokens, headBlocks: [head.trim().replace(/^<style>/, '').replace(/<\/style>$/, '')] };
+  let json, head;
+  try {
+    json = brandFile ? JSON.parse(run([...snapArgs, ...brandArgs, '--print-tokens'])) : JSON.parse(fs.readFileSync(file, 'utf8'));
+    head = run([...snapArgs, ...brandArgs]);
+  } catch (e) {
+    throw new Error(String(e.stderr || e.message).trim().split('\n').pop());
+  } finally {
+    if (tmp) fs.rmSync(tmp, { recursive: true, force: true });
+  }
+  const first = json.color.themes[0].id;
+  const tokens = {};
+  for (const t of json.color.tokens) tokens[t.name] = typeof t.value === 'object' ? t.value : { [first]: t.value };
+  return { tokens, brand: !!brandFile, headBlocks: [head.trim().replace(/^<style>/, '').replace(/<\/style>$/, '')] };
 }
 
 const toUrl = (t) => (/^https?:|^file:/.test(t) ? t : pathToFileURL(path.resolve(t.replace(/^~/, os.homedir()))).href);
@@ -111,8 +120,8 @@ async function runCombo(browser, url, theme, width, baseline) {
   }
 }
 
-export async function checkPages(targets, { themes = ['light', 'dark'], widths = [375, 1280], pw, tokensFile } = {}) {
-  const baseline = loadBaseline(tokensFile);
+export async function checkPages(targets, { themes = ['light', 'dark'], widths = [375, 1280], pw, tokensFile, brandFile } = {}) {
+  const baseline = loadBaseline(tokensFile, brandFile);
   const browser = await launchBrowser(pw);
   const out = [];
   try {
@@ -170,21 +179,27 @@ function table(res) {
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = process.argv.slice(2);
   const targets = [];
-  let json = false, tokensFile, theme = 'both', widths = [375, 1280];
+  let json = false, tokensFile, brandFile, theme = 'both', widths = [375, 1280];
   for (let i = 0; i < args.length; i++) {
     const a = args[i];
     if (a === '--json') json = true;
     else if (a === '--theme') theme = args[++i];
-    else if (a === '--tokens') tokensFile = args[++i];
+    else if (a === '--tokens' || a === '--brand') {
+      const v = args[++i];
+      if (!v || v.startsWith('--')) { console.error(`${a} needs a file`); process.exit(2); }
+      if (a === '--tokens') tokensFile = v; else brandFile = v;
+    }
     else if (a === '--widths') widths = args[++i].split(',').map(Number).filter(Boolean);
     else if (a.startsWith('--')) { console.error('unknown flag ' + a); process.exit(2); }
     else targets.push(a);
   }
   if (!targets.length || !['light', 'dark', 'both'].includes(theme)) {
-    console.error('usage: node check.mjs <file.html|url> [...] [--json] [--theme light|dark|both] [--widths 375,1280] [--tokens tokens.json]');
+    console.error('usage: node check.mjs <file.html|url> [...] [--json] [--theme light|dark|both] [--widths 375,1280] [--tokens tokens.json] [--brand brand.tokens.json]');
     process.exit(2);
   }
-  const res = await checkPages(targets, { themes: theme === 'both' ? ['light', 'dark'] : [theme], widths, tokensFile });
+  let res;
+  try { res = await checkPages(targets, { themes: theme === 'both' ? ['light', 'dark'] : [theme], widths, tokensFile, brandFile }); }
+  catch (e) { console.error(e.message); process.exit(2); }
   console.log(json ? JSON.stringify(res, null, 2) : table(res));
   process.exit(res.every((p) => p.pass) ? 0 : 1);
 }

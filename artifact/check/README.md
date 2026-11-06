@@ -3,10 +3,12 @@
 Decides whether an HTML page is an Orrery page, whatever its layout. Judges what renders (computed styles), not the markup. Tokens: `snapshot/tokens.json`.
 
 ```
-node check/check.mjs <file.html|url> [...] [--json] [--theme light|dark|both] [--widths 375,1280] [--tokens tokens.json]
+node check/check.mjs <file.html|url> [...] [--json] [--theme light|dark|both] [--widths 375,1280] [--tokens tokens.json] [--brand brand.tokens.json]
 node check/test.mjs        # kitchen-sink + mutations + non-Orrery page; exits 0 when all behave
 ```
 Baseline: token VALUES from `snapshot/tokens.json` (or `--tokens`, e.g. a Tuner export, so a declared hued preset is legal), never the page's own `:root`. Defaults: both themes (emulated `colorScheme`), widths 375 and 1280. Playwright is resolved from `ORRERY_PLAYWRIGHT`, then `import('playwright')`.
+
+Brand: `--brand` takes a brand file, and the baseline becomes head.py's output for it, so the brand accent is legal on `.os-button` and the focus ring and nowhere else. An invalid brand (bad file, locked path, accent that fails contrast) exits 2 with head.py's error line.
 
 Exit codes: 0 all pages pass, 1 any page fails or fails to load, 2 bad usage.
 

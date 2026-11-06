@@ -11,6 +11,7 @@ const fx = (f) => path.join(here, 'fixtures', f);
 const ALL7 = ['token-colors', 'literal-values', 'one-shadow', 'fits-window', 'no-edge-bands', 'no-emoji-icons', 'contrast'];
 const EXPECT = {
   'kitchen-sink.html': [],
+  'kitchen-sink-branded.html': ['token-colors', 'literal-values'], // a brand page without --brand is a hued page
   'mutations/literal-hex.html': ['literal-values'],
   'mutations/token-hue.html': ['token-colors', 'literal-values'],
   'mutations/second-shadow.html': ['one-shadow'],
@@ -59,5 +60,26 @@ res.forEach((p, i) => {
   const want = [...EXPECT[name]].sort(), got = [...failed].sort();
   ok(JSON.stringify(want) === JSON.stringify(got), `${name} fails [${got.join(', ')}] expected [${want.join(', ')}] [${p.seconds}s]`);
 });
+
+// branded batch: the same brand file is the baseline
+const brand = fx('brands/test.tokens.json');
+const BRANDED = {
+  'kitchen-sink-branded.html': [],
+  'mutations/brand-accent-misplaced.html': ['token-colors'],
+  'kitchen-sink.html': ['token-colors', 'literal-values'],
+};
+const bfiles = Object.keys(BRANDED);
+const bres = await checkPages(bfiles.map(fx), { brandFile: brand });
+bres.forEach((p, i) => {
+  const name = bfiles[i];
+  if (p.loadError) return ok(false, `[brand] ${name} load error: ${p.loadError}`);
+  const got = p.rules.filter((r) => !r.pass).map((r) => r.rule).sort();
+  ok(JSON.stringify([...BRANDED[name]].sort()) === JSON.stringify(got), `[brand] ${name} fails [${got.join(', ')}] expected [${BRANDED[name].join(', ')}] [${p.seconds}s]`);
+});
+for (const name of ['low-contrast', 'locked-override']) {
+  let msg = null;
+  await checkPages([fx('kitchen-sink.html')], { brandFile: fx(`brands/${name}.tokens.json`) }).catch((e) => { msg = e.message; });
+  ok(msg && msg.includes(`${name}.tokens.json`), `[brand] ${name} rejects: ${msg}`);
+}
 console.log(bad ? `\n${bad} failure(s)` : '\nall passed');
 process.exit(bad ? 1 : 0);
