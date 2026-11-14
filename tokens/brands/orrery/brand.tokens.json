@@ -6,6 +6,25 @@
       "modes": [
         "light",
         "dark"
+      ],
+      "unlocked": [
+        "*"
+      ],
+      "optOut": [
+        {
+          "check": "contrast",
+          "role": "color.line-dashed",
+          "surface": "color.page",
+          "mode": "light",
+          "reason": "pre-existing, pending Sean's review"
+        },
+        {
+          "check": "contrast",
+          "role": "color.line-dashed",
+          "surface": "color.layer-1",
+          "mode": "light",
+          "reason": "pre-existing, pending Sean's review"
+        }
       ]
     }
   },

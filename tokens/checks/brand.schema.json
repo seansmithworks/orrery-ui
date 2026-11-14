@@ -1,0 +1,9 @@
+{
+  "$description": "The one brand schema. Every brand under tokens/brands/<name>/ is read against it at build. A brand's lock list is written as the paths it may set (`$extensions.com.orrery.unlocked` in its brand.tokens.json); every other path is locked. A brand that declares none inherits `defaultUnlocked`.",
+  "defaultUnlocked": ["color.accent", "color.on-accent", "font.sans"],
+  "$defaultUnlocked": "The three slots a client-document brand may set. artifact/head.py enforces the same three for artifact/brands/*.tokens.json and stays the validator of that file format.",
+  "optOut": {
+    "$description": "An opt-out is one entry in `$extensions.com.orrery.optOut` in the brand's brand.tokens.json. Every entry needs a non-empty `reason`.",
+    "checks": ["contrast"]
+  }
+}
