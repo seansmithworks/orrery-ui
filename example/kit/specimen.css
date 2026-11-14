@@ -150,6 +150,14 @@ body {
   flex: 1;
 }
 
+/* The kit's documented minimum gap between buttons (button.css layout rule). */
+.spec-dense {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--space-12);
+}
+
 .spec-fields {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -161,8 +169,12 @@ body {
   gap: var(--space-8);
 }
 
+/* The static dialog's portal mounts here. contain: layout makes the frame the containing block
+   for the kit's fixed backdrop and viewport, and its own stacking context, so the open-state
+   specimen fills the frame and never rises above the live dialog. No kit prop is involved. */
 .spec-dialog-frame {
   position: relative;
+  contain: layout paint;
   min-height: calc(var(--space-72) * 3 + var(--space-48));
   border: var(--line-width) solid var(--line);
   border-radius: var(--radius-panel);

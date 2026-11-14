@@ -1,4 +1,4 @@
-import { StrictMode, useRef, useState, type ReactNode, type RefObject } from "react";
+import { StrictMode, useState, type ReactNode } from "react";
 import { createRoot } from "react-dom/client";
 import {
   Button,
@@ -190,7 +190,9 @@ function RenameDialogBody({ live }: { live: boolean }) {
 }
 
 function StaticDialog() {
-  // The portal needs its container before it mounts, so the frame is held in state, not a ref.
+  // The portal mounts into this frame. The frame is a containing block for fixed elements
+  // (specimen.css: contain), so the kit's fixed backdrop and viewport fill the frame, not the window.
+  // Held in state, not a ref: the portal needs its container before it mounts.
   const [frame, setFrame] = useState<HTMLDivElement | null>(null);
   return (
     <div className="spec-dialog-frame" ref={setFrame}>
@@ -200,7 +202,7 @@ function StaticDialog() {
       </div>
       {frame && (
         <Dialog.Root open modal={false} disablePointerDismissal>
-          <Dialog.Popup contained container={frame} initialFocus={false}>
+          <Dialog.Popup container={frame} initialFocus={false}>
             <RenameDialogBody live={false} />
           </Dialog.Popup>
         </Dialog.Root>
@@ -209,7 +211,7 @@ function StaticDialog() {
   );
 }
 
-function LiveRow({ panel }: { panel: RefObject<HTMLElement | null> }) {
+function LiveRow({ portal }: { portal: HTMLElement | null }) {
   return (
     <div className="spec-live">
       <Field.Root className="spec-live__field">
@@ -218,7 +220,7 @@ function LiveRow({ panel }: { panel: RefObject<HTMLElement | null> }) {
       </Field.Root>
       <Dialog.Root>
         <Dialog.Trigger variant="primary">Rename orbit</Dialog.Trigger>
-        <Dialog.Popup container={panel}>
+        <Dialog.Popup container={portal}>
           <RenameDialogBody live />
         </Dialog.Popup>
       </Dialog.Root>
@@ -226,12 +228,33 @@ function LiveRow({ panel }: { panel: RefObject<HTMLElement | null> }) {
   );
 }
 
-function PanelView({ panel }: { panel: Panel }) {
-  const ref = useRef<HTMLElement>(null);
+function DenseRow() {
+  return (
+    <div className="spec-dense">
+      {VARIANTS.map((v) => (
+        <Button key={v} variant={v} size="s">
+          Save
+        </Button>
+      ))}
+      {VARIANTS.map((v) => (
+        <IconButton key={v} variant={v} size="s" aria-label={`Add orbit, ${v}`}>
+          <PlusGlyph />
+        </IconButton>
+      ))}
+    </div>
+  );
+}
+
+function PanelView({
+  panel,
+  portal,
+}: {
+  panel: Panel;
+  portal: HTMLElement | null;
+}) {
   const titleId = `${panel.id}-title`;
   return (
     <section
-      ref={ref}
       className="spec-panel"
       data-panel={panel.id}
       data-brand={panel.brand}
@@ -246,7 +269,7 @@ function PanelView({ panel }: { panel: Panel }) {
       </header>
 
       <Block title="Live">
-        <LiveRow panel={ref} />
+        <LiveRow portal={portal} />
       </Block>
 
       <Block title="Button">
@@ -269,6 +292,10 @@ function PanelView({ panel }: { panel: Panel }) {
         />
       </Block>
 
+      <Block title="Dense row, size s" note="minimum gap --space-12">
+        <DenseRow />
+      </Block>
+
       <Block title="Field">
         <div className="spec-fields">
           {FIELD_STATES.map((s) => (
@@ -285,21 +312,42 @@ function PanelView({ panel }: { panel: Panel }) {
 }
 
 function Specimen() {
+  // Live dialogs portal to the end of <body>, as they would in an app, into one wrapper per
+  // panel that carries the panel's brand and mode.
+  const [portals, setPortals] = useState<Record<string, HTMLElement | null>>(
+    {},
+  );
+  const portalRef = (id: string) => (el: HTMLElement | null) => {
+    if (el) setPortals((p) => (p[id] === el ? p : { ...p, [id]: el }));
+  };
   return (
-    <main className="spec">
-      <header className="spec__head">
-        <h1 className="spec__title">Kit exemplars</h1>
-        <p className="spec__sub">
-          Button, IconButton, Field, Dialog. Brand orrery light and dark, brand
-          solar.
-        </p>
-      </header>
-      <div className="spec__grid">
+    <>
+      <main className="spec">
+        <header className="spec__head">
+          <h1 className="spec__title">Kit exemplars</h1>
+          <p className="spec__sub">
+            Button, IconButton, Field, Dialog. Brand orrery light and dark,
+            brand solar.
+          </p>
+        </header>
+        <div className="spec__grid">
+          {PANELS.map((p) => (
+            <PanelView key={p.id} panel={p} portal={portals[p.id] ?? null} />
+          ))}
+        </div>
+      </main>
+      <div className="spec-portals">
         {PANELS.map((p) => (
-          <PanelView key={p.id} panel={p} />
+          <div
+            key={p.id}
+            ref={portalRef(p.id)}
+            data-portal-for={p.id}
+            data-brand={p.brand}
+            data-theme={p.theme}
+          />
         ))}
       </div>
-    </main>
+    </>
   );
 }
 

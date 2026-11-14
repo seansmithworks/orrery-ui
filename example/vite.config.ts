@@ -60,6 +60,7 @@ export default defineConfig({
         labelMismatch: resolve(__dirname, "fixtures/label-mismatch.html"),
         anchorKeyboard: resolve(__dirname, "fixtures/anchor-keyboard.html"),
         roleFallbacks: resolve(__dirname, "fixtures/role-fallbacks.html"),
+        kitDialog: resolve(__dirname, "fixtures/kit-dialog.html"),
       },
     },
   },

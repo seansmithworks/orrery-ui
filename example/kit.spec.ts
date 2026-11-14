@@ -10,7 +10,10 @@ import AxeBuilder from "@axe-core/playwright";
 
 const PANELS = ["orrery-light", "orrery-dark", "solar"] as const;
 const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
-const LIVE_POPUP = ".orr-dialog__viewport:not([data-contained]) .orr-dialog";
+// Live dialogs portal to one wrapper per panel at the end of <body>; the static
+// open-state specimens portal into their frame inside the panel.
+const LIVE_POPUP = ".spec-portals .orr-dialog";
+const STATIC_POPUP = ".spec-dialog-frame .orr-dialog";
 
 test.beforeEach(async ({ page }) => {
   // The specimen links Google Fonts for brand solar; never touch the network in a test.
@@ -19,29 +22,29 @@ test.beforeEach(async ({ page }) => {
   );
   await page.goto("/kit.html");
   // The three static dialogs have faded in.
-  await page.waitForFunction(() => {
-    const popups = [
-      ...document.querySelectorAll(
-        ".orr-dialog__viewport[data-contained] .orr-dialog",
-      ),
-    ];
+  await page.waitForFunction((sel) => {
+    const popups = [...document.querySelectorAll(sel)];
     return (
       popups.length === 3 &&
       popups.every((p) => getComputedStyle(p).opacity === "1")
     );
-  });
+  }, STATIC_POPUP);
 });
 
 const panel = (page: Page, id: string) => page.locator(`[data-panel="${id}"]`);
 const trigger = (p: Locator) => p.getByRole("button", { name: "Rename orbit" });
 
-async function violations(page: Page, include: string) {
-  const wcag = await new AxeBuilder({ page })
-    .include(include)
-    .withTags(TAGS)
-    .analyze();
-  const labelInName = await new AxeBuilder({ page })
-    .include(include)
+/** axe over a panel and its live-dialog portal. */
+async function violations(page: Page, id: string) {
+  // Base UI's focus-guard sentinels (aria-hidden, tabbable, they only bounce focus) are
+  // excluded, per the precedent in axe.spec.ts. Every other node is scanned.
+  const scope = (b: AxeBuilder) =>
+    b
+      .include(`[data-panel="${id}"]`)
+      .include(`[data-portal-for="${id}"]`)
+      .exclude("[data-base-ui-focus-guard]");
+  const wcag = await scope(new AxeBuilder({ page })).withTags(TAGS).analyze();
+  const labelInName = await scope(new AxeBuilder({ page }))
     .withRules(["label-content-name-mismatch"])
     .analyze();
   return [...wcag.violations, ...labelInName.violations].map((v) => ({
@@ -68,7 +71,10 @@ async function openLive(page: Page, p: Locator) {
 async function focusRing(page: Page, panelId: string) {
   return page.evaluate((id) => {
     const el = document.activeElement as HTMLElement;
-    const root = document.querySelector(`[data-panel="${id}"]`) as HTMLElement;
+    // The panel, or the panel's live-dialog portal: both carry its brand and mode.
+    const root = el.closest("[data-brand]") as HTMLElement;
+    const owner =
+      root.getAttribute("data-panel") ?? root.getAttribute("data-portal-for");
     const cs = getComputedStyle(el);
     const probe = document.createElement("span");
     probe.style.color = "var(--accent)";
@@ -100,7 +106,7 @@ async function focusRing(page: Page, panelId: string) {
         clippedBy.push(a.className || a.tagName);
     }
     return {
-      inPanel: root.contains(el),
+      inPanel: owner === id,
       style: cs.outlineStyle,
       width: cs.outlineWidth,
       offset: cs.outlineOffset,
@@ -127,12 +133,12 @@ for (const id of PANELS) {
     test("axe: no violations, every component in every state", async ({
       page,
     }) => {
-      expect(await violations(page, `[data-panel="${id}"]`)).toEqual([]);
+      expect(await violations(page, id)).toEqual([]);
     });
 
     test("axe: no violations with the live dialog open", async ({ page }) => {
       await openLive(page, panel(page, id));
-      expect(await violations(page, `[data-panel="${id}"]`)).toEqual([]);
+      expect(await violations(page, id)).toEqual([]);
     });
 
     test("Button: Tab order, Enter and Space activate, disabled is skipped, loading is focusable and inert", async ({
@@ -259,25 +265,47 @@ for (const id of PANELS) {
     }) => {
       const p = panel(page, id);
       const dialog = await openLive(page, p);
-      expect(
-        await dialog.evaluate((d) => d.contains(document.activeElement)),
-      ).toBe(true);
+      const inside = () =>
+        dialog.evaluate((d) => d.contains(document.activeElement));
+      expect(await inside()).toBe(true);
+      // Record every element that takes focus. Base UI wraps focus through an aria-hidden
+      // focus-guard span (one async hop), so the guard and <body> may hold focus for a moment;
+      // nothing else outside the popup may ever take it.
+      await dialog.evaluate((d) => {
+        const w = window as unknown as { escaped: string[] };
+        w.escaped = [];
+        document.addEventListener(
+          "focusin",
+          (e) => {
+            const t = e.target as HTMLElement;
+            if (d.contains(t) || t.hasAttribute("data-base-ui-focus-guard"))
+              return;
+            w.escaped.push(t.outerHTML.slice(0, 80));
+          },
+          true,
+        );
+      });
       // Four tabbables inside (close, name, Cancel, Save): six presses each way wrap past both ends.
       for (const key of [
         ...Array(6).fill("Tab"),
         ...Array(6).fill("Shift+Tab"),
       ]) {
         await page.keyboard.press(key);
-        expect(
-          await dialog.evaluate((d) => d.contains(document.activeElement)),
-        ).toBe(true);
+        await expect.poll(inside, { timeout: 1000 }).toBe(true);
       }
+      expect(
+        await page.evaluate(
+          () => (window as unknown as { escaped: string[] }).escaped,
+        ),
+      ).toEqual([]);
       await page.keyboard.press("Escape");
       await expect(dialog).toBeHidden();
       await expect(trigger(p)).toBeFocused();
     });
 
-    test("Dialog: Space opens on top of the page, an outside press closes", async ({ page }) => {
+    test("Dialog: Space opens on top of the page, an outside press closes", async ({
+      page,
+    }) => {
       const p = panel(page, id);
       await trigger(p).focus();
       await page.keyboard.press("Space");
@@ -334,7 +362,8 @@ for (const id of PANELS) {
       page,
     }) => {
       const misses = await panel(page, id)
-        .locator(".orr-button:not([data-preview~='active'])")
+        // The dense row is measured by its own test below: there the 44px areas abut by design.
+        .locator(".orr-button:not([data-preview~='active']):not(.spec-dense *)")
         .evaluateAll((els) => {
           const out: string[] = [];
           for (const el of els) {
@@ -369,8 +398,81 @@ for (const id of PANELS) {
         );
       expect(heights.every((h) => h >= 44)).toBe(true);
     });
+
+    test("hit area, dense row: at the documented gap each size-s button's centre and edges press that button, not a neighbour", async ({
+      page,
+    }) => {
+      const row = panel(page, id).locator(".spec-dense");
+      expect(await denseRowThefts(row)).toEqual([]);
+    });
   });
 }
+
+/**
+ * Presses 1px inside each edge, and the centre, of every button in a row (elementFromPoint, the
+ * same hit test a pointer uses) and lists every point that lands on another button.
+ */
+function denseRowThefts(row: Locator) {
+  return row.evaluate((r) => {
+    r.scrollIntoView({ block: "center" });
+    const out: string[] = [];
+    const buttons = [...r.querySelectorAll<HTMLElement>(".orr-button")];
+    buttons.forEach((el, i) => {
+      const b = el.getBoundingClientRect();
+      const cy = b.top + b.height / 2;
+      const cx = b.left + b.width / 2;
+      const points: Array<[string, number, number]> = [
+        ["centre", cx, cy],
+        ["left edge", b.left + 1, cy],
+        ["right edge", b.right - 1, cy],
+        ["top edge", cx, b.top + 1],
+        ["bottom edge", cx, b.bottom - 1],
+        // 21px out from the centre on each side: inside its own 44px area, 1px short of where it meets a neighbour's at --space-12.
+        ["reach left", cx - 21, cy],
+        ["reach right", cx + 21, cy],
+        ["reach up", cx, cy - 21],
+        ["reach down", cx, cy + 21],
+      ];
+      for (const [where, x, y] of points) {
+        const hit = document.elementFromPoint(x, y)?.closest(".orr-button");
+        if (hit !== el)
+          out.push(
+            `button ${i} ${where} -> ${hit ? `button ${buttons.indexOf(hit as HTMLElement)}` : "nothing"}`,
+          );
+      }
+    });
+    return out;
+  });
+}
+
+test("hit area, dense row red-proof: under the documented gap (--space-4) a neighbour takes presses", async ({
+  page,
+}) => {
+  const row = panel(page, "orrery-light").locator(".spec-dense");
+  await row.evaluate((r) => (r.style.gap = "var(--space-4)"));
+  expect((await denseRowThefts(row)).length).toBeGreaterThan(0);
+});
+
+test("cascade layer: a consumer's single-class rule beats every kit rule, whatever the kit's specificity", async ({
+  page,
+}) => {
+  // The focus-preview primary Button is styled by .orr-button:is(:focus-visible, [data-preview~="focus"]).
+  const button = panel(page, "orrery-light")
+    .locator("tbody tr")
+    .filter({ hasText: /^focus/i })
+    .locator(".orr-button")
+    .first();
+  await page.addStyleTag({
+    content: ".consumer { outline-width: 5px; border-radius: 0; }",
+  });
+  await button.evaluate((el) => el.classList.add("consumer"));
+  expect(
+    await button.evaluate((el) => {
+      const cs = getComputedStyle(el);
+      return [cs.outlineWidth, cs.borderTopLeftRadius];
+    }),
+  ).toEqual(["5px", "0px"]);
+});
 
 /**
  * Records the live popup's transform on every frame while it opens, under the given motion
@@ -442,5 +544,71 @@ test.describe("reduced motion: no-preference (proves the check above can fail)",
     );
     expect(transitionProperty).toContain("transform");
     expect(seen.some((t) => t !== "none")).toBe(true);
+  });
+});
+
+test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
+  test.beforeEach(async ({ page }) => {
+    await page.goto("/fixtures/kit-dialog.html");
+  });
+
+  test("nested dialog: opens above its parent, Escape closes only the inner one, focus returns to the inner trigger", async ({
+    page,
+  }) => {
+    await page.getByRole("button", { name: "Open settings" }).click();
+    const outer = page.getByRole("dialog", { name: "Orbit settings" });
+    await expect(outer).toBeVisible();
+    const innerTrigger = outer.getByRole("button", { name: "Delete orbit" });
+    await innerTrigger.focus();
+    await page.keyboard.press("Enter");
+    const inner = page.getByRole("dialog", { name: "Delete orbit?" });
+    await expect(inner).toBeVisible();
+    await expect(inner).toHaveAttribute("data-nested", "");
+    // Above: the inner popup's centre hits the inner popup, not the outer one.
+    expect(
+      await inner.evaluate((d) => {
+        const r = d.getBoundingClientRect();
+        return d.contains(
+          document.elementFromPoint(r.left + r.width / 2, r.top + r.height / 2),
+        );
+      }),
+    ).toBe(true);
+    await expect
+      .poll(() => inner.evaluate((d) => d.contains(document.activeElement)))
+      .toBe(true);
+    await page.keyboard.press("Escape");
+    await expect(inner).toBeHidden();
+    await expect(outer).toBeVisible();
+    await expect(innerTrigger).toBeFocused();
+    await page.keyboard.press("Escape");
+    await expect(outer).toBeHidden();
+    await expect(
+      page.getByRole("button", { name: "Open settings" }),
+    ).toBeFocused();
+  });
+
+  test("trigger unmounts while open: no error, the dialog closes, focus lands on <body>", async ({
+    page,
+  }) => {
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    await page.getByRole("button", { name: "Edit orbit" }).click();
+    const dialog = page.getByRole("dialog", { name: "Edit orbit" });
+    await expect(dialog).toBeVisible();
+    await dialog.getByRole("button", { name: "Remove the trigger" }).click();
+    await expect(page.getByText("The trigger is gone.")).toBeVisible();
+    await expect(dialog).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dialog).toBeHidden();
+    // Base UI returns focus to the trigger; with the trigger gone it falls back to <body>.
+    // Recorded as Base UI's behaviour, not changed here: a consumer that removes the trigger
+    // should pass Dialog.Popup finalFocus.
+    expect(await page.evaluate(() => document.activeElement?.tagName)).toBe(
+      "BODY",
+    );
+    expect(errors).toEqual([]);
   });
 });
