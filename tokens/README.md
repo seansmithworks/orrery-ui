@@ -14,6 +14,20 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 - **`generated/css/<brand>.css`**: the same custom properties, in the same selectors, that `head.py` writes for that brand.
 - **`generated/swift/OrreryTokens.swift`**: one file, one namespace per brand: light and dark colors, spacing, radius, border, type styles, springs.
 
+## Gates
+
+`npm run tokens:build` stops on invalid DTCG (Terrazzo) and on a color whose `hex` and `components` disagree. It writes only after everything built, and prunes stale files only from a folder that is missing, empty, or a previous build (it holds a `.orrery-tokens-build` marker, which the build writes). Any other non-empty folder is refused with exit 2 and left untouched; `--out` must be outside the repo.
+
+`npm run tokens:check` rebuilds into a temp folder and fails, with one line per gate, when:
+
+- **drift**: the rebuild differs from the committed `generated/`.
+- **snapshot**: the generated `tokens.json` does not deep-equal `artifact/snapshot/tokens.json`. The line names the first differing key.
+- **head.py**: a generated CSS file's custom properties differ from `artifact/head.py`'s output, with no brand and for each client brand. The line names the first differing declaration. `bundle.css` is outside the comparison.
+
+`node tokens/test.mjs` proves each gate passes on the real tree and fails on a seeded input. In CI the `tokens` job runs `tokens:build` and then fails if `git status --porcelain -- tokens/generated` is non-empty, which is the step that catches uncommitted drift (the build has just rewritten the folder, so `tokens:check`'s drift comparison cannot); `tokens:check` then runs the snapshot and head.py gates.
+
+Not covered: the Swift output and the brand contract have only the drift gate. `color-scheme`, the body rule and the type classes in head.py's output are outside the head.py comparison.
+
 ## Build tool: Terrazzo 2 (`@terrazzo/parser`)
 
 Both tools were run end to end (commit `2fc0538` has both adapters). They produced byte-identical outputs, and neither one's built-in formats could produce any of the three outputs:

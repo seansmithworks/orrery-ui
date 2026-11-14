@@ -25,3 +25,23 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+
+  tokens:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      # python3 ships with ubuntu-latest; head.py and its tests are stdlib only.
+      - run: npx playwright install --with-deps --only-shell chromium
+      - run: npm run tokens:build
+      # The build just rewrote tokens/generated/, so a diff here means the committed files were stale.
+      - run: test -z "$(git status --porcelain -- tokens/generated)"
+      - run: npm run tokens:check
+      - run: node tokens/test.mjs
+      - run: node artifact/check/test.mjs
+      - run: python3 -I artifact/check/test_head.py
