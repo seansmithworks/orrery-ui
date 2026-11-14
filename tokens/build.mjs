@@ -1,16 +1,16 @@
 #!/usr/bin/env node
-// npm run tokens:build [-- --out <dir>] [--tool terrazzo|sd]
+// npm run tokens:build [-- --out <dir>]
 // Source: tokens/ (DTCG). Outputs: the Artifact contract tokens.json, CSS per brand, one Swift file.
 // Client brands (artifact/brands/*.tokens.json) pass through head.py, the single brand gate.
 import fs from 'node:fs';
 import path from 'node:path';
 import { REPO, TOKENS, loadBrand, brandOverlay } from './lib/source.mjs';
 import { contract, css, swift } from './lib/emit.mjs';
+import { resolve } from './lib/resolve.mjs';
 
 const args = process.argv.slice(2);
 const opt = (flag, dflt) => (args.includes(flag) ? args[args.indexOf(flag) + 1] : dflt);
 const out = path.resolve(opt('--out', path.join(TOKENS, 'generated')));
-const { resolve } = await import(`./lib/resolve.${opt('--tool', 'terrazzo')}.mjs`);
 
 async function build(brand, overlay) {
   const b = loadBrand(brand, overlay);

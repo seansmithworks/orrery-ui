@@ -1,4 +1,4 @@
-// Terrazzo 2 adapter: parse + lint + resolve one merged mode document.
+// Terrazzo 2 adapter: parse, lint (fails the build on invalid DTCG) and resolve one merged mode document.
 import { parse, defineConfig } from '@terrazzo/parser';
 import { pathToFileURL } from 'node:url';
 import { TOKENS } from './source.mjs';
