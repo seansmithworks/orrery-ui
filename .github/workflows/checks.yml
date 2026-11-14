@@ -66,3 +66,5 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps --only-shell chromium
       - run: npm run test:roles
+      # The opt-in Iris bridge (example/role-bridge.spec.ts): light and bridge-alone equal bare, dark is its own baseline.
+      - run: npm run test:bridge

@@ -376,5 +376,19 @@
       "ref": "scripts/audit-css-vars.mjs",
       "test": "[css-var-audit] audit: a variable the CSS reads that nothing writes or documents fails the audit"
     }
+  },
+  {
+    "id": "iris-bridge-matches-fallbacks",
+    "layer": "rule",
+    "statement": "Every variable in the opt-in Iris bridge is documented in README.md, maps to a role that exists, and that role's brand-orrery light value equals Iris's literal fallback in src/styles.module.css; it does not show how Iris looks in dark.",
+    "applies": [
+      "tokens"
+    ],
+    "scope": "opt-in",
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/bridge.mjs#irisBridgeGate",
+      "test": "[iris-bridge-matches-fallbacks] irisBridgeGate: a role whose light value no longer equals the Iris literal fails the build, naming both values, and writes nothing"
+    }
   }
 ]

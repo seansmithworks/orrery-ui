@@ -7,6 +7,7 @@ import { REPO } from '../lib/source.mjs';
 import * as system from '../lib/system.mjs';
 import * as checks from '../lib/checks.mjs';
 import * as gates from '../lib/gates.mjs';
+import * as bridge from '../lib/bridge.mjs';
 import { CHECKS } from './check-source.mjs';
 
 export const RULES_FILE = path.join(REPO, 'tokens/rules/rules.json');
@@ -14,7 +15,7 @@ const KINDS = ['token-gate', 'source-check', 'artifact-checker', 'test'];
 const LAYERS = ['floor', 'rule'];
 const APPLIES = ['tokens', 'source', 'page'];
 // Token gates live in these modules. A ref is `<file>#<export>` or `<file>#<export>.<method>` (a method on what the export returns).
-const MODULES = { 'tokens/lib/system.mjs': system, 'tokens/lib/checks.mjs': checks, 'tokens/lib/gates.mjs': gates };
+const MODULES = { 'tokens/lib/system.mjs': system, 'tokens/lib/checks.mjs': checks, 'tokens/lib/gates.mjs': gates, 'tokens/lib/bridge.mjs': bridge };
 // Seeded-failure tests are found by name in these files.
 const TEST_FILES = ['tokens/test.mjs', 'tokens/test-checks.mjs', 'tokens/rules/test-rules.mjs'];
 const ARTIFACT_CHECK = 'artifact/check/check.mjs';
