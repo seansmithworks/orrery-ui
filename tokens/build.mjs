@@ -9,6 +9,7 @@ import { REPO, TOKENS, loadBrand, brandOverlay } from './lib/source.mjs';
 import { contract, css, swift } from './lib/emit.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { colorGate } from './lib/gates.mjs';
+import { systemGate, systemCss, systemSwift, motionModule } from './lib/system.mjs';
 import { checker } from './lib/checks.mjs';
 
 const usage = (why) => {
@@ -66,6 +67,7 @@ async function build(brand, overlay) {
   for (const m of bad.length ? [] : b.modes) {
     m.tokens = await resolve(brand, m);
     bad.push(...colorGate(m.tokens, `brand ${b.name}, mode ${m.id}`), ...checks.contrast(b, m));
+    bad.push(...systemGate(m.tokens, m.doc, `brand ${b.name}, mode ${m.id}`));
   }
   if (bad.length) {
     console.error(bad.join('\n'));
@@ -82,6 +84,8 @@ const orrery = await build('orrery');
 const shape = contract(orrery.modes);
 write('tokens.json', JSON.stringify(shape, null, 2) + '\n');
 write(`css/${orrery.name}.css`, css(orrery.modes, orrery.name));
+write(`css/${orrery.name}.system.css`, systemCss(orrery.modes, orrery.name));
+write('js/orrery.motion.mjs', motionModule(orrery.modes[0].doc));
 
 const brands = [orrery];
 const clientDir = path.join(REPO, 'artifact/brands');
@@ -90,7 +94,7 @@ for (const f of fs.readdirSync(clientDir).filter((f) => f.endsWith('.tokens.json
   write(`css/${b.name}.css`, css(b.modes, b.name));
   brands.push(b);
 }
-write('swift/OrreryTokens.swift', swift(brands));
+write('swift/OrreryTokens.swift', swift(brands) + systemSwift(brands));
 // Any other brand folder is checked, not yet emitted.
 for (const name of checks.brands) if (name !== 'orrery') await build(name);
 write('checks.md', checks.report());

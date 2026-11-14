@@ -95,9 +95,9 @@ export function checkTests({ tmp, run }) {
       const open = seeded((edit, src) => addBrand(edit, src, 'acme'));
       assert.equal(open.r.status, 0, open.r.stderr);
       assert.match(fs.readFileSync(path.join(open.out, 'checks.md'), 'utf8'), /^### Brand acme$/m);
-      const narrow = seeded((edit, src) => addBrand(edit, src, 'acme', (e) => { e.unlocked = ['color.*', 'font.sans', 'shadow.*']; }));
+      const narrow = seeded((edit, src) => addBrand(edit, src, 'acme', (e) => { e.unlocked = ['color.*', 'elevation.*', 'font.sans', 'shadow.*']; }));
       assert.equal(narrow.r.status, 1, narrow.r.stderr);
-      assert.deepEqual(narrow.r.stderr.trim().split('\n'), ['lock: brand acme sets locked path font.mono in brand.tokens.json (it may set: color.*, font.sans, shadow.*)']);
+      assert.deepEqual(narrow.r.stderr.trim().split('\n'), ['lock: brand acme sets locked path font.mono in brand.tokens.json (it may set: color.*, elevation.*, font.sans, shadow.*)']);
     },
 
     'lock list: the default list is exactly what the real client brand file sets, and head.py still accepts that file'() {

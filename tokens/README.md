@@ -13,6 +13,7 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 - **`generated/tokens.json`**: the Artifact contract shape that `head.py`, `check.mjs` and the Tuner read. Deep-equals `artifact/snapshot/tokens.json` today.
 - **`generated/css/<brand>.css`**: the same custom properties, in the same selectors, that `head.py` writes for that brand.
 - **`generated/swift/OrreryTokens.swift`**: one file, one namespace per brand: light and dark colors, spacing, radius, border, type styles, springs.
+- **`generated/css/orrery.system.css`**, **`generated/js/orrery.motion.mjs`** and the `TypeSteps`, `Grid`, `Breakpoints`, `HitTarget`, `Elevation` and `Springs` enums in the Swift file: the system scales and motion below. They are outside the Artifact contract, so `tokens.json` and the two Artifact CSS files never carry them.
 - **`generated/checks.md`**: the checks report (see Brand schema and checks).
 
 ## Gates
@@ -73,3 +74,16 @@ Matching that with Style Dictionary would take hand-written validation, which co
 - **`em` is not a DTCG unit** (2025.10 allows `px` and `rem`). `layout-measure` (`43em`) and the letter-spacing values use `em`. Terrazzo accepts it; a strict validator would not.
 - **No DTCG type for "no shadow".** Dark `shadow-lift` is an empty shadow list (`[]`), which the build writes as `none`.
 - **No DTCG spring type.** Iris's open spring sits in `core.tokens.json` under `$extensions.com.orrery.testData` as test data for the Swift output, not as a token decision.
+
+## System scales and motion
+
+Type steps, grid, breakpoints, the hit target, elevation levels and the dialled Iris springs. `lib/system.mjs` writes them; where each value came from is in `docs/plans/orrery-scales-review.md`.
+
+- **Outside the Artifact contract**: a top-level group carrying `$extensions.com.orrery.system: true` is skipped by the Artifact emitters (`lib/emit.mjs`) and written by `lib/system.mjs` instead. New type sizes and `type.line-height` sit inside the existing `type` group, which the contract only reads through its roles.
+- **Type steps** (`base/scales.tokens.json`): every `type.size.<step>` that also has a `type.line-height.<step>`.
+- **Hit target**: `target.hit-target-min`. The build stops, naming the token, when it is under 44px.
+- **Elevation**: `base/scales.tokens.json` names the levels (`level-0` to `level-3`). A brand draws each level in `brands/<brand>/elevation.tokens.json` by setting `$extensions.com.orrery.draw` on it: `fill` (a `fill` token), `hairline` (`fill`, `line`, `line-width`) or `shadow` (`fill`, `shadow`). Every part must point at a role. The emitters build `fill` and `hairline`; a level that chooses `shadow` stops the build until that drawing is built. A level with no drawing is not emitted (brand orrery leaves `level-3` undrawn).
+- **Springs** (`base/motion.tokens.json`): under `$extensions.com.orrery.motion.spring`, the same place and shape as the Phase 0 test spring, because DTCG has no spring type. Each is stored in the form it was dialled in. Only dialled springs go here; `tokens/motion.test.mjs` (run by `node tokens/test.mjs`) fails when one differs from its constant in `src/motion.ts`, or when a spring with no dialled constant is added.
+- **Spring conversion, web**: a Motion transition object, `{ type: "spring", ...the stored numbers }`, which is what `mergeTransition` in `src/motion.ts` builds. A spring with no `mass` stays without one.
+- **Spring conversion, Swift**: `OrrerySpring(mass, stiffness, damping)`, whose `animation` is `Animation.interpolatingSpring(mass:stiffness:damping:initialVelocity: 0)`. A spring with no `mass` gets 1, Motion's default.
+- **No rule yet for duration and bounce springs**: all five promoted springs are stiffness, damping and mass. Motion and SwiftUI turn a duration and bounce into a spring differently, so that rule needs a measured comparison first; until then such a spring stops the build.

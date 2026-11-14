@@ -16,7 +16,10 @@ const valueOf = (t) => ({ color: color, shadow, dimension: dim, fontFamily: fami
 // Contract values keep a direct alias as {name}, the way head.py reads them.
 const contractValue = (t) => (aliasOf(t.original) ? `{${aliasOf(t.original).split('.').pop()}}` : valueOf(t));
 
-const groups = (doc, type) => Object.entries(doc).filter(([k, g]) => !k.startsWith('$') && g.$type === type);
+// A group flagged $extensions.com.orrery.system is outside the Artifact contract; lib/system.mjs writes it.
+// New type sizes stay out of the contract by structure: they sit in type.size and type.line-height, and contract() reads only the typography groups of doc.type.
+// The other new groups (grid, breakpoint, target, elevation) stay out by the system flag.
+const groups = (doc, type) => Object.entries(doc).filter(([k, g]) => !k.startsWith('$') && g.$type === type && !ext(g).system);
 const leaves = (g) => Object.entries(g).filter(([k]) => !k.startsWith('$'));
 const themed = (doc) => ['color', 'shadow'].flatMap((type) => groups(doc, type));
 
@@ -47,7 +50,7 @@ export function contract(modes) {
     })),
   };
   for (const [gname, g] of Object.entries(doc)) {
-    if (gname.startsWith('$') || ['color', 'type', 'font'].includes(gname)) continue;
+    if (gname.startsWith('$') || ['color', 'type', 'font'].includes(gname) || ext(g).system) continue;
     const tokens = g.$type === 'shadow' ? perMode([gname, g]) : leaves(g).map(([name, node]) => ({ name, value: valueOf(first.tokens[`${gname}.${name}`]), usage: node.$description }));
     out[gname] = { tokens, note: g.$description };
   }
