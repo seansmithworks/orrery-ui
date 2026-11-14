@@ -26,12 +26,12 @@ export function merge(a, b) {
 const ext = (doc) => doc?.$extensions?.['com.orrery'] ?? {};
 
 /** One merged DTCG document per mode for a brand folder under tokens/brands/. */
-export function loadBrand(brand = 'orrery', overlay = null) {
-  const base = readDir(path.join(TOKENS, 'base')).reduce(merge, {});
-  const brandDocs = readDir(path.join(TOKENS, 'brands', brand));
+export function loadBrand(brand = 'orrery', overlay = null, root = TOKENS) {
+  const base = readDir(path.join(root, 'base')).reduce(merge, {});
+  const brandDocs = readDir(path.join(root, 'brands', brand));
   const withBrand = brandDocs.reduce(merge, base);
   const order = ext(withBrand).modes;
-  const modeDir = path.join(TOKENS, 'brands', brand, 'modes');
+  const modeDir = path.join(root, 'brands', brand, 'modes');
   const modes = order.map((id) => {
     const doc = JSON.parse(fs.readFileSync(path.join(modeDir, `${id}.tokens.json`), 'utf8'));
     let merged = merge(withBrand, doc);

@@ -26,6 +26,13 @@ if (args.includes('--out')) {
   if (v === undefined || v.startsWith('--')) usage('--out needs a folder');
   out = path.resolve(v);
 }
+// --source <dir>: read base/ and brands/ from another folder (the gate tests seed bad tokens this way).
+let source = TOKENS;
+if (args.includes('--source')) {
+  const v = args[args.indexOf('--source') + 1];
+  if (v === undefined || v.startsWith('--')) usage('--source needs a folder');
+  source = path.resolve(v);
+}
 // Resolve symlinks so a link cannot hide where the folder really is; a missing tail is resolved against its nearest existing parent.
 const real = (p) => {
   const tail = [];
@@ -46,7 +53,7 @@ if (realOut !== real(generated)) {
 }
 
 async function build(brand, overlay) {
-  const b = loadBrand(brand, overlay);
+  const b = loadBrand(brand, overlay, source);
   const bad = [];
   for (const m of b.modes) {
     m.tokens = await resolve(brand, m);

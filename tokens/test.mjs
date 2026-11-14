@@ -70,6 +70,21 @@ const tests = {
     assert.match(bad[1], /^color mismatch: shadow\.lift /);
   },
 
+  'build: exits 1 and writes nothing when a color in the source has a hex that disagrees with its components'() {
+    const src = path.join(tmp, 'bad-source');
+    fs.cpSync(path.join(TOKENS, 'base'), path.join(src, 'base'), { recursive: true });
+    fs.cpSync(path.join(TOKENS, 'brands'), path.join(src, 'brands'), { recursive: true });
+    const light = path.join(src, 'brands/orrery/modes/light.tokens.json');
+    const text = fs.readFileSync(light, 'utf8');
+    assert.ok(text.includes('"hex": "#ffffff"'));
+    fs.writeFileSync(light, text.replace('"hex": "#ffffff"', '"hex": "#fffffe"'));
+    const out = path.join(tmp, 'bad-out');
+    const r = run('build.mjs', '--source', src, '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^color mismatch: .*hex #fffffe does not match components/m);
+    assert.equal(fs.existsSync(out), false);
+  },
+
   'build: --out with no value is a usage error'() {
     const r = run('build.mjs', '--out');
     assert.equal(r.status, 2);
