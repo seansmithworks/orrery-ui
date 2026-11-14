@@ -1,0 +1,14 @@
+{
+  "$description": "Iris bridge: public --orrery-iris-* variables that follow a shared role. Only variables whose documented default equals the role's brand-orrery light value exactly belong here; tokens:build stops when that stops being true. Role is a token path in the source; its CSS name is the last segment.",
+  "map": [
+    { "var": "--orrery-iris-surface-elevated", "role": "color.page" },
+    { "var": "--orrery-iris-text", "role": "color.text" },
+    { "var": "--orrery-iris-accent", "role": "color.accent" },
+    {
+      "var": "--orrery-iris-surface-border-width",
+      "role": "border.line-width"
+    },
+    { "var": "--orrery-iris-trigger-radius", "role": "radius.radius-round" },
+    { "var": "--orrery-iris-sheet-padding", "role": "spacing.space-24" }
+  ]
+}
