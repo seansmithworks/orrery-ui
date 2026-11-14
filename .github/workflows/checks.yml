@@ -39,6 +39,8 @@ jobs:
       # python3 ships with ubuntu-latest; head.py and its tests are stdlib only.
       - run: npx playwright install --with-deps --only-shell chromium
       - run: npm run tokens:build
+      # The build just rewrote tokens/generated/, so a diff here means the committed files were stale.
+      - run: test -z "$(git status --porcelain -- tokens/generated)"
       - run: npm run tokens:check
       - run: node tokens/test.mjs
       - run: node artifact/check/test.mjs

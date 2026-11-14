@@ -24,7 +24,9 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 - **snapshot**: the generated `tokens.json` does not deep-equal `artifact/snapshot/tokens.json`. The line names the first differing key.
 - **head.py**: a generated CSS file's custom properties differ from `artifact/head.py`'s output, with no brand and for each client brand. The line names the first differing declaration. `bundle.css` is outside the comparison.
 
-`node tokens/test.mjs` proves each gate passes on the real tree and fails on a seeded input. CI runs all three.
+`node tokens/test.mjs` proves each gate passes on the real tree and fails on a seeded input. In CI the `tokens` job runs `tokens:build` and then fails if `git status --porcelain -- tokens/generated` is non-empty, which is the step that catches uncommitted drift (the build has just rewritten the folder, so `tokens:check`'s drift comparison cannot); `tokens:check` then runs the snapshot and head.py gates.
+
+Not covered: the Swift output and the brand contract have only the drift gate. `color-scheme`, the body rule and the type classes in head.py's output are outside the head.py comparison.
 
 ## Build tool: Terrazzo 2 (`@terrazzo/parser`)
 
