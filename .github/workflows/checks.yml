@@ -43,6 +43,11 @@ jobs:
       - run: test -z "$(git status --porcelain -- tokens/generated)"
       - run: npm run tokens:check
       - run: node tokens/test.mjs
+      # The registry self-check runs inside tokens:check above. This runs the one source rule that passes on src/ today.
+      - run: npm run rules:check -- --only literal-color src/styles.module.css
+      - run: npm run audit:vars
+      # The kit does not exist yet. Once kit/ does, it is held to every source rule.
+      - run: test ! -d kit || npm run rules:check -- kit
       - run: node artifact/check/test.mjs
       - run: python3 -I artifact/check/test_head.py
 

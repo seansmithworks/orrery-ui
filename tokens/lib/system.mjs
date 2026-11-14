@@ -18,6 +18,7 @@ const HIT_TARGET = 'target.hit-target-min';
 //   Swift: OrrerySpring(mass, stiffness, damping) -> Animation.interpolatingSpring; a spring with no mass gets 1, Motion's default.
 // Only the stiffness/damping(/mass) form has a rule. Any other form stops the build.
 const SPRING_KEYS = ['stiffness', 'damping', 'mass'];
+export const REDUCED_FORMS = ['opacity', 'none', 'instant'];
 const springs = (doc) => Object.entries(ext(doc).motion?.spring ?? {}).map(([name, s]) => [name, Object.fromEntries(Object.entries(s).filter(([k]) => !k.startsWith('$')))]);
 const springProblem = (s) => {
   const keys = Object.keys(s);
@@ -31,6 +32,16 @@ const springProblem = (s) => {
 const DRAW = { fill: ['fill'], hairline: ['fill', 'line', 'line-width'] };
 const levels = (doc) => leaves(doc.elevation).map(([name, node]) => ({ name, n: name.replace(/^level-/, ''), node, draw: ext(node).draw })).filter((l) => l.draw !== undefined);
 
+/** Failure lines for every spring that does not declare its reduced-motion form ($reduced) as one of REDUCED_FORMS. */
+export function reducedMotionGate(doc, where) {
+  const bad = [];
+  for (const name of Object.keys(ext(doc).motion?.spring ?? {})) {
+    const form = ext(doc).motion.spring[name].$reduced;
+    if (!REDUCED_FORMS.includes(form)) bad.push(`reduced motion form missing: ${name} (${where}) has $reduced ${form === undefined ? 'unset' : JSON.stringify(form)}; use ${REDUCED_FORMS.join(', ')}`);
+  }
+  return bad;
+}
+
 /** Failure lines for one mode: hit target under the floor, a spring with no conversion rule, an elevation level the emitters cannot draw. */
 export function systemGate(tokens, doc, where) {
   const bad = [];
@@ -41,6 +52,7 @@ export function systemGate(tokens, doc, where) {
     const why = springProblem(s);
     if (why) bad.push(`spring not converted: ${name} (${where}) ${why}`);
   }
+  bad.push(...reducedMotionGate(doc, where));
   for (const l of levels(doc)) {
     const id = `elevation.${l.name}`;
     if (l.draw === 'shadow') bad.push(`elevation not drawn: ${id} (${where}) chooses "shadow", which the source allows but the emitters do not build yet`);

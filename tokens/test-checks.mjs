@@ -48,7 +48,7 @@ export function checkTests({ tmp, run }) {
       assert.match(report, /^### Brand northwind-kiln$/m);
     },
 
-    'contrast: a text role set too close to its surface fails, naming brand, mode, both roles and both ratios, and writes nothing'() {
+    '[contrast-aa-tokens] contrast: a text role set too close to its surface fails, naming brand, mode, both roles and both ratios, and writes nothing'() {
       const { out, r } = seeded(paleMuted);
       assert.equal(r.status, 1, r.stderr);
       assert.match(r.stderr, /^contrast: brand orrery, mode light: color\.text-muted on color\.page is 1\.68:1, needs 4\.5:1 \(text\)$/m);
@@ -66,7 +66,7 @@ export function checkTests({ tmp, run }) {
       assert.equal(contrastRatio(c(0.4627, 0.4627, 0.4627), c(1, 1, 1)).toFixed(2), '4.54');
     },
 
-    'required roles: a role missing from one mode fails, naming brand, mode and role'() {
+    '[required-roles] source: required roles: a role missing from one mode fails, naming brand, mode and role'() {
       const { out, r } = seeded((edit) => edit('brands/orrery/modes/dark.tokens.json', (d) => { delete d.color['text-muted']; }));
       assert.equal(r.status, 1, r.stderr);
       assert.match(r.stderr, /^required role: brand orrery, mode dark: color\.text-muted is missing$/m);
@@ -81,7 +81,7 @@ export function checkTests({ tmp, run }) {
       assert.match(r.stderr, /^required role: brand orrery, mode dark: color\.seeded-role is missing$/m);
     },
 
-    'lock list: a brand that inherits the default list and sets a locked path fails, naming brand and path'() {
+    '[brand-lock] locks: lock list: a brand that inherits the default list and sets a locked path fails, naming brand and path'() {
       const { out, r } = seeded((edit, src) => addBrand(edit, src, 'acme', (e) => { delete e.unlocked; }));
       assert.equal(r.status, 1, r.stderr);
       assert.match(r.stderr, /^lock: brand acme sets locked path color\.page in modes\/light\.tokens\.json \(it may set: color\.accent, color\.on-accent, font\.sans\)$/m);
@@ -110,7 +110,7 @@ export function checkTests({ tmp, run }) {
       assert.equal(fs.existsSync(path.join(out, 'css/northwind-kiln.css')), true);
     },
 
-    'opt-out: one with no reason fails, naming the brand and the opt-out'() {
+    '[opt-out-reasons] readOptOuts: opt-out: one with no reason fails, naming the brand and the opt-out'() {
       for (const reason of [undefined, '', '   ']) {
         const { out, r } = seeded((edit) => {
           paleMuted(edit);
