@@ -142,6 +142,31 @@ const tests = {
     assert.match(r.stderr, /^hit target too small: target\.hit-target-min \(brand orrery, mode light\) is 40px; the floor is 44px$/m);
     assert.equal(fs.existsSync(out), false);
   },
+  'spring: a spring with a field that has no conversion rule fails the build, naming the spring, and writes nothing'() {
+    const out = path.join(tmp, 'spring-out');
+    const r = run('build.mjs', '--source', seededSource('spring-rule', 'base/motion.tokens.json', '"damping": 42.5,', '"damping": 42.5,\n            "bounce": 0.2,'), '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^spring not converted: iris-open \(brand orrery, mode light\) has no conversion rule for \{ stiffness, damping, bounce, mass \}/m);
+    assert.equal(fs.existsSync(out), false);
+  },
+
+  'elevation: a level that chooses shadow fails the build, naming the level, and writes nothing'() {
+    const out = path.join(tmp, 'shadow-out');
+    const r = run('build.mjs', '--source', seededSource('elev-shadow', 'brands/orrery/elevation.tokens.json', '"draw": "fill"', '"draw": "shadow"'), '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^elevation not drawn: elevation\.level-0 \(brand orrery, mode light\) chooses "shadow"/m);
+    assert.equal(fs.existsSync(out), false);
+  },
+
+  'elevation: a part that is not an alias to a role fails the build, naming the part, and writes nothing'() {
+    const out = path.join(tmp, 'alias-out');
+    const literal = '{ "colorSpace": "srgb", "components": [1, 1, 1], "hex": "#ffffff" }';
+    const r = run('build.mjs', '--source', seededSource('elev-alias', 'brands/orrery/elevation.tokens.json', '"$value": "{color.page}"', `"$value": ${literal}`), '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^elevation not drawn: elevation\.level-0\.fill \(brand orrery, mode light\) must point at a role/m);
+    assert.equal(fs.existsSync(out), false);
+  },
+
   ...checkTests({ tmp, run }),
 };
 
