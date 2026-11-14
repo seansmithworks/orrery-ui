@@ -1,0 +1,183 @@
+/* Specimen page layout only. Tokens, never literals; each panel reads its own brand and mode. */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+html,
+body {
+  margin: 0;
+}
+body {
+  background: var(--layer-1);
+  color: var(--text);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+.spec {
+  max-width: var(--grid-max-width);
+  margin: 0 auto;
+  padding: var(--space-40) var(--space-32) var(--space-72);
+}
+.spec__head {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-16);
+  margin-bottom: var(--space-24);
+}
+.spec__title {
+  margin: 0;
+  font-size: var(--type-size-22);
+  line-height: var(--type-line-height-22);
+  font-weight: 600;
+}
+.spec__sub {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--type-size-14);
+  line-height: var(--type-line-height-14);
+}
+
+.spec__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: var(--grid-gutter-standard);
+  align-items: start;
+}
+@media (max-width: 1280px) {
+  .spec__grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+.spec-panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-32);
+  padding: var(--space-24);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.spec-panel__head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-16);
+  padding-bottom: var(--space-16);
+  border-bottom: var(--line-width) solid var(--line);
+}
+.spec-panel__title {
+  margin: 0;
+  font-size: var(--type-size-20);
+  line-height: var(--type-line-height-20);
+  font-weight: 600;
+}
+
+.spec-block {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-12);
+}
+.spec-block__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-8);
+}
+.spec-block__title {
+  margin: 0;
+  font-size: var(--type-size-14);
+  line-height: var(--type-line-height-14);
+  font-weight: 600;
+}
+
+/* mono caps: data labels only (state and variant names) */
+.spec-label {
+  font-family: var(--font-mono);
+  font-size: var(--type-size-11);
+  line-height: var(--type-line-height-11);
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-align: start;
+  white-space: nowrap;
+}
+
+/* strong chip: needs attention */
+.spec-chip {
+  font-family: var(--font-mono);
+  font-size: var(--type-size-11);
+  line-height: var(--type-line-height-11);
+  padding: var(--space-4) var(--space-8);
+  border: var(--line-width) solid var(--line-strong);
+  border-radius: var(--radius-round);
+  color: var(--text);
+  white-space: nowrap;
+}
+
+.spec-table {
+  border-collapse: collapse;
+  width: 100%;
+}
+.spec-table :is(th, td) {
+  padding: var(--space-8) var(--space-8) var(--space-8) 0;
+  vertical-align: middle;
+}
+.spec-table thead th {
+  padding-top: 0;
+}
+.spec-table tbody tr + tr :is(th, td) {
+  border-top: var(--line-width) solid var(--line);
+}
+
+.spec-live {
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-12);
+}
+.spec-live__field {
+  flex: 1;
+}
+
+.spec-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-24) var(--space-16);
+}
+.spec-cell {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+
+.spec-dialog-frame {
+  position: relative;
+  min-height: calc(var(--space-72) * 4);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+.spec-dialog-behind {
+  padding: var(--space-16);
+  color: var(--text-muted);
+  font-size: var(--type-size-14);
+  line-height: var(--type-line-height-14);
+}
+.spec-dialog-behind p {
+  margin: 0;
+}
+.spec-dialog-behind__title {
+  color: var(--text);
+  font-size: var(--type-size-17);
+  line-height: var(--type-line-height-17);
+  font-weight: 600;
+}
+.spec-dialog-field {
+  margin-top: var(--space-8);
+}

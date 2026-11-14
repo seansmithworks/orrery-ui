@@ -51,6 +51,7 @@ export default defineConfig({
         canvas: resolve(__dirname, "canvas.html"),
         video: resolve(__dirname, "video.html"),
         buttons: resolve(__dirname, "buttons.html"),
+        kit: resolve(__dirname, "kit.html"),
         linkPreview: resolve(__dirname, "link-preview.html"),
         linkPreviewHost: resolve(__dirname, "canvas/link-preview-host.html"),
         surface: resolve(__dirname, "surface.html"),
