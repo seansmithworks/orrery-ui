@@ -1,15 +1,17 @@
 #!/usr/bin/env node
-// npm run tokens:check [-- --snapshot <dir>]: rebuild into a temp dir, then three gates.
+// npm run tokens:check [-- --snapshot <dir>]: rebuild into a temp dir, then four gates.
 //   1. drift: the rebuild equals the committed tokens/generated/.
 //   2. snapshot: the generated contract tokens.json deep-equals <snapshot>/tokens.json.
 //   3. head.py: each generated CSS file declares the same tokens as head.py's output, with no brand and for every client brand.
+//   4. rules: tokens/rules/rules.json is sound (every rule has a check that resolves and is tested, or a stated reason).
 // --snapshot defaults to artifact/snapshot, the folder head.py reads.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { REPO, TOKENS } from './lib/source.mjs';
-import { snapshotGate, cssGate, headOutput } from './lib/gates.mjs';
+import { snapshotGate, cssGate, headOutput, driftGate } from './lib/gates.mjs';
+import { ruleProblems } from './rules/registry.mjs';
 
 const args = process.argv.slice(2);
 let snapshot = path.join(REPO, 'artifact/snapshot');
@@ -24,18 +26,12 @@ const rel = (f) => path.relative(REPO, f);
 
 const committed = path.join(TOKENS, 'generated');
 const fresh = fs.mkdtempSync(path.join(os.tmpdir(), 'orrery-tokens-'));
-const list = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir, { recursive: true }).filter((f) => fs.statSync(path.join(dir, f)).isFile()).sort() : []);
 
 const drift = [];
 const gates = [];
 try {
   execFileSync(process.execPath, [path.join(TOKENS, 'build.mjs'), '--out', fresh], { stdio: ['ignore', 'ignore', 'inherit'] });
-  for (const f of new Set([...list(committed), ...list(fresh)])) {
-    const a = path.join(committed, f), b = path.join(fresh, f);
-    if (!fs.existsSync(a)) drift.push(`not committed: tokens/generated/${f}`);
-    else if (!fs.existsSync(b)) drift.push(`no longer generated: tokens/generated/${f}`);
-    else if (!fs.readFileSync(a).equals(fs.readFileSync(b))) drift.push(`differs from source: tokens/generated/${f}`);
-  }
+  drift.push(...driftGate(committed, fresh));
 
   const snapshotFile = path.join(snapshot, 'tokens.json');
   const contract = JSON.parse(fs.readFileSync(path.join(fresh, 'tokens.json'), 'utf8'));
@@ -54,9 +50,9 @@ try {
   fs.rmSync(fresh, { recursive: true, force: true });
 }
 
-const bad = [...drift, ...gates.filter(Boolean)];
+const bad = [...drift, ...gates.filter(Boolean), ...ruleProblems()];
 if (bad.length) {
   console.error(bad.join('\n') + (drift.length ? '\nRun npm run tokens:build and commit tokens/generated/.' : ''));
   process.exit(1);
 }
-console.log('tokens:check: tokens/generated/ matches the source, the Artifact snapshot and head.py');
+console.log('tokens:check: tokens/generated/ matches the source, the Artifact snapshot and head.py; the rules registry is sound');

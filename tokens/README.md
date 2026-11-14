@@ -88,6 +88,18 @@ Type steps, grid, breakpoints, the hit target, elevation levels and the dialled 
 - **Spring conversion, Swift**: `OrrerySpring(mass, stiffness, damping)`, whose `animation` is `Animation.interpolatingSpring(mass:stiffness:damping:initialVelocity: 0)`. A spring with no `mass` gets 1, Motion's default.
 - **No rule yet for duration and bounce springs**: all five promoted springs are stiffness, damping and mass. Motion and SwiftUI turn a duration and bounce into a spring differently, so that rule needs a measured comparison first; until then such a spring stops the build.
 
+## Rules
+
+`rules/rules.json` is the one list of the system's floors and rules. Read it there; it is not repeated in prose. Each rule has an `id`, a `layer` (`floor` or `rule`), a one-sentence `statement` that says only what its check proves, what it `applies` to (`tokens`, `source`, `page`), and either a `check` or a `reason`.
+
+- **Add a rule**: append it to `rules.json`. Pick the check kind: `token-gate` (`ref` is `<file>#<export>` or `<file>#<export>.<method>` in `lib/`), `source-check` (`ref` is a key of `CHECKS` in `rules/check-source.mjs`), `artifact-checker` (`ref` is a rule id in `artifact/check/check.mjs`) or `test` (`ref` is a test file or audit script). Gates, source checks and audit scripts also need `check.test`, the title of a seeded-failure test.
+- **No check**: set `"check": null` and `reason: { kind, text }`, where `kind` is `needs-render`, `judgement`, `held-decision` or `not-built`. `not-built` means checkable but not built yet.
+- **Opt-in checks**: `"scope": "opt-in"` marks a check that only looks at what opts in, and the statement must say "opt-in". `control-min-size` reads only rules marked `/* orrery-control */`; add `/* orrery-hit-area: pseudo */` when a pseudo-element supplies the real hit area.
+- **Seeded-failure tests** live in `rules/test-rules.mjs` or `test.mjs`. A test title starts with `[<rule-id>]` and names the checked function (or the source check id).
+- **What the self-check proves** (it runs inside `npm run tokens:check`): ids are unique; every rule has a check or a valid reason; a gate ref names a function that exists and is used by `build.mjs`, `check.mjs` or a module they import; a source check or artifact rule exists; `check.test` names a test that exists and whose title carries the rule id and the checked function. **What it does not prove**: that the test really fails when the check is broken, or that a gate's logic matches its statement. Those are the reviewer's job.
+- **Source rules**: `npm run rules:check -- [--only <rule-id>,...] <file-or-dir>...` prints `file:line rule-id message`, exits 1 on any finding and 2 on a bad argument, including an explicit file of a type no rule reads. It is plain text scanning, not a parser. The `literal-color`, `literal-spacing` and `control-min-size` rules read CSS, `inline-style-literal` reads `style={{ }}` in JSX and TSX, and `em-dash` reads CSS, JS, TS and HTML outside comments. A regex literal holding a quote can confuse the JS reader.
+- **Reduced motion**: each spring in `base/motion.tokens.json` carries `$reduced`: `opacity`, `none` or `instant`. The build stops, naming the spring, when one is missing. It declares intent for components and changes no emitted number.
+
 ## Iris bridge (opt-in)
 
 `generated/css/orrery.iris.css` makes Iris follow the roles. Nothing loads it for you, and a page without it renders exactly as before: `src/` is untouched and the roles are unprefixed (`--page`, `--text`), so Iris reading them on its own would re-skin any page that already uses those names.

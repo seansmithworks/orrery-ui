@@ -10,6 +10,7 @@ import { REPO, TOKENS } from './lib/source.mjs';
 import { colorGate, snapshotGate, cssGate, headOutput } from './lib/gates.mjs';
 import { irisBridgeGate } from './lib/bridge.mjs';
 import { checkTests } from './test-checks.mjs';
+import { ruleTests } from './rules/test-rules.mjs';
 
 const SNAPSHOT = path.join(REPO, 'artifact/snapshot');
 const BRAND = path.join(REPO, 'artifact/brands/example.tokens.json');
@@ -55,7 +56,7 @@ const tests = {
     assert.equal(r.status, 0, r.stderr);
   },
 
-  'snapshot gate: a changed snapshot value fails, naming the key'() {
+  '[artifact-contract-matches] snapshotGate: snapshot gate: a changed snapshot value fails, naming the key'() {
     // usage text is in the contract but not in the CSS, so only this gate may fail.
     const r = run('check.mjs', '--snapshot', seededSnapshot('usage', (tok) => { tok.color.tokens[0].usage += ' (seeded)'; }));
     assert.equal(r.status, 1);
@@ -70,7 +71,7 @@ const tests = {
     assert.match(r.stderr, /^head\.py mismatch: tokens\/generated\/css\/northwind-kiln\.css vs artifact\/head\.py --brand artifact\/brands\/example\.tokens\.json: first difference at :root \| --page: /m);
   },
 
-  'head.py gate alone: generated CSS that drifts from head.py fails while the snapshot gate passes'() {
+  '[head-py-matches] cssGate: head.py gate alone: generated CSS that drifts from head.py fails while the snapshot gate passes'() {
     const contract = JSON.parse(fs.readFileSync(path.join(TOKENS, 'generated/tokens.json'), 'utf8'));
     assert.equal(snapshotGate(contract, JSON.parse(fs.readFileSync(path.join(SNAPSHOT, 'tokens.json'), 'utf8')), 'artifact/snapshot/tokens.json'), null);
     for (const [name, brand] of [['orrery', null], ['northwind-kiln', BRAND]]) {
@@ -84,7 +85,7 @@ const tests = {
     }
   },
 
-  'color gate: hex and components that disagree fail, naming the token'() {
+  '[hex-matches-components] colorGate: color gate: hex and components that disagree fail, naming the token'() {
     const srgb = (components, hex) => ({ colorSpace: 'srgb', components, hex });
     const shadow = (color) => [{ color, offsetX: { value: 0, unit: 'px' }, offsetY: { value: 1, unit: 'px' }, blur: { value: 2, unit: 'px' }, spread: { value: 0, unit: 'px' } }];
     assert.deepEqual(colorGate({ 'color.accent': { type: 'color', value: srgb([0.1216, 0.3725, 0.5451], '#1F5F8B') }, 'shadow.lift': { type: 'shadow', value: shadow({ colorSpace: 'srgb', components: [0, 0, 0], alpha: 0.05 }) } }, 'test'), []);
@@ -147,7 +148,7 @@ const tests = {
     assert.doesNotMatch(r.stdout, /^FAIL  .*iris-close/m);
   },
 
-  'hit target: a value under 44 fails the build, naming the token, and writes nothing'() {
+  '[hit-target-token] systemGate: hit target: a value under 44 fails the build, naming the token, and writes nothing'() {
     const out = path.join(tmp, 'hit-out');
     const r = run('build.mjs', '--source', seededSource('hit', 'base/scales.tokens.json', '"value": 44,', '"value": 40,'), '--out', out);
     assert.equal(r.status, 1, r.stderr);
@@ -179,7 +180,7 @@ const tests = {
     assert.equal(fs.existsSync(out), false);
   },
 
-  'iris bridge: the real build emits an opt-in file with the six mapped variables and nothing else'() {
+  '[iris-bridge-matches-fallbacks] irisBridgeGate: the real build emits an opt-in file with the six mapped variables and nothing else'() {
     const out = path.join(tmp, 'bridge-out');
     assert.equal(run('build.mjs', '--out', out).status, 0);
     const css = fs.readFileSync(path.join(out, 'css/orrery.iris.css'), 'utf8');
@@ -188,7 +189,7 @@ const tests = {
     assert.deepEqual(decls, ['surface-elevated: var(--page)', 'text: var(--text)', 'accent: var(--accent)', 'surface-border-width: var(--line-width)', 'trigger-radius: var(--radius-round)', 'sheet-padding: var(--space-24)'].map((d) => `  --orrery-iris-${d};`));
   },
 
-  'iris bridge: a mapped variable that README.md does not document fails the build, naming it, and writes nothing'() {
+  '[iris-bridge-matches-fallbacks] irisBridgeGate: a mapped variable that README.md does not document fails the build, naming it, and writes nothing'() {
     const out = path.join(tmp, 'bridge-undoc-out');
     const r = run('build.mjs', '--source', seededBridge('bridge-undoc', (m) => m.push({ var: '--orrery-iris-not-public', role: 'color.page' })), '--out', out);
     assert.equal(r.status, 1, r.stderr);
@@ -196,7 +197,7 @@ const tests = {
     assert.equal(fs.existsSync(out), false);
   },
 
-  'iris bridge: a mapped role that does not exist fails the build, naming the variable and the role, and writes nothing'() {
+  '[iris-bridge-matches-fallbacks] irisBridgeGate: a mapped role that does not exist fails the build, naming the variable and the role, and writes nothing'() {
     const out = path.join(tmp, 'bridge-role-out');
     const r = run('build.mjs', '--source', seededBridge('bridge-role', (m) => { m[0].role = 'color.no-such-role'; }), '--out', out);
     assert.equal(r.status, 1, r.stderr);
@@ -204,7 +205,7 @@ const tests = {
     assert.equal(fs.existsSync(out), false);
   },
 
-  'iris bridge: a role whose light value no longer equals Iris\'s literal fails the build, naming both values, and writes nothing'() {
+  '[iris-bridge-matches-fallbacks] irisBridgeGate: a role whose light value no longer equals the Iris literal fails the build, naming both values, and writes nothing'() {
     const out = path.join(tmp, 'bridge-value-out');
     const r = run('build.mjs', '--source', seededSource('bridge-value', 'base/core.tokens.json', '"value": 9999,', '"value": 9998,'), '--out', out);
     assert.equal(r.status, 1, r.stderr);
@@ -212,7 +213,7 @@ const tests = {
     assert.equal(fs.existsSync(out), false);
   },
 
-  'iris bridge gate: hex case and #fff match, a changed Iris literal fails, and every use site is compared'() {
+  '[iris-bridge-matches-fallbacks] irisBridgeGate: hex case and #fff match, a changed Iris literal fails, and every use site is compared'() {
     const map = [{ var: '--orrery-iris-text', role: 'color.text' }];
     const tokens = { 'color.text': { type: 'color', value: { colorSpace: 'srgb', components: [1, 1, 1], hex: '#ffffff' } } };
     const readme = '| `--orrery-iris-text` | `#fff` |\n';
@@ -223,6 +224,7 @@ const tests = {
   },
 
   ...checkTests({ tmp, run }),
+  ...ruleTests({ tmp, run }),
 };
 
 let failed = 0;

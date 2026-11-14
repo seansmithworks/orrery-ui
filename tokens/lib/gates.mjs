@@ -1,4 +1,5 @@
 // Gates for tokens:build and tokens:check. Each returns null when it passes, or one failure line.
+import fs from 'node:fs';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 import { REPO } from './source.mjs';
@@ -74,4 +75,18 @@ export function cssGate(generatedCss, headCss, cssFile, headLabel) {
 export function headOutput(snapshotDir, brandFile) {
   const args = ['-I', HEAD, '--snapshot', snapshotDir, ...(brandFile ? ['--brand', brandFile] : [])];
   return execFileSync('python3', args, { encoding: 'utf8' });
+}
+
+const listFiles = (dir) => (fs.existsSync(dir) ? fs.readdirSync(dir, { recursive: true }).filter((f) => fs.statSync(path.join(dir, f)).isFile()).sort() : []);
+
+/** Failure lines for every file that differs between the committed tokens/generated/ and a fresh build of the source. */
+export function driftGate(committed, fresh) {
+  const bad = [];
+  for (const f of new Set([...listFiles(committed), ...listFiles(fresh)])) {
+    const a = path.join(committed, f), b = path.join(fresh, f);
+    if (!fs.existsSync(a)) bad.push(`not committed: tokens/generated/${f}`);
+    else if (!fs.existsSync(b)) bad.push(`no longer generated: tokens/generated/${f}`);
+    else if (!fs.readFileSync(a).equals(fs.readFileSync(b))) bad.push(`differs from source: tokens/generated/${f}`);
+  }
+  return bad;
 }
