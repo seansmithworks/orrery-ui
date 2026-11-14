@@ -224,7 +224,7 @@
   {
     "id": "no-literal-spacing",
     "layer": "rule",
-    "statement": "In CSS files given to the source checker, a px value that a space or radius token already holds is written as that token, including negative values and custom properties whose name contains pad, gap, margin, space, inset or radius; other custom properties and declarations excused by an orrery-allow marker with a reason are skipped.",
+    "statement": "In CSS files given to the source checker, a px value that a space or radius token already holds is written as that token, including negative values and custom properties with a name segment of pad, padding, gap, gutter, margin, space, spacing, inset, offset, indent, radius or radii; other custom properties and declarations excused by an orrery-allow marker with a reason are skipped.",
     "applies": [
       "source"
     ],
@@ -237,7 +237,7 @@
   {
     "id": "inline-style-literal",
     "layer": "rule",
-    "statement": "In JSX and TSX files given to the source checker, an object literal in a style, animate, initial, exit, whileHover or whileTap attribute (directly, or as a ternary or && branch) holds no literal color and no spacing or radius value a token already holds; style={identifier}, values built in code, transform and translate offsets, and TS outside those attributes are not read.",
+    "statement": "In JSX and TSX files given to the source checker, an object literal in a style, animate, initial, exit, whileHover or whileTap attribute of a JSX tag (directly, as a ternary, &&, || or ?? branch, or as a call argument) holds no literal color and no spacing or radius value a token already holds, with no escape; not read are style={identifier}, values computed by a call, computed keys, spreads, as casts, nested objects, transform and translate offsets, and TS outside those attributes.",
     "applies": [
       "source"
     ],

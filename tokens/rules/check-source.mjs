@@ -14,8 +14,10 @@ const JS_EXT = ['.js', '.jsx', '.ts', '.tsx', '.mjs', '.cjs'];
 const HTML_EXT = ['.html', '.htm'];
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'generated']);
 
-// One escape mechanism for every rule: `/* orrery-allow: <rule-id> <reason> */` on one line, before the declaration it excuses (CSS)
-// or before the property it excuses (JSX). It covers that one declaration. No reason is itself a finding.
+// The escape, CSS only: `/* orrery-allow: <rule-id> <reason> */` on one line, directly before the declaration it excuses. It covers every
+// finding of that rule within that one declaration. Markers stack, one per rule. A marker with an unknown rule id, with no reason (a word of
+// 3+ letters), or that excuses nothing is itself a finding. JSX has no escape: move the value into CSS or pass it as a custom property.
+export const ALLOWABLE = ['literal-color', 'literal-spacing'];
 const ALLOW = /orrery-allow:\s*([\w-]+)[ \t]*(.*?)\s*(?:\*\/)?\s*$/;
 
 // ---- CSS reader. Rules with their declarations; comments blanked (newlines kept) so line numbers hold.
@@ -23,12 +25,13 @@ const ALLOW = /orrery-allow:\s*([\w-]+)[ \t]*(.*?)\s*(?:\*\/)?\s*$/;
 // `/* orrery-hit-area: pseudo */` beside it says a pseudo-element supplies the real hit area, so the rule's own box may be small.
 export function parseCss(text) {
   const rules = [], stack = [];
-  let line = 1, buf = '', bufLine = 1, paren = 0, marker = { control: false, pseudo: false }, allow = null;
+  let line = 1, buf = '', bufLine = 1, paren = 0, marker = { control: false, pseudo: false }, allows = [];
+  const orphans = [];
   const top = () => stack[stack.length - 1];
   const flush = () => {
     const m = /^\s*([^:\s][^:]*?)\s*:\s*([\s\S]*?)\s*$/.exec(buf);
-    if (m && top()) top().decls.push({ prop: m[1].toLowerCase(), value: m[2], line: bufLine, allow });
-    if (buf.trim()) allow = null;
+    if (m && top()) top().decls.push({ prop: m[1].toLowerCase(), value: m[2], line: bufLine, allows });
+    if (buf.trim()) allows = [];
     buf = '';
   };
   for (let i = 0; i < text.length; i++) {
@@ -39,7 +42,7 @@ export function parseCss(text) {
       if (!buf.trim() && /orrery-control/.test(body)) marker.control = true;
       if (!buf.trim() && /orrery-hit-area:\s*pseudo/.test(body)) marker.pseudo = true;
       const al = !buf.trim() && !body.includes('\n') ? ALLOW.exec(body) : null;
-      if (al) allow = { rule: al[1], reason: al[2].trim(), line };
+      if (al) allows.push({ rule: al[1], reason: al[2].trim(), line });
       for (const c of body) { if (c === '\n') { line++; if (buf.trim()) buf += '\n'; } }
       if (buf.trim()) buf += ' ';
       i = end - 1;
@@ -63,18 +66,23 @@ export function parseCss(text) {
       stack.push(rule);
       buf = '';
       marker = { control: false, pseudo: false };
-      allow = null;
+      orphans.push(...allows);
+      allows = [];
     } else if (paren === 0 && ch === '}') {
       flush();
       stack.pop();
       marker = { control: false, pseudo: false };
-      allow = null;
+      orphans.push(...allows);
+      allows = [];
     } else if (paren === 0 && ch === ';') {
       flush();
       marker = { control: false, pseudo: false };
-      allow = null;
+      orphans.push(...allows);
+      allows = [];
     } else buf += ch;
   }
+  orphans.push(...allows);
+  rules.orphans = orphans;
   return rules;
 }
 
@@ -134,16 +142,14 @@ function scaleValues() {
   for (const m of css.matchAll(/^\s*--((space|radius)-[\w-]+):\s*(\d*\.?\d+)px;/gm)) if (!scales[m[2]].has(Number(m[3]))) scales[m[2]].set(Number(m[3]), m[1]);
   return scales;
 }
+const RADIUS_SEGMENTS = ['radius', 'radii'];
+const SPACE_SEGMENTS = ['pad', 'padding', 'gap', 'gutter', 'margin', 'space', 'spacing', 'inset', 'offset', 'indent'];
+const customScale = (prop, scales) => { const seg = prop.slice(2).split('-'); return seg.some((x) => RADIUS_SEGMENTS.includes(x)) ? scales.radius : seg.some((x) => SPACE_SEGMENTS.includes(x)) ? scales.space : null; };
 // Which scale a property reads from, or null. A custom property is only read when its NAME says spacing or radius: it reads the radius
-// scale when the name contains `radius`, the space scale when it contains pad, gap, margin, space or inset, and is skipped otherwise.
-const scaleFor = (prop, scales) => (SPACE_PROP.test(prop) ? scales.space : RADIUS_PROP.test(prop) ? scales.radius : prop.startsWith('--') ? (/radius/.test(prop) ? scales.radius : /pad|gap|margin|space|inset/.test(prop) ? scales.space : null) : null);
+// scale when a hyphen-separated segment of the name is radius or radii, the space scale for pad, padding, gap, gutter, margin, space, spacing, inset, offset or indent, and is skipped otherwise.
+const scaleFor = (prop, scales) => (SPACE_PROP.test(prop) ? scales.space : RADIUS_PROP.test(prop) ? scales.radius : prop.startsWith('--') ? customScale(prop, scales) : null);
 
-/** Findings for one declaration under rule `id`, after its orrery-allow marker. An allowed finding is kept with `allowed: reason`. */
-function withAllow(id, d, found) {
-  if (d.allow?.rule !== id) return found;
-  if (!d.allow.reason) return [{ line: d.allow.line, message: `orrery-allow: ${id} needs a reason after the rule id` }, ...found];
-  return found.map((f) => ({ ...f, allowed: d.allow.reason }));
-}
+const declKey = (d) => `${d.line}:${d.prop}`;
 const lineAt = (d, t) => d.line + (d.value.slice(0, t.index).match(/\n/g)?.length ?? 0);
 /** Color findings for one declaration: [{ line, message }]. `d` is { prop, value, line }. */
 function colorFindings(d) {
@@ -151,7 +157,7 @@ function colorFindings(d) {
   scanValue(d.value, (t) => {
     const named = t.kind === 'word' && COLOR_PROPS.test(d.prop) && (NAMED.has(t.text.toLowerCase()) || SYSTEM.has(t.text.toLowerCase()));
     const what = t.kind === 'hex' ? t.text : t.kind === 'function' && COLOR_FUNCTIONS.has(t.text) ? `${t.text}()` : named ? t.text : null;
-    if (what) out.push({ line: lineAt(d, t), message: `literal color ${what} in ${d.prop}: use a color role, with a ${t.kind === 'hex' ? 'hex' : 'literal'} only as a var() fallback` });
+    if (what) out.push({ declKey: declKey(d), line: lineAt(d, t), message: `literal color ${what} in ${d.prop}: use a color role, with a ${t.kind === 'hex' ? 'hex' : 'literal'} only as a var() fallback` });
   });
   return out;
 }
@@ -162,7 +168,7 @@ function spacingFindings(d, scales) {
   scanValue(d.value, (t) => {
     if (t.kind !== 'px' || !scale.has(t.px)) return;
     const sign = d.value[t.index - 1] === '-' ? '-' : '';
-    const v = { line: lineAt(d, t), message: `literal ${sign}${t.text} in ${d.prop}: use var(--${scale.get(t.px)})` };
+    const v = { declKey: declKey(d), line: lineAt(d, t), message: `literal ${sign}${t.text} in ${d.prop}: use var(--${scale.get(t.px)})` };
     if (!seen.has(`${v.line} ${v.message}`)) { seen.add(`${v.line} ${v.message}`); out.push(v); }
   });
   return out;
@@ -170,15 +176,19 @@ function spacingFindings(d, scales) {
 
 // ---- Rules. Each takes (file, text) and returns [{ line, message }].
 const cssDecls = (text) => parseCss(text).flatMap((rule) => rule.decls);
-const literalColor = (file, text) => cssDecls(text).flatMap((d) => withAllow('literal-color', d, colorFindings(d)));
-const literalSpacing = (file, text) => { const scales = scaleValues(); return cssDecls(text).flatMap((d) => withAllow('literal-spacing', d, spacingFindings(d, scales))); };
+const literalColor = (file, text) => cssDecls(text).flatMap(colorFindings);
+const literalSpacing = (file, text) => { const scales = scaleValues(); return cssDecls(text).flatMap((d) => spacingFindings(d, scales)); };
 
 // Inline styles: object literals in the JSX attributes style, animate, initial, exit, whileHover and whileTap (not transition).
-// Each key: value pair is checked like a CSS declaration (camelCase keys become kebab-case). A value that is a string, a bare number,
-// a template string (its ${} parts dropped) or a ternary of those is read; a ternary or && attribute that holds object literals has each
-// of them read. Not read: style={identifier} and any value built in code (a call, a variable, a spread). Not covered: transform and
-// translate offsets, and color literals in TS outside these attributes.
-const INLINE_ATTRS = /\b(style|animate|initial|exit|whileHover|whileTap)\s*=\s*\{/g;
+// There is no escape in JSX: move the value into CSS (where orrery-allow exists) or pass it as a custom property (keys starting -- are never read).
+// What is read: a real attribute of a JSX tag (not `data-style`, not a plain assignment), whose value is an object literal, or an object literal
+// in a ternary, && / || / ?? branch or a call argument. Each key: value pair is checked like a CSS declaration (camelCase becomes kebab-case).
+// A value is read when it is a string, a bare number, a template string (its ${} parts dropped), an array of those, a ternary or a
+// parenthesised expression of those, or the literal side of && / || / ??.
+// Not read: style={identifier}; values computed by a call; computed keys; spreads; `as` casts; nested objects (transition inside animate);
+// transform and translate offsets; color literals in TS outside these attributes.
+const INLINE_ATTRS = new Set(['style', 'animate', 'initial', 'exit', 'whileHover', 'whileTap']);
+const OPEN = '([{', CLOSE = ')]}';
 function topLevelEntries(body) {
   const out = [];
   let depth = 0, quote = null, start = 0;
@@ -186,61 +196,100 @@ function topLevelEntries(body) {
     const ch = body[i];
     if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
     if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-    else if (ch !== undefined && '([{'.includes(ch)) depth++;
-    else if (ch !== undefined && ')]}'.includes(ch)) depth--;
+    else if (ch !== undefined && OPEN.includes(ch)) depth++;
+    else if (ch !== undefined && CLOSE.includes(ch)) depth--;
     else if ((ch === ',' || i === body.length) && depth === 0) { out.push({ text: body.slice(start, i), at: start }); start = i + 1; }
   }
   return out;
 }
 /** Index of the bracket that closes the one at `open`, skipping strings, or -1. */
 function closing(text, open) {
-  const pairs = { '{': '}', '(': ')', '[': ']' };
   let depth = 0, quote = null;
   for (let i = open; i < text.length; i++) {
     const ch = text[i];
     if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
     if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-    else if (pairs[ch]) depth++;
-    else if (ch === '}' || ch === ')' || ch === ']') { if (--depth === 0) return text[open] && pairs[text[open]] === ch ? i : -1; }
+    else if (OPEN.includes(ch)) depth++;
+    else if (CLOSE.includes(ch) && --depth === 0) return i;
   }
   return -1;
 }
-/** Splits `a ? b : c` at its top level; returns the branches (recursively), or [raw] when it is not a ternary. */
-function branches(raw) {
-  let depth = 0, quote = null, q = -1;
+/** Splits `raw` at its top-level occurrences of any operator in `ops`, or returns [raw]. */
+function splitTop(raw, ops) {
+  const parts = [];
+  let depth = 0, quote = null, start = 0;
   for (let i = 0; i < raw.length; i++) {
     const ch = raw[i];
     if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
     if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-    else if ('([{'.includes(ch)) depth++;
-    else if (')]}'.includes(ch)) depth--;
-    else if (ch === '?' && depth === 0 && raw[i + 1] !== '?' && raw[i - 1] !== '?' && raw[i + 1] !== '.') { q = i; break; }
+    else if (OPEN.includes(ch)) depth++;
+    else if (CLOSE.includes(ch)) depth--;
+    else if (depth === 0) {
+      const op = ops.find((o) => raw.startsWith(o, i) && !(o === '?' && (raw[i + 1] === '?' || raw[i + 1] === '.' || raw[i - 1] === '?')));
+      if (op) { parts.push(raw.slice(start, i)); start = i + op.length; i += op.length - 1; }
+    }
   }
-  if (q === -1) return [raw.trim()];
-  let d2 = 0, quote2 = null, colon = -1, nested = 0;
-  for (let i = q + 1; i < raw.length; i++) {
-    const ch = raw[i];
-    if (quote2) { if (ch === '\\') i++; else if (ch === quote2) quote2 = null; continue; }
-    if (ch === '"' || ch === "'" || ch === '`') quote2 = ch;
-    else if ('([{'.includes(ch)) d2++;
-    else if (')]}'.includes(ch)) d2--;
-    else if (ch === '?' && d2 === 0) nested++;
-    else if (ch === ':' && d2 === 0) { if (nested === 0) { colon = i; break; } nested--; }
-  }
-  if (colon === -1) return [raw.trim()];
-  return [...branches(raw.slice(q + 1, colon)), ...branches(raw.slice(colon + 1))];
+  return parts.length ? [...parts, raw.slice(start)] : [raw];
 }
-/** A value this rule can read as CSS, or null. */
-function literalValue(raw) {
+/** Every CSS string this rule can read out of a value expression. */
+function literals(raw) {
+  raw = raw.trim();
+  while (raw.startsWith('(') && closing(raw, 0) === raw.length - 1) raw = raw.slice(1, -1).trim();
+  if (raw.startsWith('[') && closing(raw, 0) === raw.length - 1) return topLevelEntries(raw.slice(1, -1)).flatMap((e) => literals(e.text));
+  const logical = splitTop(raw, ['&&', '||', '??']);
+  if (logical.length > 1) return logical.flatMap(literals);
+  // a ternary: a ? b : c, nested to the right or in parentheses
+  const q = splitTop(raw, ['?']);
+  if (q.length > 1) {
+    const rest = raw.slice(q[0].length + 1);
+    let depth = 0, quote = null, nested = 0, colon = -1;
+    for (let i = 0; i < rest.length && colon === -1; i++) {
+      const ch = rest[i];
+      if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
+      if (ch === '"' || ch === "'" || ch === '`') quote = ch;
+      else if (OPEN.includes(ch)) depth++;
+      else if (CLOSE.includes(ch)) depth--;
+      else if (depth === 0 && ch === '?' && rest[i + 1] !== '?' && rest[i + 1] !== '.') nested++;
+      else if (depth === 0 && ch === ':') { if (nested === 0) colon = i; else nested--; }
+    }
+    if (colon !== -1) return [...literals(rest.slice(0, colon)), ...literals(rest.slice(colon + 1))];
+  }
   const str = /^(["'])([\s\S]*)\1$/.exec(raw);
-  if (str) return str[2];
+  if (str) return [str[2]];
   const tpl = /^`([\s\S]*)`$/.exec(raw);
-  if (tpl) { let out = '', depth = 0; for (let i = 0; i < tpl[1].length; i++) { if (tpl[1].startsWith('${', i)) { depth++; i++; out += ' '; } else if (depth && tpl[1][i] === '}') depth--; else if (!depth) out += tpl[1][i]; } return out; }
-  return /^-?\d*\.?\d+$/.test(raw) && Number(raw) !== 0 ? `${raw}px` : null;
+  if (tpl) { let out = '', depth = 0; for (let i = 0; i < tpl[1].length; i++) { if (tpl[1].startsWith('${', i)) { depth++; i++; out += ' '; } else if (depth && tpl[1][i] === '}') depth--; else if (!depth) out += tpl[1][i]; } return [out]; }
+  return /^-?\d*\.?\d+$/.test(raw) && Number(raw) !== 0 ? [`${raw}px`] : [];
+}
+/** Attribute value expressions { name, from, to } of every JSX tag, found by walking each `<Tag` start. */
+function jsxAttributes(clean) {
+  const found = [];
+  for (const m of clean.matchAll(/<([A-Za-z][\w.:-]*)/g)) {
+    let i = m.index + m[0].length;
+    while (i < clean.length) {
+      while (/\s/.test(clean[i] ?? '')) i++;
+      if (clean[i] === '>' || clean.startsWith('/>', i) || i >= clean.length) break;
+      if (clean[i] === '{') { const e = closing(clean, i); if (e === -1) break; i = e + 1; continue; }
+      const name = /^[A-Za-z_$][\w$:.-]*/.exec(clean.slice(i))?.[0];
+      if (!name) break;
+      i += name.length;
+      while (/\s/.test(clean[i] ?? '')) i++;
+      if (clean[i] !== '=') continue;
+      i++;
+      while (/\s/.test(clean[i] ?? '')) i++;
+      if (clean[i] === '"' || clean[i] === "'") { const e = clean.indexOf(clean[i], i + 1); if (e === -1) break; i = e + 1; }
+      else if (clean[i] === '{') {
+        const e = closing(clean, i);
+        if (e === -1) break;
+        if (INLINE_ATTRS.has(name)) found.push({ name, from: i + 1, to: e });
+        i = e + 1;
+      } else break;
+    }
+  }
+  return found;
 }
 function inlineStyle(file, text) {
-  const clean = blankComments(text, path.extname(file)), scales = scaleValues(), out = [], entries = [];
-  // object literals directly in the attribute, or as branches of a ternary or && / || / ?? expression
+  const clean = blankComments(text, path.extname(file)), scales = scaleValues(), out = [];
+  // an object literal directly in the expression, or after ( ? : = , && || ??
   const objectsIn = (from, to) => {
     const found = [];
     for (let i = from; i < to; i++) {
@@ -256,27 +305,22 @@ function inlineStyle(file, text) {
     }
     return found;
   };
-  for (const m of clean.matchAll(INLINE_ATTRS)) {
-    const open = m.index + m[0].length - 1, end = closing(clean, open);
-    if (end === -1) continue;
-    for (const [from, to] of objectsIn(open + 1, end)) {
+  for (const attr of jsxAttributes(clean)) {
+    for (const [from, to] of objectsIn(attr.from, attr.to)) {
       for (const e of topLevelEntries(clean.slice(from, to))) {
         const kv = /^\s*(?:([A-Za-z_$][\w$]*)|(["'])([^"']+)\2)\s*:\s*([\s\S]*?)\s*$/.exec(e.text);
         if (!kv) continue;
         const key = kv[1] ?? kv[3];
-        const prop = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+        if (key.startsWith('--')) continue; // a custom property is how a value gets from component code into CSS
+        const prop = key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
         const line = clean.slice(0, from + e.at + e.text.indexOf(key)).split('\n').length;
-        entries.push({ prop, line, values: branches(kv[4]).map(literalValue).filter((v) => v !== null) });
+        for (const value of literals(kv[4])) for (const v of [...colorFindings({ prop, value, line }), ...spacingFindings({ prop, value, line }, scales)]) out.push({ line: v.line, message: `inline style: ${v.message}; move it into CSS or pass it as a custom property` });
       }
     }
   }
-  // orrery-allow markers sit on the line before an entry (or on its line) and cover the first entry at or after them
-  const markers = [];
-  text.split('\n').forEach((l, i) => { const c = /(?:\/\/|\/\*)\s*(orrery-allow:.*)$/.exec(l); const al = c && ALLOW.exec(c[1]); if (al) markers.push({ rule: al[1], reason: al[2].trim(), line: i + 1 }); });
-  for (const e of entries) {
-    const marker = markers.filter((mk) => mk.rule === 'inline-style-literal' && mk.line <= e.line && !entries.some((o) => o !== e && o.line >= mk.line && o.line < e.line)).sort((x, y) => y.line - x.line)[0];
-    const found = e.values.flatMap((value) => [...colorFindings({ prop: e.prop, value, line: e.line }), ...spacingFindings({ prop: e.prop, value, line: e.line }, scales)]).map((v) => ({ line: v.line, message: `inline style: ${v.message}` }));
-    out.push(...withAllow('inline-style-literal', { allow: marker }, found));
+  // JSX has no escape marker: one found in a comment is a finding
+  for (const m of text.matchAll(/orrery-allow:/g)) {
+    if (/^\s+$/.test(clean.slice(m.index, m.index + 12))) out.push({ line: text.slice(0, m.index).split('\n').length, message: 'orrery-allow is CSS-only; move the value into CSS' });
   }
   return out;
 }
@@ -348,6 +392,21 @@ export const CHECKS = {
 export function checkText(file, text, only = Object.keys(CHECKS), allowedOut = []) {
   const ext = path.extname(file);
   const all = only.filter((id) => CHECKS[id].exts.includes(ext)).flatMap((id) => CHECKS[id].run(file, text).map((v) => ({ file, rule: id, ...v })));
+  const marker = (line, message) => ({ file, rule: 'orrery-allow', line, message });
+  if (CSS_EXT.includes(ext) && only.some((id) => ALLOWABLE.includes(id))) {
+    const parsed = parseCss(text);
+    for (const d of parsed.flatMap((r) => r.decls)) {
+      for (const a of d.allows) {
+        if (!ALLOWABLE.includes(a.rule)) { all.push(marker(a.line, `unknown rule id ${a.rule}; valid ids: ${ALLOWABLE.join(', ')}`)); continue; }
+        if (!only.includes(a.rule)) continue;
+        if (!/[A-Za-z]{3,}/.test(a.reason)) { all.push(marker(a.line, `orrery-allow: ${a.rule} needs a reason, a word of 3 or more letters`)); continue; }
+        const mine = all.filter((f) => f.rule === a.rule && f.declKey === declKey(d));
+        if (!mine.length) { all.push(marker(a.line, `unused orrery-allow: ${a.rule} excuses nothing on the next declaration (stale, wrong rule, or already compliant)`)); continue; }
+        for (const f of mine) { f.allowed = a.reason; f.markerLine = a.line; }
+      }
+    }
+    for (const a of parsed.orphans) all.push(marker(a.line, `unused orrery-allow: ${a.rule} has no declaration after it`));
+  }
   allowedOut.push(...all.filter((v) => v.allowed));
   return all.filter((v) => !v.allowed);
 }
@@ -392,7 +451,8 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
   const found = checkPaths(targets, only, allowed);
   const excused = `${allowed.length} allowed exception(s)`;
   for (const v of found) console.error(`${path.relative(process.cwd(), v.file)}:${v.line} ${v.rule} ${v.message}`);
-  for (const v of allowed) console.log(`${path.relative(process.cwd(), v.file)}:${v.line} ${v.rule} allowed: ${v.allowed}`);
+  allowed.sort((a, b) => (a.file === b.file ? a.markerLine - b.markerLine : a.file < b.file ? -1 : 1));
+  for (const v of allowed) console.log(`${path.relative(process.cwd(), v.file)}:${v.markerLine} ${v.rule} allowed (finding at line ${v.line}): ${v.allowed}`);
   if (found.length) { console.error(`rules:check: ${found.length} violation(s), ${excused}`); process.exit(1); }
   console.log(`rules:check: ${targets.length} path(s), no violations, ${excused}`);
 }

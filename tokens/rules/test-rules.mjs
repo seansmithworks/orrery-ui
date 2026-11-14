@@ -112,10 +112,10 @@ export function ruleTests({ tmp, run }) {
     '[inline-style-literal] source rules: inline-style-literal fails a literal color and a token-sized spacing number in style={{ }}, and passes var() values and off-scale numbers'() {
       const bad = ['export const A = () => (', '  <div', '    style={{', '      color: "#1d1d1f",', '      padding: 8,', '      marginTop: "-16px",', '      background: "var(--surface, #fff)",', '      borderRadius: 10,', '    }}', '  />', ');'].join('\n');
       assert.deepEqual(hits('k.tsx', bad, 'inline-style-literal'), [
-        '4 inline-style-literal inline style: literal color #1d1d1f in color: use a color role, with a hex only as a var() fallback',
-        '5 inline-style-literal inline style: literal 8px in padding: use var(--space-8)',
-        '6 inline-style-literal inline style: literal -16px in margin-top: use var(--space-16)',
-        '8 inline-style-literal inline style: literal 10px in border-radius: use var(--radius-panel)',
+        '4 inline-style-literal inline style: literal color #1d1d1f in color: use a color role, with a hex only as a var() fallback; move it into CSS or pass it as a custom property',
+        '5 inline-style-literal inline style: literal 8px in padding: use var(--space-8); move it into CSS or pass it as a custom property',
+        '6 inline-style-literal inline style: literal -16px in margin-top: use var(--space-16); move it into CSS or pass it as a custom property',
+        '8 inline-style-literal inline style: literal 10px in border-radius: use var(--radius-panel); move it into CSS or pass it as a custom property',
       ]);
       const ok = ['export const A = () => <div style={{ color: "var(--text)", padding: "var(--space-8)", marginTop: 7, width: 8, opacity: 0, transform: `translate(${x}px, 0)` }} />;', '// style={{ color: "#fff" }}'].join('\n');
       assert.deepEqual(hits('k.tsx', ok, 'inline-style-literal'), []);
@@ -223,46 +223,76 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(one('no-gradients', (r) => { r.scope = 'opt-in'; r.statement = 'Opt-in nothing.'; }), ['rules registry: no-gradients has no check, so it has no scope']);
     },
 
-    '[no-literal-spacing] orrery-allow: a marker with a reason excuses the next declaration only, a marker with no reason is a finding, and no marker flags'() {
-      const flagged = ['.a {', '  margin: 8px;', '}'].join('\n');
-      assert.deepEqual(hits('k.css', flagged, 'literal-spacing'), ['2 literal-spacing literal 8px in margin: use var(--space-8)']);
-      const allowed = ['.a {', '  /* orrery-allow: literal-spacing optical nudge to match the icon */', '  margin: 8px;', '}'].join('\n');
-      assert.deepEqual(hits('k.css', allowed, 'literal-spacing'), []);
-      const noReason = ['.a {', '  /* orrery-allow: literal-spacing */', '  margin: 8px;', '}'].join('\n');
-      assert.deepEqual(hits('k.css', noReason, 'literal-spacing'), ['2 literal-spacing orrery-allow: literal-spacing needs a reason after the rule id', '3 literal-spacing literal 8px in margin: use var(--space-8)']);
-      const leak = ['.a {', '  /* orrery-allow: literal-spacing optical nudge */', '  margin: 8px;', '  padding: 8px;', '}'].join('\n');
-      assert.deepEqual(hits('k.css', leak, 'literal-spacing'), ['4 literal-spacing literal 8px in padding: use var(--space-8)']);
-      const wrongRule = ['.a {', '  /* orrery-allow: literal-color not this rule */', '  margin: 8px;', '}'].join('\n');
-      assert.equal(hits('k.css', wrongRule, 'literal-spacing').length, 1);
+    '[no-literal-spacing] orrery-allow: a marker with a reason excuses its declaration only; no reason, an unknown id, a stale marker and a marker with no declaration are each a finding; markers stack'() {
+      const both = (text) => checkText('k.css', text, ['literal-color', 'literal-spacing']).map((v) => `${v.line} ${v.rule} ${v.message}`).sort();
+      const MSG = (n) => `${n} literal-spacing literal 8px in margin: use var(--space-8)`;
+      assert.deepEqual(hits('k.css', ['.a {', '  margin: 8px;', '}'].join('\n'), 'literal-spacing'), [MSG(2)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing optical nudge to match the icon */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing'), []);
+      const noReason = '2 orrery-allow orrery-allow: literal-spacing needs a reason, a word of 3 or more letters';
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing').sort(), [noReason, MSG(3)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing ... */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing').sort(), [noReason, MSG(3)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing optical nudge */', '  margin: 8px;', '  padding: 8px;', '}'].join('\n'), 'literal-spacing'), ['4 literal-spacing literal 8px in padding: use var(--space-8)']);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spaceing optical nudge */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing').sort(), ['2 orrery-allow unknown rule id literal-spaceing; valid ids: literal-color, literal-spacing', MSG(3)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing was needed once */', '  margin: var(--space-8);', '}'].join('\n'), 'literal-spacing'), ['2 orrery-allow unused orrery-allow: literal-spacing excuses nothing on the next declaration (stale, wrong rule, or already compliant)']);
+      assert.deepEqual(hits('k.css', ['.a {', '  margin: 0;', '  /* orrery-allow: literal-spacing nothing follows */', '}'].join('\n'), 'literal-spacing'), ['3 orrery-allow unused orrery-allow: literal-spacing has no declaration after it']);
+      // wrong rule for the declaration: a color marker on a spacing finding excuses nothing, and is stale
+      assert.deepEqual(both(['.a {', '  /* orrery-allow: literal-color brand swatch */', '  margin: 8px;', '}'].join('\n')), ['2 orrery-allow unused orrery-allow: literal-color excuses nothing on the next declaration (stale, wrong rule, or already compliant)', MSG(3)]);
+      // stacked markers, one per rule, excuse one declaration that breaks both rules; one marker covers only its own rule
+      const decl = '  --card-padding: 8px solid #fff;';
+      assert.deepEqual(both(['.a {', '  /* orrery-allow: literal-color brand swatch */', '  /* orrery-allow: literal-spacing optical nudge */', decl, '}'].join('\n')), []);
+      assert.deepEqual(both(['.a {', '  /* orrery-allow: literal-color brand swatch */', decl, '}'].join('\n')), ['3 literal-spacing literal 8px in --card-padding: use var(--space-8)']);
+      // one marker covers every finding of its rule within its one declaration
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color shadow tuned by eye */', '  box-shadow: 0 1px 2px #000, 0 4px 8px #111;', '}'].join('\n'), 'literal-color'), []);
+    },
+
+    '[no-literal-spacing] custom properties are read by name segment (pad, padding, gap, gutter, margin, space, spacing, inset, offset, indent, radius, radii), not by substring'() {
+      const src = ['.a {', '  --card-padding: 16px;', '  --page-gutter: 24px;', '  --x-offset: 4px;', '  --orr-gap-count: 8px;', '  --sheet-radii: 10px;', '  --marginalia: 8px;', '  --paddington: 8px;', '  --icon-size: 16px;', '  --avatar: 40px;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', src, 'literal-spacing'), [
+        '2 literal-spacing literal 16px in --card-padding: use var(--space-16)',
+        '3 literal-spacing literal 24px in --page-gutter: use var(--space-24)',
+        '4 literal-spacing literal 4px in --x-offset: use var(--space-4)',
+        '5 literal-spacing literal 8px in --orr-gap-count: use var(--space-8)',
+        '6 literal-spacing literal 10px in --sheet-radii: use var(--radius-panel)',
+      ]);
     },
 
     '[no-literal-color] orrery-allow: a marker with a reason excuses the next declaration only, and with no reason it is a finding'() {
       assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color brand swatch shown as data */', '  background: #123456;', '  color: #fff;', '}'].join('\n'), 'literal-color'), ['4 literal-color literal color #fff in color: use a color role, with a hex only as a var() fallback']);
-      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color */', '  background: #123456;', '}'].join('\n'), 'literal-color'), ['2 literal-color orrery-allow: literal-color needs a reason after the rule id', '3 literal-color literal color #123456 in background: use a color role, with a hex only as a var() fallback']);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color */', '  background: #123456;', '}'].join('\n'), 'literal-color').sort(), ['2 orrery-allow orrery-allow: literal-color needs a reason, a word of 3 or more letters', '3 literal-color literal color #123456 in background: use a color role, with a hex only as a var() fallback']);
     },
 
-    '[inline-style-literal] orrery-allow: a marker with a reason excuses the next property only, and with no reason it is a finding'() {
-      const src = (marker) => ['export const A = () => (', '  <div', '    style={{', marker, '      color: "#fff",', '      background: "#000",', '    }}', '  />', ');'].join('\n');
-      const bare = hits('k.tsx', src('      // (no marker)'), 'inline-style-literal');
-      assert.equal(bare.length, 2);
-      const ok = hits('k.tsx', src('      // orrery-allow: inline-style-literal print stylesheet needs fixed ink'), 'inline-style-literal');
-      assert.deepEqual(ok, ['6 inline-style-literal inline style: literal color #000 in background: use a color role, with a hex only as a var() fallback']);
-      const none = hits('k.tsx', src('      // orrery-allow: inline-style-literal'), 'inline-style-literal');
-      assert.equal(none[0], '4 inline-style-literal orrery-allow: inline-style-literal needs a reason after the rule id');
-      assert.equal(none.length, 3);
+    '[inline-style-literal] orrery-allow is CSS-only: a marker in a TSX comment is a finding and excuses nothing, a marker inside a string is ignored, and keys starting -- are never flagged'() {
+      const src = ['export const A = () => (', '  <div', '    style={{', '      // orrery-allow: inline-style-literal because reasons', '      color: "#fff",', '      "--orr-x": "#000",', '      "--orr-pad": 8,', '      content: "orrery-allow: inline-style-literal",', '    }}', '  />', ');'].join('\n');
+      assert.deepEqual(hits('k.tsx', src, 'inline-style-literal').sort(), [
+        '4 inline-style-literal orrery-allow is CSS-only; move the value into CSS',
+        '5 inline-style-literal inline style: literal color #fff in color: use a color role, with a hex only as a var() fallback; move it into CSS or pass it as a custom property',
+      ]);
     },
 
-    '[inline-style-literal] attributes: style, animate, initial, exit, whileHover and whileTap are read, with ternary and && branches, template strings and ternary values; transition and style={identifier} are not'() {
-      const t = (jsx) => hits('k.tsx', `export const A = () => (${jsx});`, 'inline-style-literal');
-      assert.equal(t('<motion.div animate={{ backgroundColor: "#fff" }} />').length, 1);
-      assert.equal(t('<motion.div initial={{ opacity: 0, padding: 8 }} exit={{ color: "red" }} whileHover={{ margin: 16 }} whileTap={{ borderColor: "#000" }} />').length, 4);
-      assert.equal(t('<div style={on ? { color: "#fff" } : { padding: 8 }} />').length, 2);
-      assert.equal(t('<div style={on && { color: "#fff" }} />').length, 1);
-      assert.equal(t('<div style={{ color: on ? "#fff" : "var(--text)", padding: big ? 24 : 7 }} />').length, 2);
-      assert.equal(t('<div style={{ border: `1px solid #fff`, width: `${w}px` }} />').length, 1);
-      assert.deepEqual(t('<motion.div transition={{ duration: 8, color: "#fff" }} />'), []);
-      assert.deepEqual(t('<div style={styles} />'), []);
-      assert.deepEqual(t('<motion.div animate={{ transition: { padding: 8 }, x: 8 }} />'), []);
+    '[inline-style-literal] attributes: only real JSX attributes style, animate, initial, exit, whileHover and whileTap are read, with arrays, nested ternaries, ??, ||, &&, call arguments and template strings; what is not read is pinned here'() {
+      const t = (jsx) => hits('k.tsx', `export const A = () => (${jsx});`, 'inline-style-literal').length;
+      // read
+      assert.equal(t('<motion.div animate={{ backgroundColor: "#fff" }} />'), 1);
+      assert.equal(t('<motion.div initial={{ opacity: 0, padding: 8 }} exit={{ color: "red" }} whileHover={{ margin: 16 }} whileTap={{ borderColor: "#000" }} />'), 4);
+      assert.equal(t('<div style={on ? { color: "#fff" } : { padding: 8 }} />'), 2);
+      assert.equal(t('<div style={on && { color: "#fff" }} />'), 1);
+      assert.equal(t('<div style={{ color: on ? "#fff" : "var(--text)", padding: big ? 24 : 7 }} />'), 2);
+      assert.equal(t('<div style={{ border: `1px solid #fff`, width: `${w}px` }} />'), 1);
+      assert.equal(t('<motion.div animate={{ backgroundColor: ["#fff", "#000"] }} />'), 2);
+      assert.equal(t('<div style={{ color: (on ? "#fff" : (big ? "red" : "var(--t)")) }} />'), 2);
+      assert.equal(t('<div style={{ color: theme ?? "#fff", padding: gap || 8 }} />'), 2);
+      assert.equal(t('<div style={merge({ color: "#fff" }, other)} />'), 1);
+      // not an attribute of a tag
+      assert.equal(t('<div data-style={{ color: "#fff" }} />'), 0);
+      assert.equal(hits('k.tsx', 'let style = { color: "#fff" };\nconst initial = { padding: 8 };\nstyle = { color: "red" };', 'inline-style-literal').length, 0);
+      // known not read
+      assert.equal(t('<div style={styles} />'), 0);
+      assert.equal(t('<div style={{ color: pick("#fff"), padding: space(8) }} />'), 0);
+      assert.equal(t('<div style={{ [key]: "#fff" }} />'), 0);
+      assert.equal(t('<div style={{ color: "#fff" as string }} />'), 0);
+      assert.equal(t('<div style={{ ...base }} />'), 0);
+      assert.equal(t('<motion.div transition={{ duration: 8, color: "#fff" }} />'), 0);
+      assert.equal(t('<motion.div animate={{ transition: { padding: 8 }, transform: "translateX(8px)" }} />'), 0);
     },
 
     '[no-em-dashes] an apostrophe in JSX text is text, so a comment after it is still a comment, and a real string is still read'() {
@@ -271,14 +301,14 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(hits('k.tsx', `export const A = () => <p>Can't won't</p>; /* ${dash} */\nconst b = 'x ${dash} y';`, 'em-dash').map((x) => x.slice(0, 12)), ['2 em-dash em']);
     },
 
-    'source rules: the CLI counts allowed exceptions and lists each one with its reason'() {
+    'source rules: the CLI counts allowed exceptions, and lists each one sorted by marker line with the marker line and the finding line'() {
       const dir = path.join(tmp, 'cli-allow');
       fs.mkdirSync(dir, { recursive: true });
-      fs.writeFileSync(path.join(dir, 'a.css'), '.a {\n  /* orrery-allow: literal-spacing optical nudge */\n  margin: 8px;\n}\n');
+      fs.writeFileSync(path.join(dir, 'a.css'), '.a {\n  /* orrery-allow: literal-spacing optical nudge */\n  margin: 8px;\n  /* orrery-allow: literal-color brand swatch */\n  color: #fff;\n}\n');
       const r = spawnSync(process.execPath, [CLI, 'a.css'], { encoding: 'utf8', cwd: dir });
       assert.equal(r.status, 0, r.stderr);
-      assert.match(r.stdout, /^a\.css:3 literal-spacing allowed: optical nudge$/m);
-      assert.match(r.stdout, /^rules:check: 1 path\(s\), no violations, 1 allowed exception\(s\)$/m);
+      assert.match(r.stdout, /^a\.css:2 literal-spacing allowed \(finding at line 3\): optical nudge\na\.css:4 literal-color allowed \(finding at line 5\): brand swatch$/m);
+      assert.match(r.stdout, /^rules:check: 1 path\(s\), no violations, 2 allowed exception\(s\)$/m);
     },
 
     'registry: a gate named only in a comment or a string, never called, fails'() {
