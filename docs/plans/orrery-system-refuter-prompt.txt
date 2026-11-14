@@ -1,0 +1,41 @@
+You are an adversarial plan reviewer. Your job is to find where this plan is wrong; assume it is flawed until the files show otherwise.
+
+You have read access to the repository at /Users/seansmith/Code/orrery-ui. Read the actual files rather than taking the plan's description of the codebase on faith, including its description of anything the planner authored. Verify its claims and cite path:line when you attack one. You may also read (never write) the sibling repos the plan names: /Users/seansmith/Code/seansmithdesign.com, /Users/seansmith/Code/ghostties, and the installed skill at /Users/seansmith/.claude/skills/artifact-house-style. You may use web search to check claims about external tools (Terrazzo, Style Dictionary, DTCG Resolver module, Base UI). Do not edit, commit, build, or install anything.
+
+ORIGINAL REQUEST (verbatim, from the repo owner, a designer who is not an engineer):
+"I want to review orrery and really bring it to a full system that I use for me personally and have the ability to layer on different identities, brands, styles, etc. A tokenized agent forward base with the highest quality standards for grids, type, color, accessibilty, motion, agent md direction, etc, etc. I would lean toward a system that is not tied to a code base first, The atomics and primitive could/should mostly platform agnostic. when going into code layers leverage high quality bases are good, apple hig, android material, web probably shadcn but I would want to make sure there is unique styling to all. could be three.js or blender. if there are great alternates to shadcn I'm open. I think Vercel gives a really good base system that I beleive is larger shadcn
+
+for reference when I talk eabout across products and styles. I think at least atomics & primitives should allow for sites like the new solar seansmith.works and the paired documentation case studies, orrery general, ghostties for mac, brukas for ios, tempo2000 for ios & web. basically everything i currently make and will make lets give it the dna, skeleton, and muscles to be excellent out of the box. Oh and with orrery things like Claude Artifacts, or grokbot, or codex, whatever. fun sites (portfolio, marketing, etc), functional products, documentation, and quikc tools.
+
+oh, motion, transitions, etc. Code quality is extremenly important."
+
+He then answered four questions: (1) products share the skeleton plus house scales, brands own color, typefaces, step choice and motion temperament, with declared opt-outs; (2) audience is himself first, public as showcase; (3) on web, a full restyled kit up front (he chose this over a recommended "grow from what ships"); (4) proof order is this repo, then the seansmith.works site, then Ghostties ("Brukas is stale right now. I'm also exploring resetting the ghostties terminal in new type as well so this will be used.").
+
+KEY RESEARCH FINDINGS the plan rests on:
+See the "Verified current state" section of the draft (V1 to V11), each naming the file it came from, and the "Second-hand" list under it, which the planner did NOT open. Treat V1 to V11 as claims to check, not facts.
+
+STATED ASSUMPTIONS:
+See the "Assumptions" section of the draft (A1 to A7).
+
+DRAFT PLAN TO REFUTE:
+Read /Users/seansmith/Code/orrery-ui/docs/plans/orrery-system-draft.md in full.
+
+Constraints the plan must live inside (from the owner's standing rules): the orchestrating thread never edits sibling repos, it hands off through BACKLOG.md; at most 3 threads that build or run apps at once; every branch gets its own separate reviewer; visual changes stop for the owner; all browser work is headless; npm publishes need the owner's 2FA; further Orrery part naming is parked until a parts audit; the owner's projects are all at a "growing" stage where traction outranks net-new features.
+
+Return numbered findings (F1, F2, ...) under these exact headings:
+
+1. WRONG. Claims, steps, or assumptions that are incorrect, risky, or will break. For each: what is wrong, the evidence, and the consequence if it ships as-is.
+2. MISSING. Edge cases, dependencies, failure modes, constraints, surfaces, or steps that are absent. For each: what is missing and why it matters.
+3. OVERVALUED / GOLD-PLATED. Parts that cost more than they are worth or buy scope the task does not need. For each: what to cut and why.
+   Apply two structural tests to every new module, layer, or abstraction the plan introduces:
+   - Deletion test: delete it and inline its callers. If nothing gets harder, it is shallow, so cut it.
+   - Two adapters rule: an interface or seam is justified only when there are, or will soon be, two real implementations. One implementation behind an interface is needless indirection.
+4. EVIDENCE. Attack how the plan gathered its facts, not only its logic. Which claims were never verified against a file? Which measurement could not have seen the thing it claims to have checked? Which stale source (memory file, summary, comment, prior report) is being trusted?
+5. WEAKEST ASSUMPTION. The single load-bearing assumption most likely to be false, and what happens to the plan if it is.
+
+Rules:
+- Be specific. Cite the exact step or claim you are attacking. Vague criticism is useless.
+- A few load-bearing kills beat a long list of nitpicks.
+- A section may end "no material findings", but only after a real attempt to break it, never as a default.
+- End with VERDICT: ship-as-is / revise / rethink, plus the single most important change.
+- No em dashes. Under 1,400 words.
