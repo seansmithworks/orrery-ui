@@ -1,0 +1,287 @@
+{
+  "$description": "Orrery core scales: shared by every brand. Values that a brand may not change live here.",
+  "$extensions": {
+    "com.orrery": {
+      "contract": {
+        "version": 1
+      },
+      "testData": {
+        "$description": "Phase 0 test data for the Swift output, not a token decision: Iris's DEFAULT_OPEN_SPRING from src/motion.ts.",
+        "spring": {
+          "open": { "stiffness": 375, "damping": 42.5, "mass": 1.75 }
+        }
+      }
+    }
+  },
+  "spacing": {
+    "$type": "dimension",
+    "$description": "Ten steps on a 4px base, then layout widths.",
+    "space-4": {
+      "$value": {
+        "value": 4,
+        "unit": "px"
+      },
+      "$description": "Hairline gaps: ramp swatch gap, chip vertical padding, icon-to-text."
+    },
+    "space-8": {
+      "$value": {
+        "value": 8,
+        "unit": "px"
+      },
+      "$description": "Tight gaps: chip horizontal padding, label-to-content, list item gap."
+    },
+    "space-12": {
+      "$value": {
+        "value": 12,
+        "unit": "px"
+      },
+      "$description": "Row padding in dense lists and tables; card grid gap on mobile."
+    },
+    "space-16": {
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$description": "Default component gap; row padding; page gutter under 600px."
+    },
+    "space-20": {
+      "$value": {
+        "value": 20,
+        "unit": "px"
+      },
+      "$description": "Sheet padding on mobile; gap between index cards."
+    },
+    "space-24": {
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$description": "Gap between stacked sheets; row padding in decision lists; sheet padding in rail."
+    },
+    "space-32": {
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$description": "Gap between sections in memo mode; sheet padding on desktop."
+    },
+    "space-40": {
+      "$value": {
+        "value": 40,
+        "unit": "px"
+      },
+      "$description": "Large sheet padding (answer sheet, twin sheets) on desktop."
+    },
+    "space-48": {
+      "$value": {
+        "value": 48,
+        "unit": "px"
+      },
+      "$description": "Space above a page title; between major blocks in report mode."
+    },
+    "space-72": {
+      "$value": {
+        "value": 72,
+        "unit": "px"
+      },
+      "$description": "Section rhythm in report and poster modes; page bottom padding."
+    },
+    "layout-measure": {
+      "$value": {
+        "value": 43,
+        "unit": "em"
+      },
+      "$description": "Max line length for prose blocks in every mode (about 68 characters; em so it tracks the block's own size)."
+    },
+    "layout-read": {
+      "$value": {
+        "value": 760,
+        "unit": "px"
+      },
+      "$description": "Container width for memo mode (single reading column)."
+    },
+    "layout-report": {
+      "$value": {
+        "value": 1240,
+        "unit": "px"
+      },
+      "$description": "Container width for rail (default) and report modes."
+    },
+    "layout-wide": {
+      "$value": {
+        "value": 1600,
+        "unit": "px"
+      },
+      "$description": "Container width for panel mode."
+    },
+    "layout-gutter": {
+      "$value": {
+        "value": 56,
+        "unit": "px"
+      },
+      "$description": "Page side padding at 860px and up; `space-32` from 600px; `space-16` below."
+    },
+    "layout-rail": {
+      "$value": {
+        "value": 300,
+        "unit": "px"
+      },
+      "$description": "Sticky question column in report mode; side table of contents."
+    },
+    "layout-label": {
+      "$value": {
+        "value": 140,
+        "unit": "px"
+      },
+      "$description": "Label column in a label | body strip row and the memo key-value head; collapses above the body under 600px."
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "$description": "Two radii do the work: 10 for layers, 6 for what sits inside them. Nothing larger than 12px.",
+    "radius-panel": {
+      "$value": {
+        "value": 10,
+        "unit": "px"
+      },
+      "$description": "Layer-1 surfaces: sheets, panels, cards, index cards, segmented-control track. Nothing larger than 12px anywhere."
+    },
+    "radius-control": {
+      "$value": {
+        "value": 6,
+        "unit": "px"
+      },
+      "$description": "Layer-2 and controls: chips, insets, inputs, buttons, ramp swatches, segment thumbs. A 10px container with 4px padding holds 6px children."
+    },
+    "radius-round": {
+      "$value": {
+        "value": 9999,
+        "unit": "px"
+      },
+      "$description": "True circles only: dots and discs. Never pills on text chips."
+    },
+    "radius-tick": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$description": "Micro marks: pips."
+    }
+  },
+  "shadow": {
+    "$type": "shadow",
+    "$description": "One faint shadow per page, never in dark.",
+    "shadow-lift": {
+      "$value": [
+        {
+          "color": {
+            "colorSpace": "srgb",
+            "components": [0, 0, 0],
+            "alpha": 0.05
+          },
+          "offsetX": {
+            "value": 0,
+            "unit": "px"
+          },
+          "offsetY": {
+            "value": 1,
+            "unit": "px"
+          },
+          "blur": {
+            "value": 2,
+            "unit": "px"
+          },
+          "spread": {
+            "value": 0,
+            "unit": "px"
+          }
+        }
+      ],
+      "$description": "The page's one shadow, via `.os-lift` on the decisions sheet. Dark theme: none (no glows)."
+    }
+  },
+  "border": {
+    "$type": "dimension",
+    "$description": "Stroke widths. Colors come from `line`, `line-strong`, `line-dashed`, `text` and `accent`.",
+    "line-width": {
+      "$value": {
+        "value": 1,
+        "unit": "px"
+      },
+      "$description": "Every hairline and rule: layer borders, row dividers, `line-strong` rules, dashed absent-item borders, the gap between panel cells."
+    },
+    "ring-width": {
+      "$value": {
+        "value": 2,
+        "unit": "px"
+      },
+      "$description": "Keyboard focus ring: a solid `accent` outline at this width on every focusable element."
+    }
+  },
+  "type": {
+    "size": {
+      "11": {
+        "$value": {
+          "value": 11,
+          "unit": "px"
+        }
+      },
+      "13": {
+        "$value": {
+          "value": 13,
+          "unit": "px"
+        }
+      },
+      "14": {
+        "$value": {
+          "value": 14,
+          "unit": "px"
+        }
+      },
+      "16": {
+        "$value": {
+          "value": 16,
+          "unit": "px"
+        }
+      },
+      "17": {
+        "$value": {
+          "value": 17,
+          "unit": "px"
+        }
+      },
+      "22": {
+        "$value": {
+          "value": 22,
+          "unit": "px"
+        }
+      },
+      "25": {
+        "$value": {
+          "value": 25,
+          "unit": "px"
+        }
+      },
+      "30": {
+        "$value": {
+          "value": 30,
+          "unit": "px"
+        }
+      },
+      "44": {
+        "$value": {
+          "value": 44,
+          "unit": "px"
+        }
+      },
+      "$type": "dimension",
+      "$description": "Font-size steps. Type roles pick from these.",
+      "12-5": {
+        "$value": {
+          "value": 12.5,
+          "unit": "px"
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,38 @@
+{
+  "$description": "Brand orrery: the default Orrery look. Monochrome; accent equals text.",
+  "$extensions": {
+    "com.orrery": {
+      "name": "orrery",
+      "modes": [
+        "light",
+        "dark"
+      ]
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "$extensions": {
+      "com.orrery": {
+        "fonts": []
+      }
+    },
+    "sans": {
+      "$value": [
+        "system-ui",
+        "-apple-system",
+        "SF Pro Text",
+        "SF Pro Display",
+        "Helvetica Neue",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "$value": [
+        "ui-monospace",
+        "SF Mono",
+        "Menlo",
+        "monospace"
+      ]
+    }
+  }
+}
