@@ -25,6 +25,17 @@ function seededSnapshot(name, change) {
   return dir;
 }
 
+// A copy of the token source (base/ and brands/) with one text change in one file.
+function seededSource(name, file, from, to) {
+  const src = path.join(tmp, name);
+  fs.cpSync(path.join(TOKENS, 'base'), path.join(src, 'base'), { recursive: true });
+  fs.cpSync(path.join(TOKENS, 'brands'), path.join(src, 'brands'), { recursive: true });
+  const text = fs.readFileSync(path.join(src, file), 'utf8');
+  assert.equal(text.split(from).length, 2, `${file} should hold ${from} exactly once`);
+  fs.writeFileSync(path.join(src, file), text.replace(from, to));
+  return src;
+}
+
 const tests = {
   'real tree: tokens:check passes'() {
     const r = run('check.mjs');
@@ -99,7 +110,7 @@ const tests = {
     const r = run('build.mjs', '--out', out);
     assert.equal(r.status, 0, r.stderr);
     const files = fs.readdirSync(out, { recursive: true }).filter((f) => fs.statSync(path.join(out, f)).isFile()).sort();
-    assert.deepEqual(files, ['.orrery-tokens-build', 'css/northwind-kiln.css', 'css/orrery.css', 'swift/OrreryTokens.swift', 'tokens.json']);
+    assert.deepEqual(files, ['.orrery-tokens-build', 'css/northwind-kiln.css', 'css/orrery.css', 'css/orrery.system.css', 'js/orrery.motion.mjs', 'swift/OrreryTokens.swift', 'tokens.json']);
     assert.equal(fs.existsSync(path.join(out, 'css/old')), false);
     const foreign = path.join(tmp, 'foreign');
     fs.mkdirSync(path.join(foreign, 'sub'), { recursive: true });
@@ -111,6 +122,24 @@ const tests = {
     const refused = run('build.mjs', '--out', path.join(TOKENS, 'base'));
     assert.equal(refused.status, 2);
     assert.equal(fs.existsSync(path.join(TOKENS, 'base/core.tokens.json')), true);
+  },
+
+  'motion: the promoted springs equal src/motion.ts, and a changed spring fails naming it'() {
+    const real = run('motion.test.mjs');
+    assert.equal(real.status, 0, real.stdout + real.stderr);
+    const r = run('motion.test.mjs', '--source', seededSource('spring', 'base/motion.tokens.json', '"damping": 42.5', '"damping": 43'));
+    assert.equal(r.status, 1, r.stdout + r.stderr);
+    assert.match(r.stdout, /^FAIL  source: iris-open equals DEFAULT_OPEN_SPRING$/m);
+    assert.match(r.stdout, /^FAIL  web: irisOpen /m);
+    assert.doesNotMatch(r.stdout, /^FAIL  .*iris-close/m);
+  },
+
+  'hit target: a value under 44 fails the build, naming the token, and writes nothing'() {
+    const out = path.join(tmp, 'hit-out');
+    const r = run('build.mjs', '--source', seededSource('hit', 'base/scales.tokens.json', '"value": 44,', '"value": 40,'), '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^hit target too small: target\.hit-target-min \(brand orrery, mode light\) is 40px; the floor is 44px$/m);
+    assert.equal(fs.existsSync(out), false);
   },
 };
 

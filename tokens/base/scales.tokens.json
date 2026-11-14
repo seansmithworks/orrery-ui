@@ -1,0 +1,286 @@
+{
+  "$description": "Orrery system scales: type steps, grid, breakpoints, hit target and elevation level names. Outside the Artifact contract. Every value is taken from a product; sources are in docs/plans/orrery-scales-review.md.",
+  "type": {
+    "size": {
+      "10": {
+        "$value": {
+          "value": 10,
+          "unit": "px"
+        },
+        "$description": "Smallest interface text: Solar chips, counters and overlines."
+      },
+      "12": {
+        "$value": {
+          "value": 12,
+          "unit": "px"
+        },
+        "$description": "Small labels and status text (the site's eyebrow size)."
+      },
+      "20": {
+        "$value": {
+          "value": 20,
+          "unit": "px"
+        },
+        "$description": "Sub-heading; sits between body and headings."
+      },
+      "24": {
+        "$value": {
+          "value": 24,
+          "unit": "px"
+        },
+        "$description": "Small heading."
+      },
+      "28": {
+        "$value": {
+          "value": 28,
+          "unit": "px"
+        },
+        "$description": "Heading."
+      },
+      "64": {
+        "$value": {
+          "value": 64,
+          "unit": "px"
+        },
+        "$description": "Section hero."
+      },
+      "80": {
+        "$value": {
+          "value": 80,
+          "unit": "px"
+        },
+        "$description": "Page hero."
+      },
+      "96": {
+        "$value": {
+          "value": 96,
+          "unit": "px"
+        },
+        "$description": "Full-bleed hero."
+      }
+    },
+    "line-height": {
+      "10": {
+        "$value": 1.3
+      },
+      "11": {
+        "$value": 1.4
+      },
+      "12": {
+        "$value": 1.4
+      },
+      "13": {
+        "$value": 1.45
+      },
+      "14": {
+        "$value": 1.5
+      },
+      "16": {
+        "$value": 1.6
+      },
+      "17": {
+        "$value": 1.3
+      },
+      "20": {
+        "$value": 1.5
+      },
+      "22": {
+        "$value": 1.25
+      },
+      "24": {
+        "$value": 1.1
+      },
+      "25": {
+        "$value": 1.3
+      },
+      "28": {
+        "$value": 1.15
+      },
+      "30": {
+        "$value": 1
+      },
+      "44": {
+        "$value": 1.06
+      },
+      "64": {
+        "$value": 1.05
+      },
+      "80": {
+        "$value": 1.02
+      },
+      "96": {
+        "$value": 1.02
+      },
+      "$type": "number",
+      "$description": "Default line height for each font-size step, as a multiple of the size. A type role may set its own.",
+      "12-5": {
+        "$value": 1.5
+      }
+    }
+  },
+  "grid": {
+    "$description": "Page grid: 12 columns, three gutters by density, side margins that step up with the window, one max width.",
+    "$extensions": {
+      "com.orrery": {
+        "system": true
+      }
+    },
+    "grid-columns": {
+      "$type": "number",
+      "$value": 12,
+      "$description": "Columns in the page grid."
+    },
+    "grid-gutter-tight": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$description": "Gap between columns, tight density."
+    },
+    "grid-gutter-standard": {
+      "$type": "dimension",
+      "$value": {
+        "value": 24,
+        "unit": "px"
+      },
+      "$description": "Gap between columns, standard density."
+    },
+    "grid-gutter-roomy": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$description": "Gap between columns, roomy density."
+    },
+    "grid-margin-mobile": {
+      "$type": "dimension",
+      "$value": {
+        "value": 16,
+        "unit": "px"
+      },
+      "$description": "Page side margin below `breakpoint-480`."
+    },
+    "grid-margin-tablet": {
+      "$type": "dimension",
+      "$value": {
+        "value": 32,
+        "unit": "px"
+      },
+      "$description": "Page side margin from `breakpoint-480`."
+    },
+    "grid-margin-laptop": {
+      "$type": "dimension",
+      "$value": {
+        "value": 56,
+        "unit": "px"
+      },
+      "$description": "Page side margin from `breakpoint-1024`."
+    },
+    "grid-margin-desktop": {
+      "$type": "dimension",
+      "$value": {
+        "value": 80,
+        "unit": "px"
+      },
+      "$description": "Page side margin from `breakpoint-1280`."
+    },
+    "grid-margin-wide": {
+      "$type": "dimension",
+      "$value": {
+        "value": 96,
+        "unit": "px"
+      },
+      "$description": "Page side margin from `breakpoint-1600`."
+    },
+    "grid-max-width": {
+      "$type": "dimension",
+      "$value": {
+        "value": 1440,
+        "unit": "px"
+      },
+      "$description": "Widest the page grid grows."
+    }
+  },
+  "breakpoint": {
+    "$type": "dimension",
+    "$description": "Window widths where layout changes. Named by their value; each is a minimum width.",
+    "$extensions": {
+      "com.orrery": {
+        "system": true
+      }
+    },
+    "breakpoint-480": {
+      "$value": {
+        "value": 480,
+        "unit": "px"
+      },
+      "$description": "Large phones and up: side margins step to `grid-margin-tablet`."
+    },
+    "breakpoint-768": {
+      "$value": {
+        "value": 768,
+        "unit": "px"
+      },
+      "$description": "Tablets and up: the main switch away from the phone layout."
+    },
+    "breakpoint-1024": {
+      "$value": {
+        "value": 1024,
+        "unit": "px"
+      },
+      "$description": "Laptops and up: side margins step to `grid-margin-laptop`."
+    },
+    "breakpoint-1280": {
+      "$value": {
+        "value": 1280,
+        "unit": "px"
+      },
+      "$description": "Desktops and up: side margins step to `grid-margin-desktop`."
+    },
+    "breakpoint-1600": {
+      "$value": {
+        "value": 1600,
+        "unit": "px"
+      },
+      "$description": "Large monitors: side margins step to `grid-margin-wide`."
+    }
+  },
+  "target": {
+    "$type": "dimension",
+    "$description": "Touch and click targets.",
+    "$extensions": {
+      "com.orrery": {
+        "system": true
+      }
+    },
+    "hit-target-min": {
+      "$value": {
+        "value": 44,
+        "unit": "px"
+      },
+      "$description": "Smallest hit area for anything pressable, on each axis. A brand may raise it; the build refuses anything under 44."
+    }
+  },
+  "elevation": {
+    "$description": "Elevation levels: shared names for how far a surface sits above the page. How a level is drawn (fill only, fill plus hairline, or fill plus shadow) is the brand's choice, in the brand folder.",
+    "$extensions": {
+      "com.orrery": {
+        "system": true
+      }
+    },
+    "level-0": {
+      "$description": "The ground: the page itself."
+    },
+    "level-1": {
+      "$description": "A surface on the page: sheets, panels, cards."
+    },
+    "level-2": {
+      "$description": "A surface nested in a level-1 surface: insets, callouts, chips, control tracks."
+    },
+    "level-3": {
+      "$description": "A surface floating over the page: menus, popovers, the Iris sheet."
+    }
+  }
+}

@@ -235,3 +235,139 @@ public extension OrreryTokens {
         }
     }
 }
+
+// ---- Orrery system scales and motion (outside the Artifact contract).
+public struct OrreryTypeStep: Sendable {
+    public let size: CGFloat
+    /// Line height as a multiple of size.
+    public let lineHeight: CGFloat
+}
+
+public struct OrreryElevation: Sendable {
+    public enum Draw: Sendable { case fill, hairline }
+    public let draw: Draw
+    public let fill: Color
+    /// The hairline color; nil when the level is drawn as fill only.
+    public let line: Color?
+    public let lineWidth: CGFloat
+}
+
+public extension OrreryTokens.Orrery {
+    enum TypeSteps {
+        public static let step10 = OrreryTypeStep(size: 10, lineHeight: 1.3)
+        public static let step11 = OrreryTypeStep(size: 11, lineHeight: 1.4)
+        public static let step12 = OrreryTypeStep(size: 12, lineHeight: 1.4)
+        public static let step12_5 = OrreryTypeStep(size: 12.5, lineHeight: 1.5)
+        public static let step13 = OrreryTypeStep(size: 13, lineHeight: 1.45)
+        public static let step14 = OrreryTypeStep(size: 14, lineHeight: 1.5)
+        public static let step16 = OrreryTypeStep(size: 16, lineHeight: 1.6)
+        public static let step17 = OrreryTypeStep(size: 17, lineHeight: 1.3)
+        public static let step20 = OrreryTypeStep(size: 20, lineHeight: 1.5)
+        public static let step22 = OrreryTypeStep(size: 22, lineHeight: 1.25)
+        public static let step24 = OrreryTypeStep(size: 24, lineHeight: 1.1)
+        public static let step25 = OrreryTypeStep(size: 25, lineHeight: 1.3)
+        public static let step28 = OrreryTypeStep(size: 28, lineHeight: 1.15)
+        public static let step30 = OrreryTypeStep(size: 30, lineHeight: 1)
+        public static let step44 = OrreryTypeStep(size: 44, lineHeight: 1.06)
+        public static let step64 = OrreryTypeStep(size: 64, lineHeight: 1.05)
+        public static let step80 = OrreryTypeStep(size: 80, lineHeight: 1.02)
+        public static let step96 = OrreryTypeStep(size: 96, lineHeight: 1.02)
+    }
+    enum Grid {
+        public static let columns: Int = 12
+        public static let gutterTight: CGFloat = 16
+        public static let gutterStandard: CGFloat = 24
+        public static let gutterRoomy: CGFloat = 32
+        public static let marginMobile: CGFloat = 16
+        public static let marginTablet: CGFloat = 32
+        public static let marginLaptop: CGFloat = 56
+        public static let marginDesktop: CGFloat = 80
+        public static let marginWide: CGFloat = 96
+        public static let maxWidth: CGFloat = 1440
+    }
+    enum Breakpoints {
+        public static let min480: CGFloat = 480
+        public static let min768: CGFloat = 768
+        public static let min1024: CGFloat = 1024
+        public static let min1280: CGFloat = 1280
+        public static let min1600: CGFloat = 1600
+    }
+    enum HitTarget {
+        public static let min: CGFloat = 44
+    }
+    enum Elevation {
+        /// The ground: the page itself.
+        public static let level0 = OrreryElevation(draw: .fill, fill: Colors.page, line: nil, lineWidth: 0)
+        /// A surface on the page: sheets, panels, cards.
+        public static let level1 = OrreryElevation(draw: .hairline, fill: Colors.layer1, line: Colors.line, lineWidth: Border.lineWidth)
+        /// A surface nested in a level-1 surface: insets, callouts, chips, control tracks.
+        public static let level2 = OrreryElevation(draw: .hairline, fill: Colors.layer2, line: Colors.line, lineWidth: Border.lineWidth)
+    }
+    enum Springs {
+        public static let irisOpen = OrrerySpring(mass: 1.75, stiffness: 375, damping: 42.5)
+        public static let irisClose = OrrerySpring(mass: 1, stiffness: 375, damping: 32)
+        public static let irisSharedOpen = OrrerySpring(mass: 1, stiffness: 500, damping: 45)
+        public static let irisSharedClose = OrrerySpring(mass: 1, stiffness: 340, damping: 30)
+        public static let irisSnap = OrrerySpring(mass: 1, stiffness: 700, damping: 52)
+    }
+}
+
+public extension OrreryTokens.NorthwindKiln {
+    enum TypeSteps {
+        public static let step10 = OrreryTypeStep(size: 10, lineHeight: 1.3)
+        public static let step11 = OrreryTypeStep(size: 11, lineHeight: 1.4)
+        public static let step12 = OrreryTypeStep(size: 12, lineHeight: 1.4)
+        public static let step12_5 = OrreryTypeStep(size: 12.5, lineHeight: 1.5)
+        public static let step13 = OrreryTypeStep(size: 13, lineHeight: 1.45)
+        public static let step14 = OrreryTypeStep(size: 14, lineHeight: 1.5)
+        public static let step16 = OrreryTypeStep(size: 16, lineHeight: 1.6)
+        public static let step17 = OrreryTypeStep(size: 17, lineHeight: 1.3)
+        public static let step20 = OrreryTypeStep(size: 20, lineHeight: 1.5)
+        public static let step22 = OrreryTypeStep(size: 22, lineHeight: 1.25)
+        public static let step24 = OrreryTypeStep(size: 24, lineHeight: 1.1)
+        public static let step25 = OrreryTypeStep(size: 25, lineHeight: 1.3)
+        public static let step28 = OrreryTypeStep(size: 28, lineHeight: 1.15)
+        public static let step30 = OrreryTypeStep(size: 30, lineHeight: 1)
+        public static let step44 = OrreryTypeStep(size: 44, lineHeight: 1.06)
+        public static let step64 = OrreryTypeStep(size: 64, lineHeight: 1.05)
+        public static let step80 = OrreryTypeStep(size: 80, lineHeight: 1.02)
+        public static let step96 = OrreryTypeStep(size: 96, lineHeight: 1.02)
+    }
+    enum Grid {
+        public static let columns: Int = 12
+        public static let gutterTight: CGFloat = 16
+        public static let gutterStandard: CGFloat = 24
+        public static let gutterRoomy: CGFloat = 32
+        public static let marginMobile: CGFloat = 16
+        public static let marginTablet: CGFloat = 32
+        public static let marginLaptop: CGFloat = 56
+        public static let marginDesktop: CGFloat = 80
+        public static let marginWide: CGFloat = 96
+        public static let maxWidth: CGFloat = 1440
+    }
+    enum Breakpoints {
+        public static let min480: CGFloat = 480
+        public static let min768: CGFloat = 768
+        public static let min1024: CGFloat = 1024
+        public static let min1280: CGFloat = 1280
+        public static let min1600: CGFloat = 1600
+    }
+    enum HitTarget {
+        public static let min: CGFloat = 44
+    }
+    enum Elevation {
+        /// The ground: the page itself.
+        public static let level0 = OrreryElevation(draw: .fill, fill: Colors.page, line: nil, lineWidth: 0)
+        /// A surface on the page: sheets, panels, cards.
+        public static let level1 = OrreryElevation(draw: .hairline, fill: Colors.layer1, line: Colors.line, lineWidth: Border.lineWidth)
+        /// A surface nested in a level-1 surface: insets, callouts, chips, control tracks.
+        public static let level2 = OrreryElevation(draw: .hairline, fill: Colors.layer2, line: Colors.line, lineWidth: Border.lineWidth)
+    }
+    enum Springs {
+        public static let irisOpen = OrrerySpring(mass: 1.75, stiffness: 375, damping: 42.5)
+        public static let irisClose = OrrerySpring(mass: 1, stiffness: 375, damping: 32)
+        public static let irisSharedOpen = OrrerySpring(mass: 1, stiffness: 500, damping: 45)
+        public static let irisSharedClose = OrrerySpring(mass: 1, stiffness: 340, damping: 30)
+        public static let irisSnap = OrrerySpring(mass: 1, stiffness: 700, damping: 52)
+    }
+}

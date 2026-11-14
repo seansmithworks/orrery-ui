@@ -9,6 +9,7 @@ import { REPO, TOKENS, loadBrand, brandOverlay } from './lib/source.mjs';
 import { contract, css, swift } from './lib/emit.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { colorGate } from './lib/gates.mjs';
+import { systemGate, systemCss, systemSwift, motionModule } from './lib/system.mjs';
 
 const usage = (why) => {
   console.error(`tokens:build: ${why}\nusage: node tokens/build.mjs [--out <dir>]`);
@@ -58,6 +59,7 @@ async function build(brand, overlay) {
   for (const m of b.modes) {
     m.tokens = await resolve(brand, m);
     bad.push(...colorGate(m.tokens, `brand ${b.name}, mode ${m.id}`));
+    bad.push(...systemGate(m.tokens, m.doc, `brand ${b.name}, mode ${m.id}`));
   }
   if (bad.length) {
     console.error(bad.join('\n'));
@@ -74,6 +76,8 @@ const orrery = await build('orrery');
 const shape = contract(orrery.modes);
 write('tokens.json', JSON.stringify(shape, null, 2) + '\n');
 write(`css/${orrery.name}.css`, css(orrery.modes, orrery.name));
+write(`css/${orrery.name}.system.css`, systemCss(orrery.modes, orrery.name));
+write('js/orrery.motion.mjs', motionModule(orrery.modes[0].doc));
 
 const brands = [orrery];
 const clientDir = path.join(REPO, 'artifact/brands');
@@ -82,7 +86,7 @@ for (const f of fs.readdirSync(clientDir).filter((f) => f.endsWith('.tokens.json
   write(`css/${b.name}.css`, css(b.modes, b.name));
   brands.push(b);
 }
-write('swift/OrreryTokens.swift', swift(brands));
+write('swift/OrreryTokens.swift', swift(brands) + systemSwift(brands));
 
 // Everything built: now clear what is stale, then write. A failed build above leaves the folder untouched.
 if (fs.existsSync(out)) {
