@@ -88,6 +88,7 @@ export function ruleTests({ tmp, run }) {
         '2 literal-spacing literal 8px in padding: use var(--space-8)',
         '3 literal-spacing literal 10px in border-radius: use var(--radius-panel)',
       ]);
+      assert.deepEqual(hits('k.css', ['.a {', '  --icon-size: 16px;', '  --avatar: 40px;', '  --card-padding: 16px;', '}'].join('\n'), 'literal-spacing'), ['4 literal-spacing literal 16px in --card-padding: use var(--space-16)']);
       const more = ['.a {', '  margin: 0 -8px;', '  --pad: 16px;', '  inset: 4px;', '  top: -12px;', '  scroll-padding-top: 24px;', '  scroll-margin: 8px;', '  outline-offset: 4px;', '  --sheet-radius: 10px;', '  --size: 7px;', '}'].join('\n');
       assert.deepEqual(hits('k.css', more, 'literal-spacing'), [
         '2 literal-spacing literal -8px in margin: use var(--space-8)',
@@ -207,11 +208,11 @@ export function ruleTests({ tmp, run }) {
       // A gate that exists but is not wired in: a repo root whose build and check never mention it.
       const bare = path.join(tmp, 'unwired-root');
       fs.mkdirSync(path.join(bare, 'tokens/lib'), { recursive: true });
-      fs.writeFileSync(path.join(bare, 'tokens/build.mjs'), '// no gates\n');
+      fs.writeFileSync(path.join(bare, 'tokens/build.mjs'), '// systemGate(tokens) runs here\nconst note = "systemGate(x)";\n');
       fs.writeFileSync(path.join(bare, 'tokens/check.mjs'), '// no gates\n');
       fs.copyFileSync(path.join(TOKENS, 'lib/system.mjs'), path.join(bare, 'tokens/lib/system.mjs'));
       const unwired = registryProblems(withRule((l) => { l.length = 0; l.push(rules().find((r) => r.id === 'hit-target-token')); }), { root: bare, names: new Set(rules().map((r) => r.check?.test)), artifact: [] });
-      assert.deepEqual(unwired, ['rules registry: hit-target-token check ref does not resolve: systemGate is not used by tokens/build.mjs, tokens/check.mjs or a module they import']);
+      assert.deepEqual(unwired, ['rules registry: hit-target-token check ref does not resolve: systemGate is not called by tokens/build.mjs, tokens/check.mjs or a module they import']);
     },
 
     'registry: a reason with an unknown kind, an opt-in scope that does not say opt-in, and a scope on a rule with no check each fail'() {
@@ -220,6 +221,77 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(one('no-gradients', (r) => { r.reason = 'a bare string'; }), ['rules registry: no-gradients has no check and no reason; give it a check, or say why none is possible']);
       assert.deepEqual(one('hit-target-source', (r) => { r.statement = 'A control is at least 44px.'; }), ['rules registry: hit-target-source has scope opt-in, so its statement must say "opt-in"']);
       assert.deepEqual(one('no-gradients', (r) => { r.scope = 'opt-in'; r.statement = 'Opt-in nothing.'; }), ['rules registry: no-gradients has no check, so it has no scope']);
+    },
+
+    '[no-literal-spacing] orrery-allow: a marker with a reason excuses the next declaration only, a marker with no reason is a finding, and no marker flags'() {
+      const flagged = ['.a {', '  margin: 8px;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', flagged, 'literal-spacing'), ['2 literal-spacing literal 8px in margin: use var(--space-8)']);
+      const allowed = ['.a {', '  /* orrery-allow: literal-spacing optical nudge to match the icon */', '  margin: 8px;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', allowed, 'literal-spacing'), []);
+      const noReason = ['.a {', '  /* orrery-allow: literal-spacing */', '  margin: 8px;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', noReason, 'literal-spacing'), ['2 literal-spacing orrery-allow: literal-spacing needs a reason after the rule id', '3 literal-spacing literal 8px in margin: use var(--space-8)']);
+      const leak = ['.a {', '  /* orrery-allow: literal-spacing optical nudge */', '  margin: 8px;', '  padding: 8px;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', leak, 'literal-spacing'), ['4 literal-spacing literal 8px in padding: use var(--space-8)']);
+      const wrongRule = ['.a {', '  /* orrery-allow: literal-color not this rule */', '  margin: 8px;', '}'].join('\n');
+      assert.equal(hits('k.css', wrongRule, 'literal-spacing').length, 1);
+    },
+
+    '[no-literal-color] orrery-allow: a marker with a reason excuses the next declaration only, and with no reason it is a finding'() {
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color brand swatch shown as data */', '  background: #123456;', '  color: #fff;', '}'].join('\n'), 'literal-color'), ['4 literal-color literal color #fff in color: use a color role, with a hex only as a var() fallback']);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color */', '  background: #123456;', '}'].join('\n'), 'literal-color'), ['2 literal-color orrery-allow: literal-color needs a reason after the rule id', '3 literal-color literal color #123456 in background: use a color role, with a hex only as a var() fallback']);
+    },
+
+    '[inline-style-literal] orrery-allow: a marker with a reason excuses the next property only, and with no reason it is a finding'() {
+      const src = (marker) => ['export const A = () => (', '  <div', '    style={{', marker, '      color: "#fff",', '      background: "#000",', '    }}', '  />', ');'].join('\n');
+      const bare = hits('k.tsx', src('      // (no marker)'), 'inline-style-literal');
+      assert.equal(bare.length, 2);
+      const ok = hits('k.tsx', src('      // orrery-allow: inline-style-literal print stylesheet needs fixed ink'), 'inline-style-literal');
+      assert.deepEqual(ok, ['6 inline-style-literal inline style: literal color #000 in background: use a color role, with a hex only as a var() fallback']);
+      const none = hits('k.tsx', src('      // orrery-allow: inline-style-literal'), 'inline-style-literal');
+      assert.equal(none[0], '4 inline-style-literal orrery-allow: inline-style-literal needs a reason after the rule id');
+      assert.equal(none.length, 3);
+    },
+
+    '[inline-style-literal] attributes: style, animate, initial, exit, whileHover and whileTap are read, with ternary and && branches, template strings and ternary values; transition and style={identifier} are not'() {
+      const t = (jsx) => hits('k.tsx', `export const A = () => (${jsx});`, 'inline-style-literal');
+      assert.equal(t('<motion.div animate={{ backgroundColor: "#fff" }} />').length, 1);
+      assert.equal(t('<motion.div initial={{ opacity: 0, padding: 8 }} exit={{ color: "red" }} whileHover={{ margin: 16 }} whileTap={{ borderColor: "#000" }} />').length, 4);
+      assert.equal(t('<div style={on ? { color: "#fff" } : { padding: 8 }} />').length, 2);
+      assert.equal(t('<div style={on && { color: "#fff" }} />').length, 1);
+      assert.equal(t('<div style={{ color: on ? "#fff" : "var(--text)", padding: big ? 24 : 7 }} />').length, 2);
+      assert.equal(t('<div style={{ border: `1px solid #fff`, width: `${w}px` }} />').length, 1);
+      assert.deepEqual(t('<motion.div transition={{ duration: 8, color: "#fff" }} />'), []);
+      assert.deepEqual(t('<div style={styles} />'), []);
+      assert.deepEqual(t('<motion.div animate={{ transition: { padding: 8 }, x: 8 }} />'), []);
+    },
+
+    '[no-em-dashes] an apostrophe in JSX text is text, so a comment after it is still a comment, and a real string is still read'() {
+      const dash = '—';
+      assert.deepEqual(hits('k.tsx', `export const A = () => <p>Don't</p>; // note ${dash} fine`, 'em-dash'), []);
+      assert.deepEqual(hits('k.tsx', `export const A = () => <p>Can't won't</p>; /* ${dash} */\nconst b = 'x ${dash} y';`, 'em-dash').map((x) => x.slice(0, 12)), ['2 em-dash em']);
+    },
+
+    'source rules: the CLI counts allowed exceptions and lists each one with its reason'() {
+      const dir = path.join(tmp, 'cli-allow');
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, 'a.css'), '.a {\n  /* orrery-allow: literal-spacing optical nudge */\n  margin: 8px;\n}\n');
+      const r = spawnSync(process.execPath, [CLI, 'a.css'], { encoding: 'utf8', cwd: dir });
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /^a\.css:3 literal-spacing allowed: optical nudge$/m);
+      assert.match(r.stdout, /^rules:check: 1 path\(s\), no violations, 1 allowed exception\(s\)$/m);
+    },
+
+    'registry: a gate named only in a comment or a string, never called, fails'() {
+      const bare = path.join(tmp, 'mention-root');
+      fs.mkdirSync(path.join(bare, 'tokens/lib'), { recursive: true });
+      fs.writeFileSync(path.join(bare, 'tokens/build.mjs'), "import { systemGate } from './lib/system.mjs';\n// systemGate(tokens) is called here, honest\n/* systemGate( */\nconst s = 'systemGate(x)';\n");
+      fs.writeFileSync(path.join(bare, 'tokens/check.mjs'), '// nothing\n');
+      fs.copyFileSync(path.join(TOKENS, 'lib/system.mjs'), path.join(bare, 'tokens/lib/system.mjs'));
+      const ctx = { root: bare, names: new Set(rules().map((r) => r.check?.test)), artifact: [] };
+      const only = (l) => { l.length = 0; l.push(rules().find((r) => r.id === 'hit-target-token')); };
+      assert.deepEqual(registryProblems(withRule(only), ctx), ['rules registry: hit-target-token check ref does not resolve: systemGate is not called by tokens/build.mjs, tokens/check.mjs or a module they import']);
+      fs.appendFileSync(path.join(bare, 'tokens/build.mjs'), 'systemGate(tokens, doc, where);\n');
+      assert.deepEqual(registryProblems(withRule(only), ctx), []);
     },
   };
 }
