@@ -121,9 +121,14 @@ body {
   white-space: nowrap;
 }
 
+/* Fixed layout so the Button and IconButton tables share one column grid. */
 .spec-table {
   border-collapse: collapse;
+  table-layout: fixed;
   width: 100%;
+}
+.spec-table :is(thead td, tbody th) {
+  width: calc(var(--space-72) + var(--space-16));
 }
 .spec-table :is(th, td) {
   padding: var(--space-8) var(--space-8) var(--space-8) 0;
@@ -158,7 +163,7 @@ body {
 
 .spec-dialog-frame {
   position: relative;
-  min-height: calc(var(--space-72) * 4);
+  min-height: calc(var(--space-72) * 3 + var(--space-48));
   border: var(--line-width) solid var(--line);
   border-radius: var(--radius-panel);
   overflow: hidden;

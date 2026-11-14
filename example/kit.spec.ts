@@ -277,7 +277,7 @@ for (const id of PANELS) {
       await expect(trigger(p)).toBeFocused();
     });
 
-    test("Dialog: Space opens, an outside press closes", async ({ page }) => {
+    test("Dialog: Space opens on top of the page, an outside press closes", async ({ page }) => {
       const p = panel(page, id);
       await trigger(p).focus();
       await page.keyboard.press("Space");
@@ -285,6 +285,21 @@ for (const id of PANELS) {
         .getByRole("dialog", { name: "Rename orbit" })
         .and(page.locator(LIVE_POPUP));
       await expect(dialog).toBeVisible();
+      // Nothing on the page paints over the open popup: every corner and the centre hit it.
+      const covered = await dialog.evaluate((d) => {
+        const r = d.getBoundingClientRect();
+        const points = [
+          [r.left + 8, r.top + 8],
+          [r.right - 8, r.top + 8],
+          [r.left + 8, r.bottom - 8],
+          [r.right - 8, r.bottom - 8],
+          [r.left + r.width / 2, r.top + r.height / 2],
+        ];
+        return points.filter(
+          ([x, y]) => !d.contains(document.elementFromPoint(x, y)),
+        );
+      });
+      expect(covered).toEqual([]);
       await page.mouse.click(4, 4);
       await expect(dialog).toBeHidden();
     });
