@@ -87,3 +87,13 @@ Type steps, grid, breakpoints, the hit target, elevation levels and the dialled 
 - **Spring conversion, web**: a Motion transition object, `{ type: "spring", ...the stored numbers }`, which is what `mergeTransition` in `src/motion.ts` builds. A spring with no `mass` stays without one.
 - **Spring conversion, Swift**: `OrrerySpring(mass, stiffness, damping)`, whose `animation` is `Animation.interpolatingSpring(mass:stiffness:damping:initialVelocity: 0)`. A spring with no `mass` gets 1, Motion's default.
 - **No rule yet for duration and bounce springs**: all five promoted springs are stiffness, damping and mass. Motion and SwiftUI turn a duration and bounce into a spring differently, so that rule needs a measured comparison first; until then such a spring stops the build.
+
+## Iris bridge (opt-in)
+
+`generated/css/orrery.iris.css` makes Iris follow the roles. Nothing loads it for you, and a page without it renders exactly as before: `src/` is untouched and the roles are unprefixed (`--page`, `--text`), so Iris reading them on its own would re-skin any page that already uses those names.
+
+- **Opt in**: load `orrery.css`, then `orrery.iris.css`. In dark mode (`data-theme="dark"` or the system setting) the mapped variables follow the dark roles.
+- **Maps** (`bridges/iris.json`, role path to `--orrery-iris-*`): `color.page` to `surface-elevated`, `color.text` to `text`, `color.accent` to `accent`, `border.line-width` to `surface-border-width`, `radius.radius-round` to `trigger-radius`, `spacing.space-24` to `sheet-padding`. Only variables whose documented default equals the role's brand-orrery light value exactly.
+- **Does not map**: `surface` (`#fafafa`), `surface-border`, `sheet-radius`, both shadows, `z`, hover and press feel, highlight and press tint, sheet width. No role has their value, so they stay Iris's own literals, and dark with the bridge is only partly themed (`example/role-bridge.spec.ts`, `docs/plans/iris-roles-bridge/`).
+- **Gate**: the build stops when a mapped variable is not documented in `README.md`, a role does not exist, or a role's light value differs from Iris's literal in `src/styles.module.css`.
+- **Bridge alone** (without `orrery.css`) is safe: an undefined role leaves the variable invalid, so Iris's fallback applies. `npm run test:bridge` proves it.
