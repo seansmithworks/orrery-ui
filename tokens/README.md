@@ -14,6 +14,18 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 - **`generated/css/<brand>.css`**: the same custom properties, in the same selectors, that `head.py` writes for that brand.
 - **`generated/swift/OrreryTokens.swift`**: one file, one namespace per brand: light and dark colors, spacing, radius, border, type styles, springs.
 
+## Gates
+
+`npm run tokens:build` stops on invalid DTCG (Terrazzo) and on a color whose `hex` and `components` disagree. It writes only after everything built, and removes anything else from the output folder; `--out` must be a folder outside the repo.
+
+`npm run tokens:check` rebuilds into a temp folder and fails, with one line per gate, when:
+
+- **drift**: the rebuild differs from the committed `generated/`.
+- **snapshot**: the generated `tokens.json` does not deep-equal `artifact/snapshot/tokens.json`. The line names the first differing key.
+- **head.py**: a generated CSS file's custom properties differ from `artifact/head.py`'s output, with no brand and for each client brand. The line names the first differing declaration. `bundle.css` is outside the comparison.
+
+`node tokens/test.mjs` proves each gate passes on the real tree and fails on a seeded input. CI runs all three.
+
 ## Build tool: Terrazzo 2 (`@terrazzo/parser`)
 
 Both tools were run end to end (commit `2fc0538` has both adapters). They produced byte-identical outputs, and neither one's built-in formats could produce any of the three outputs:
