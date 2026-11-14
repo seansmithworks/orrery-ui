@@ -185,6 +185,11 @@ async function collect(page: Page, geometry: boolean): Promise<Snapshot> {
         "[data-orrery-iris-root], [data-orrery-iris-part], [data-orrery-iris-highlight]",
       );
       const wanted = geometry ? [...props, ...geomProps] : props;
+      // Without geometry (S4) also drop what JS derives from the box: the
+      // trigger-root position transform and the shadow layer radii.
+      const skip = (p: string, part: string) =>
+        !geometry &&
+        (p === "transform" || (part === "shadow" && p.endsWith("-radius")));
       for (const el of els) {
         const rootEl = el.closest("[data-orrery-iris-root]");
         const ri = rootEl ? rootEls.indexOf(rootEl) : -1;
@@ -197,7 +202,8 @@ async function collect(page: Page, geometry: boolean): Promise<Snapshot> {
         const key = `${base}#${n}`;
         const cs = getComputedStyle(el);
         const vals: Record<string, string> = {};
-        for (const p of wanted) vals[p] = norm(cs.getPropertyValue(p));
+        for (const p of wanted)
+          if (!skip(p, part)) vals[p] = norm(cs.getPropertyValue(p));
         for (const v of vars) {
           const val = cs.getPropertyValue(v).trim();
           if (val !== "") vals[v] = norm(val);
@@ -210,7 +216,8 @@ async function collect(page: Page, geometry: boolean): Promise<Snapshot> {
           const content = ps.getPropertyValue("content");
           if (content === "none" || content === "normal") continue;
           const pv: Record<string, string> = { content };
-          for (const p of wanted) pv[p] = norm(ps.getPropertyValue(p));
+          for (const p of wanted)
+            if (!skip(p, part)) pv[p] = norm(ps.getPropertyValue(p));
           out[`${key}${pseudo}`] = pv;
         }
       }
