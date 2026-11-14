@@ -14,6 +14,7 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 - **`generated/css/<brand>.css`**: the same custom properties, in the same selectors, that `head.py` writes for that brand.
 - **`generated/swift/OrreryTokens.swift`**: one file, one namespace per brand: light and dark colors, spacing, radius, border, type styles, springs.
 - **`generated/css/orrery.system.css`**, **`generated/js/orrery.motion.mjs`** and the `TypeSteps`, `Grid`, `Breakpoints`, `HitTarget`, `Elevation` and `Springs` enums in the Swift file: the system scales and motion below. They are outside the Artifact contract, so `tokens.json` and the two Artifact CSS files never carry them.
+- **`generated/checks.md`**: the checks report (see Brand schema and checks).
 
 ## Gates
 
@@ -28,6 +29,20 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 `node tokens/test.mjs` proves each gate passes on the real tree and fails on a seeded input. In CI the `tokens` job runs `tokens:build` and then fails if `git status --porcelain -- tokens/generated` is non-empty, which is the step that catches uncommitted drift (the build has just rewritten the folder, so `tokens:check`'s drift comparison cannot); `tokens:check` then runs the snapshot and head.py gates.
 
 Not covered: the Swift output and the brand contract have only the drift gate. `color-scheme`, the body rule and the type classes in head.py's output are outside the head.py comparison.
+
+## Brand schema and checks
+
+`npm run tokens:build` also stops, one line per failure, on the four checks below, so `tokens:check` and the CI `tokens` job run them too. The data is in `checks/`; the code is `lib/checks.mjs`; the tests are `test-checks.mjs` (run by `test.mjs`).
+
+- **Brand schema** (`checks/brand.schema.json`): one schema for every folder under `brands/`. A brand's `brand.tokens.json` carries, under `$extensions.com.orrery`, its `name`, its `modes`, and optionally `unlocked` and `optOut`.
+- **Lock list**: `unlocked` lists the paths the brand may set: one path (`color.accent`), a group (`color.*`) or everything (`*`). Every other path is locked. A brand with no `unlocked` inherits `defaultUnlocked` from the schema: `color.accent`, `color.on-accent`, `font.sans`, the three slots a client-document brand has. Brand orrery unlocks everything. Fails with `lock: brand <name> sets locked path <path> in <file>`.
+- **Client-document brands** stay in `artifact/brands/*.tokens.json`, in the format `artifact/head.py --brand` validates. head.py enforces the same three slots there and is still that format's only validator; the build does not re-check those files. They are layers on brand orrery, so they inherit its opt-outs and cannot declare their own.
+- **Opt-outs**: entries in `optOut`, each with a non-empty `reason`. `{ "role": "color.x", "reason" }` drops a required role from that brand. `{ "check": "contrast", "role", "surface", "mode", "reason" }` lets one pair through (`mode` is optional; leave out `role` and `surface` to skip the whole check). An entry with no reason, or one that names an unknown check, pair or role, fails with `opt-out: brand <name>: opt-out <n> (...)`.
+- **Required roles**: every leaf of `base/roles.tokens.json`; that file is the list. Checked on each mode after merging base, brand and mode. Fails with `required role: brand <name>, mode <mode>: <role> is missing`.
+- **Contrast** (`checks/contrast.pairs.json`): the one list of pairs (`role`, `surface`, `kind`), each taken from the role's usage note. WCAG 2.2 AA: `text` 4.5:1, `ui` 3:1. Checked for every pair, brand and mode. Fails with `contrast: brand <name>, mode <mode>: <role> on <surface> is <measured>:1, needs <required>:1`.
+- **Report**: `generated/checks.md` lists every opt-out in force and every pair's measured ratio per brand and mode.
+
+Not in the pair list: `line` (the hairline only separates) and the `scale-1` to `scale-5` fills against the page (data graphics, not controls). Any folder under `brands/` other than `orrery` is checked but not yet written to `generated/`.
 
 ## Build tool: Terrazzo 2 (`@terrazzo/parser`)
 

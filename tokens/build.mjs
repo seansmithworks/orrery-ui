@@ -10,6 +10,7 @@ import { contract, css, swift } from './lib/emit.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { colorGate } from './lib/gates.mjs';
 import { systemGate, systemCss, systemSwift, motionModule } from './lib/system.mjs';
+import { checker } from './lib/checks.mjs';
 
 const usage = (why) => {
   console.error(`tokens:build: ${why}\nusage: node tokens/build.mjs [--out <dir>]`);
@@ -53,12 +54,19 @@ if (realOut !== real(generated)) {
   if (fs.existsSync(realOut) && fs.readdirSync(realOut).length && !fs.existsSync(path.join(realOut, MARKER))) refuse(`--out ${out} is not empty and is not a previous token build; use a missing or empty folder`);
 }
 
+const checks = checker(source);
+const locked = checks.locks();
+if (locked.length) {
+  console.error(locked.join('\n'));
+  process.exit(1);
+}
+
 async function build(brand, overlay) {
   const b = loadBrand(brand, overlay, source);
-  const bad = [];
-  for (const m of b.modes) {
+  const bad = checks.source(b);
+  for (const m of bad.length ? [] : b.modes) {
     m.tokens = await resolve(brand, m);
-    bad.push(...colorGate(m.tokens, `brand ${b.name}, mode ${m.id}`));
+    bad.push(...colorGate(m.tokens, `brand ${b.name}, mode ${m.id}`), ...checks.contrast(b, m));
     bad.push(...systemGate(m.tokens, m.doc, `brand ${b.name}, mode ${m.id}`));
   }
   if (bad.length) {
@@ -87,6 +95,9 @@ for (const f of fs.readdirSync(clientDir).filter((f) => f.endsWith('.tokens.json
   brands.push(b);
 }
 write('swift/OrreryTokens.swift', swift(brands) + systemSwift(brands));
+// Any other brand folder is checked, not yet emitted.
+for (const name of checks.brands) if (name !== 'orrery') await build(name);
+write('checks.md', checks.report());
 
 // Everything built: now clear what is stale, then write. A failed build above leaves the folder untouched.
 if (fs.existsSync(out)) {
