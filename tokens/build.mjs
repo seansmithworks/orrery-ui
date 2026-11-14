@@ -2,7 +2,7 @@
 // npm run tokens:build [-- --out <dir>]
 // Source: tokens/ (DTCG). Outputs: the Artifact contract tokens.json, CSS per brand, one Swift file.
 // Client brands (artifact/brands/*.tokens.json) pass through head.py, the single brand gate.
-// The output folder holds only what this build wrote: anything else in it is removed.
+// The build prunes its output folder, so it only writes into a folder that is missing, empty, or a previous build (marked by MARKER).
 import fs from 'node:fs';
 import path from 'node:path';
 import { REPO, TOKENS, loadBrand, brandOverlay } from './lib/source.mjs';
@@ -14,6 +14,10 @@ const usage = (why) => {
   console.error(`tokens:build: ${why}\nusage: node tokens/build.mjs [--out <dir>]`);
   process.exit(2);
 };
+const refuse = (why) => {
+  console.error(`tokens:build: ${why}`);
+  process.exit(2);
+};
 const args = process.argv.slice(2);
 const generated = path.join(TOKENS, 'generated');
 let out = generated;
@@ -22,9 +26,24 @@ if (args.includes('--out')) {
   if (v === undefined || v.startsWith('--')) usage('--out needs a folder');
   out = path.resolve(v);
 }
-// The build empties its output folder, so the folder must not hold the repo or sit among its files.
+// Resolve symlinks so a link cannot hide where the folder really is; a missing tail is resolved against its nearest existing parent.
+const real = (p) => {
+  const tail = [];
+  let cur = p;
+  while (!fs.existsSync(cur)) {
+    tail.unshift(path.basename(cur));
+    cur = path.dirname(cur);
+  }
+  return path.join(fs.realpathSync(cur), ...tail);
+};
 const inside = (parent, child) => !path.relative(parent, child).startsWith('..') && !path.isAbsolute(path.relative(parent, child));
-if (out !== generated && (inside(out, REPO) || inside(REPO, out))) usage(`--out ${out} overlaps the repo; use tokens/generated or a folder outside the repo`);
+const MARKER = '.orrery-tokens-build';
+const realOut = real(out);
+if (realOut !== real(generated)) {
+  if (inside(realOut, real(REPO)) || inside(real(REPO), realOut)) refuse(`--out ${out} overlaps the repo; use tokens/generated or a folder outside the repo`);
+  // Only a missing, empty, or previously built folder may be pruned; anything else is the user's.
+  if (fs.existsSync(realOut) && fs.readdirSync(realOut).length && !fs.existsSync(path.join(realOut, MARKER))) refuse(`--out ${out} is not empty and is not a previous token build; use a missing or empty folder`);
+}
 
 async function build(brand, overlay) {
   const b = loadBrand(brand, overlay);
@@ -42,6 +61,7 @@ async function build(brand, overlay) {
 
 const files = new Map();
 const write = (rel, text) => files.set(rel, text);
+write(MARKER, 'Written by npm run tokens:build. A folder with this file may be pruned by the next build.\n');
 
 const orrery = await build('orrery');
 const shape = contract(orrery.modes);

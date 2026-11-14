@@ -16,7 +16,7 @@ The DTCG 2025.10 source for every Orrery value. `npm run tokens:build` writes `g
 
 ## Gates
 
-`npm run tokens:build` stops on invalid DTCG (Terrazzo) and on a color whose `hex` and `components` disagree. It writes only after everything built, and removes anything else from the output folder; `--out` must be a folder outside the repo.
+`npm run tokens:build` stops on invalid DTCG (Terrazzo) and on a color whose `hex` and `components` disagree. It writes only after everything built, and prunes stale files only from a folder that is missing, empty, or a previous build (it holds a `.orrery-tokens-build` marker, which the build writes). Any other non-empty folder is refused with exit 2 and left untouched; `--out` must be outside the repo.
 
 `npm run tokens:check` rebuilds into a temp folder and fails, with one line per gate, when:
 

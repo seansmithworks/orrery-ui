@@ -76,15 +76,23 @@ const tests = {
     assert.match(r.stderr, /^usage: node tokens\/build\.mjs \[--out <dir>\]$/m);
   },
 
-  'build: stale files in the output folder are removed, and an --out inside the repo is refused'() {
+  'build: stale files in a previous build are removed, a foreign folder is refused untouched, and an --out inside the repo is refused'() {
     const out = path.join(tmp, 'out');
+    assert.equal(run('build.mjs', '--out', out).status, 0);
     fs.mkdirSync(path.join(out, 'css/old'), { recursive: true });
     for (const f of ['stale.txt', 'css/retired-brand.css', 'css/old/deep.css']) fs.writeFileSync(path.join(out, f), 'stale');
     const r = run('build.mjs', '--out', out);
     assert.equal(r.status, 0, r.stderr);
     const files = fs.readdirSync(out, { recursive: true }).filter((f) => fs.statSync(path.join(out, f)).isFile()).sort();
-    assert.deepEqual(files, ['css/northwind-kiln.css', 'css/orrery.css', 'swift/OrreryTokens.swift', 'tokens.json']);
+    assert.deepEqual(files, ['.orrery-tokens-build', 'css/northwind-kiln.css', 'css/orrery.css', 'swift/OrreryTokens.swift', 'tokens.json']);
     assert.equal(fs.existsSync(path.join(out, 'css/old')), false);
+    const foreign = path.join(tmp, 'foreign');
+    fs.mkdirSync(path.join(foreign, 'sub'), { recursive: true });
+    fs.writeFileSync(path.join(foreign, 'notes.txt'), 'mine');
+    fs.writeFileSync(path.join(foreign, 'sub/a.md'), 'mine');
+    const kept = run('build.mjs', '--out', foreign);
+    assert.equal(kept.status, 2);
+    assert.deepEqual(fs.readdirSync(foreign, { recursive: true }).sort(), ['notes.txt', 'sub', 'sub/a.md']);
     const refused = run('build.mjs', '--out', path.join(TOKENS, 'base'));
     assert.equal(refused.status, 2);
     assert.equal(fs.existsSync(path.join(TOKENS, 'base/core.tokens.json')), true);
