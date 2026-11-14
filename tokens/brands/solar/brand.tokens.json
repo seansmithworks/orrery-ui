@@ -1,0 +1,30 @@
+{
+  "$description": "Brand solar: the fixed dark look of seansmithdesign.com/solar. Values are read from that repo (src/solar/look/palette.ts SOLAR_CHROME_VARS, src/solar/look/base/colors.ts, src/solar/look/base/fonts.ts, src/solar/look/base/base.module.css). Roles the site has no value for (layer-2, line-dashed, the scale ramp and its inks, shadow-lift, the mono fallback chain) take brand orrery's dark value as gaps until the site defines them. Fixed dark: one mode.",
+  "$extensions": {
+    "com.orrery": {
+      "name": "solar",
+      "modes": ["dark"],
+      "unlocked": ["color.*", "shadow.*", "font.*", "elevation.*"]
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "$extensions": {
+      "com.orrery": {
+        "fonts": []
+      }
+    },
+    "sans": {
+      "$value": ["Space Grotesk", "ui-sans-serif", "system-ui", "sans-serif"]
+    },
+    "mono": {
+      "$value": [
+        "JetBrains Mono",
+        "ui-monospace",
+        "SF Mono",
+        "Menlo",
+        "monospace"
+      ]
+    }
+  }
+}

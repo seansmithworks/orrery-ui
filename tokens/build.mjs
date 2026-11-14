@@ -95,8 +95,14 @@ for (const f of fs.readdirSync(clientDir).filter((f) => f.endsWith('.tokens.json
   brands.push(b);
 }
 write('swift/OrreryTokens.swift', swift(brands) + systemSwift(brands));
-// Any other brand folder is checked, not yet emitted.
-for (const name of checks.brands) if (name !== 'orrery') await build(name);
+// Any other brand folder: checked, then written as its own CSS and system CSS only. It stays out of
+// the Artifact contract (tokens.json, head.py) and out of the Swift file, which needs a light and a dark mode.
+for (const name of checks.brands) {
+  if (name === 'orrery') continue;
+  const b = await build(name);
+  write(`css/${b.name}.css`, css(b.modes, b.name));
+  write(`css/${b.name}.system.css`, systemCss(b.modes, b.name));
+}
 write('checks.md', checks.report());
 
 // Everything built: now clear what is stale, then write. A failed build above leaves the folder untouched.

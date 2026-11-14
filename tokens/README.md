@@ -42,7 +42,9 @@ Not covered: the Swift output and the brand contract have only the drift gate. `
 - **Contrast** (`checks/contrast.pairs.json`): the one list of pairs (`role`, `surface`, `kind`), each taken from the role's usage note. WCAG 2.2 AA: `text` 4.5:1, `ui` 3:1. Checked for every pair, brand and mode. Fails with `contrast: brand <name>, mode <mode>: <role> on <surface> is <measured>:1, needs <required>:1`.
 - **Report**: `generated/checks.md` lists every opt-out in force and every pair's measured ratio per brand and mode.
 
-Not in the pair list: `line` (the hairline only separates) and the `scale-1` to `scale-5` fills against the page (data graphics, not controls). Any folder under `brands/` other than `orrery` is checked but not yet written to `generated/`.
+Not in the pair list: `line` (the hairline only separates) and the `scale-1` to `scale-5` fills against the page (data graphics, not controls). Any folder under `brands/` other than `orrery` is checked, then written as `generated/css/<brand>.css` and `generated/css/<brand>.system.css` only: it is outside the Artifact contract and the Swift file.
+
+- **`brands/solar/`**: the fixed dark look of seansmithdesign.com/solar (one mode, `dark`). Its own values come from that site's `src/solar/look/`; the roles the site has no value for carry brand orrery's dark value.
 
 ## Build tool: Terrazzo 2 (`@terrazzo/parser`)
 
