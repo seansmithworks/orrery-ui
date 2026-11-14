@@ -58,6 +58,7 @@ export default defineConfig({
         modal: resolve(__dirname, "fixtures/modal.html"),
         labelMismatch: resolve(__dirname, "fixtures/label-mismatch.html"),
         anchorKeyboard: resolve(__dirname, "fixtures/anchor-keyboard.html"),
+        roleFallbacks: resolve(__dirname, "fixtures/role-fallbacks.html"),
       },
     },
   },
