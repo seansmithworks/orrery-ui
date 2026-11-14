@@ -87,3 +87,13 @@ Type steps, grid, breakpoints, the hit target, elevation levels and the dialled 
 - **Spring conversion, web**: a Motion transition object, `{ type: "spring", ...the stored numbers }`, which is what `mergeTransition` in `src/motion.ts` builds. A spring with no `mass` stays without one.
 - **Spring conversion, Swift**: `OrrerySpring(mass, stiffness, damping)`, whose `animation` is `Animation.interpolatingSpring(mass:stiffness:damping:initialVelocity: 0)`. A spring with no `mass` gets 1, Motion's default.
 - **No rule yet for duration and bounce springs**: all five promoted springs are stiffness, damping and mass. Motion and SwiftUI turn a duration and bounce into a spring differently, so that rule needs a measured comparison first; until then such a spring stops the build.
+
+## Rules
+
+`rules/rules.json` is the one list of the system's floors and rules. Read it there; it is not repeated in prose. Each rule has an `id`, a `layer` (`floor` or `rule`), a one-sentence `statement`, what it `applies` to (`tokens`, `source`, `page`), and either a `check` or a `reason` no check is possible.
+
+- **Add a rule**: append it to `rules.json`. Pick the check kind: `token-gate` (`ref` is `<file>#<export>` or `<file>#<export>.<method>` in `lib/`, plus the name of its seeded-failure test), `source-check` (`ref` is a key of `CHECKS` in `rules/check-source.mjs`, plus its test), `artifact-checker` (`ref` is a rule id in `artifact/check/check.mjs`; it must have a mutation in `artifact/check/test.mjs`) or `test` (`ref` is a test file). With no check, set `"check": null` and write the `reason`.
+- **Write the seeded-failure test** in `rules/test-rules.mjs` (or `test.mjs`): a bad input that fails with the message, and a good one that passes.
+- **The self-check** runs inside `npm run tokens:check`. It fails on a rule with no check and no reason, a ref that does not resolve, a duplicate id, or a check no named test exercises.
+- **Source rules**: `npm run rules:check -- [--only <rule-id>,...] <file-or-dir>...` prints `file:line rule-id message` and exits 1 on any. It is plain text scanning, not a parser. `literal-color` and `literal-spacing` read CSS (a color is allowed only as a `var()` fallback); `em-dash` reads CSS, JS, TS and HTML outside comments; `control-min-size` reads only rules marked `/* orrery-control */`. The kit is checked by passing its path.
+- **Reduced motion**: each spring in `base/motion.tokens.json` carries `$reduced`: `opacity`, `none` or `instant`. The build stops, naming the spring, when one is missing. The value is a declaration for components; it changes no emitted number.

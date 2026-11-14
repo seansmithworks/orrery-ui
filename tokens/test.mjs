@@ -9,6 +9,7 @@ import { spawnSync } from 'node:child_process';
 import { REPO, TOKENS } from './lib/source.mjs';
 import { colorGate, snapshotGate, cssGate, headOutput } from './lib/gates.mjs';
 import { checkTests } from './test-checks.mjs';
+import { ruleTests } from './rules/test-rules.mjs';
 
 const SNAPSHOT = path.join(REPO, 'artifact/snapshot');
 const BRAND = path.join(REPO, 'artifact/brands/example.tokens.json');
@@ -168,6 +169,7 @@ const tests = {
   },
 
   ...checkTests({ tmp, run }),
+  ...ruleTests({ tmp, run }),
 };
 
 let failed = 0;

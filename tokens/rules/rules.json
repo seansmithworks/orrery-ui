@@ -1,0 +1,331 @@
+[
+  {
+    "id": "contrast-aa-tokens",
+    "layer": "floor",
+    "statement": "Every text and UI color pair the system declares meets WCAG 2.2 AA in every brand and mode.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/checks.mjs#checker.contrast",
+      "test": "contrast: a text role set too close to its surface fails, naming brand, mode, both roles and both ratios, and writes nothing"
+    }
+  },
+  {
+    "id": "contrast-aa-page",
+    "layer": "floor",
+    "statement": "Text on an Artifact page meets 4.5:1, or 3:1 when large, with see-through layers composited.",
+    "applies": [
+      "page"
+    ],
+    "check": {
+      "kind": "artifact-checker",
+      "ref": "contrast"
+    }
+  },
+  {
+    "id": "hit-target-token",
+    "layer": "floor",
+    "statement": "The hit target token is at least 44px in every brand and mode.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/system.mjs#systemGate",
+      "test": "hit target: a value under 44 fails the build, naming the token, and writes nothing"
+    }
+  },
+  {
+    "id": "hit-target-source",
+    "layer": "floor",
+    "statement": "A control that sets a pixel width or height in CSS sets at least 44px.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "source-check",
+      "ref": "control-min-size",
+      "test": "source rules: control-min-size fails a marked control under 44px, naming the property and selector, and passes an unmarked rule and a 44px control"
+    }
+  },
+  {
+    "id": "hit-target-rendered",
+    "layer": "floor",
+    "statement": "Every rendered interactive element has a hit area of at least 44px on each axis.",
+    "applies": [
+      "page",
+      "source"
+    ],
+    "check": null,
+    "reason": "A hit area is the painted box plus any pseudo-element or padding that extends it, which only a rendered component shows; the Phase 2 component tests measure it per kit component."
+  },
+  {
+    "id": "focus-ring-contrast",
+    "layer": "floor",
+    "statement": "The focus ring color meets 3:1 against every surface it can sit on, in every brand and mode.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/checks.mjs#checker.contrast",
+      "test": "focus ring: an accent too close to the page fails, naming the ring role, the surface and both ratios, and writes nothing"
+    }
+  },
+  {
+    "id": "focus-ring-contrast-page",
+    "layer": "floor",
+    "statement": "Each focus ring on an Artifact page meets 3:1 against the surface around it.",
+    "applies": [
+      "page"
+    ],
+    "check": {
+      "kind": "artifact-checker",
+      "ref": "contrast"
+    }
+  },
+  {
+    "id": "focus-ring-drawn",
+    "layer": "floor",
+    "statement": "Every focusable element shows a visible focus ring.",
+    "applies": [
+      "page",
+      "source"
+    ],
+    "check": null,
+    "reason": "The artifact checker only warns when a tabbed element has no outline (artifact/check/check.mjs, 'no visible focus outline'), and a source scan cannot know which elements are focusable or what a :focus-visible rule resolves to; it needs a rendered kit component or a stricter page checker."
+  },
+  {
+    "id": "reduced-motion-form",
+    "layer": "floor",
+    "statement": "Every motion role declares how it behaves under reduced motion: opacity, none or instant.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/system.mjs#reducedMotionGate",
+      "test": "reduced motion: a spring with no $reduced fails the build, naming the spring, and writes nothing"
+    }
+  },
+  {
+    "id": "reduced-motion-implemented",
+    "layer": "floor",
+    "statement": "A component honors the reduced-motion form its motion role declares.",
+    "applies": [
+      "source",
+      "page"
+    ],
+    "check": null,
+    "reason": "Whether a component swaps its spring for the declared form is behavior, not text; it needs a rendered component under prefers-reduced-motion, which the Phase 2 component tests can assert."
+  },
+  {
+    "id": "no-nested-scrolls",
+    "layer": "rule",
+    "statement": "A scrolling region does not sit inside another scrolling region.",
+    "applies": [
+      "page"
+    ],
+    "check": null,
+    "reason": "Needs the computed overflow of every ancestor in a rendered page; artifact/check has no such rule and a page checker is not being built here."
+  },
+  {
+    "id": "no-eyebrow-kickers",
+    "layer": "rule",
+    "statement": "Nothing sits above a title or heading only to categorize, date or restate it.",
+    "applies": [
+      "page"
+    ],
+    "check": null,
+    "reason": "Whether a line is a kicker is a judgement about its role beside a heading, in a rendered page; artifact/SKILL.md states the rule but artifact/check has no rule for it."
+  },
+  {
+    "id": "no-em-dashes",
+    "layer": "rule",
+    "statement": "User-facing text and markup contain no em dash.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "source-check",
+      "ref": "em-dash",
+      "test": "source rules: em-dash fails an em dash, its entity and its escapes, naming file, line and rule, and passes a comment and clean text"
+    }
+  },
+  {
+    "id": "status-is-a-word",
+    "layer": "rule",
+    "statement": "Status is written as a word, never carried by color or an icon alone.",
+    "applies": [
+      "page"
+    ],
+    "check": null,
+    "reason": "Detecting a status carried by color or an icon needs the rendered meaning of an element; artifact/check bans status hue through token-colors and icons through no-emoji-icons but cannot see a status that has no word."
+  },
+  {
+    "id": "accent-placement",
+    "layer": "rule",
+    "statement": "The accent color appears only on the primary button fill and the focus ring.",
+    "applies": [
+      "page"
+    ],
+    "check": {
+      "kind": "artifact-checker",
+      "ref": "token-colors"
+    }
+  },
+  {
+    "id": "no-literal-color",
+    "layer": "rule",
+    "statement": "A color in CSS source is a var(); a hex or color function appears only as a var() fallback, so styles.module.css never gains a bare hex.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "source-check",
+      "ref": "literal-color",
+      "test": "source rules: literal-color fails a bare hex, color function and named color, naming file, line and property, and passes a var() fallback"
+    }
+  },
+  {
+    "id": "no-literal-spacing",
+    "layer": "rule",
+    "statement": "Kit CSS takes spacing and radius from the scale tokens, not a pixel literal that a token already holds.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "source-check",
+      "ref": "literal-spacing",
+      "test": "source rules: literal-spacing fails a pixel value a space or radius token holds, naming the token to use, and passes a var() and an off-scale value"
+    }
+  },
+  {
+    "id": "no-gradients",
+    "layer": "rule",
+    "statement": "No gradients or decorative color inside the package.",
+    "applies": [
+      "source"
+    ],
+    "check": null,
+    "reason": "conflicts with the trigger highlight; wording needs Sean's call"
+  },
+  {
+    "id": "required-roles",
+    "layer": "rule",
+    "statement": "Every brand and mode sets every role base/roles.tokens.json requires, or opts out of it with a reason.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/checks.mjs#checker.source",
+      "test": "required roles: a role missing from one mode fails, naming brand, mode and role"
+    }
+  },
+  {
+    "id": "brand-lock",
+    "layer": "rule",
+    "statement": "A brand sets only the token paths its lock list unlocks.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/checks.mjs#checker.locks",
+      "test": "lock list: a brand that inherits the default list and sets a locked path fails, naming brand and path"
+    }
+  },
+  {
+    "id": "opt-out-reasons",
+    "layer": "rule",
+    "statement": "An opt-out names a known check, pair or role and gives a reason.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/checks.mjs#readOptOuts",
+      "test": "opt-out: one with no reason fails, naming the brand and the opt-out"
+    }
+  },
+  {
+    "id": "generated-matches-source",
+    "layer": "rule",
+    "statement": "tokens/generated/ equals a fresh build of the token source.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/gates.mjs#driftGate",
+      "test": "drift: a generated file that differs, is missing or is stale fails, naming the file"
+    }
+  },
+  {
+    "id": "hex-matches-components",
+    "layer": "rule",
+    "statement": "A color's hex equals its components.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/gates.mjs#colorGate",
+      "test": "color gate: hex and components that disagree fail, naming the token"
+    }
+  },
+  {
+    "id": "artifact-contract-matches",
+    "layer": "rule",
+    "statement": "The generated Artifact contract equals artifact/snapshot/tokens.json.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/gates.mjs#snapshotGate",
+      "test": "snapshot gate: a changed snapshot value fails, naming the key"
+    }
+  },
+  {
+    "id": "head-py-matches",
+    "layer": "rule",
+    "statement": "The generated CSS declares the same tokens as artifact/head.py, for no brand and for each client brand.",
+    "applies": [
+      "tokens"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/gates.mjs#cssGate",
+      "test": "head.py gate alone: generated CSS that drifts from head.py fails while the snapshot gate passes"
+    }
+  },
+  {
+    "id": "springs-match-src",
+    "layer": "rule",
+    "statement": "Each promoted spring equals its constant in src/motion.ts.",
+    "applies": [
+      "tokens",
+      "source"
+    ],
+    "check": {
+      "kind": "test",
+      "ref": "tokens/motion.test.mjs"
+    }
+  },
+  {
+    "id": "css-var-audit",
+    "layer": "rule",
+    "statement": "Every --orrery-iris-* variable the package CSS reads is written by the package or documented, and every documented variable is read.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "test",
+      "ref": "scripts/audit-css-vars.mjs"
+    }
+  }
+]
