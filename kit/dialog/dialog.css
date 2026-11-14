@@ -2,6 +2,13 @@
    Floating level ("level 3") has no drawing decided yet. STRAWMAN (Sean's call 8):
    page fill plus the heavy --line-strong hairline, no shadow. */
 
+/* Backdrop and viewport sit on the overlay layer, so positioned page content
+   that comes later in the document (or carries its own z-index) never paints over an open dialog. */
+.orr-dialog__backdrop,
+.orr-dialog__viewport {
+  z-index: var(--orr-z-overlay);
+}
+
 .orr-dialog__backdrop {
   position: fixed;
   inset: 0;
@@ -27,6 +34,7 @@
 .orr-dialog__backdrop[data-contained],
 .orr-dialog__viewport[data-contained] {
   position: absolute;
+  z-index: auto;
 }
 
 .orr-dialog {

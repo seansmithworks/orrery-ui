@@ -21,4 +21,6 @@
   --orr-spin-dur: 600ms;
   --orr-scrim-mix: 72%;
   --orr-dialog-width: 440px; /* no width token fits a dialog */
+  /* No layer (z-index) scale in the tokens yet. */
+  --orr-z-overlay: 100;
 }
