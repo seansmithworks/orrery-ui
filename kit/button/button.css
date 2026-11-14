@@ -1,164 +1,169 @@
 /* Button and IconButton. Every value is a token or a kit-local property from kit.css.
    States: rest, hover, pressed, focus-visible, disabled, loading.
-   [data-preview] shows hover, active or focus without interaction (specimen pages only). */
 
-.orr-button {
-  --orr-fill: transparent;
-  --orr-mix: 0%;
-  position: relative;
-  box-sizing: border-box;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--space-8);
-  height: var(--hit-target-min);
-  margin: 0;
-  padding: 0 var(--space-16);
-  border: var(--line-width) solid transparent;
-  border-radius: var(--radius-control);
-  /* Hover and press tint the fill with the label colour, so one rule works on every variant. */
-  background-color: color-mix(
-    in srgb,
-    var(--orr-fill),
-    currentColor var(--orr-mix)
-  );
-  color: var(--text);
-  font-family: var(--font-sans);
-  font-size: var(--type-size-14);
-  line-height: var(--type-line-height-14);
-  font-weight: 500;
-  white-space: nowrap;
-  cursor: pointer;
-  user-select: none;
-  -webkit-user-select: none;
-  -webkit-tap-highlight-color: transparent;
-}
+   One rule per state. Each interactive state is written once, as
+   :is(<real pseudo-class>, [data-preview~="<state>"]) with the same exclusions, so the
+   specimen and test hook (data-preview="hover" | "active" | "focus") can never show a
+   state the real interaction would not.
 
-/* The hit area is never under --hit-target-min on either axis, whatever the drawn size. */
-.orr-button::after {
-  content: "";
-  position: absolute;
-  inset: min(0px, calc((100% - var(--hit-target-min)) / 2));
-}
+   Layout rule: drawn size s (32px) keeps a 44px hit area by reaching 6px past its box on
+   each side. Size s buttons need a gap of at least --space-12 (44 - 32) from any neighbour,
+   so every button owns its whole 44px area. Under that, the reaches overlap in the gap; under
+   6px, the later button's reach enters the earlier one's box and takes presses on its edge. */
 
-.orr-button[data-variant="primary"] {
-  --orr-fill: var(--accent);
-  color: var(--on-accent);
-}
-.orr-button[data-variant="secondary"] {
-  --orr-fill: var(--layer-2);
-  border-color: var(--line);
-}
-
-.orr-button[data-size="s"] {
-  height: var(--space-32);
-  padding: 0 var(--space-12);
-  gap: var(--space-4);
-  font-size: var(--type-size-13);
-  line-height: var(--type-line-height-13);
-}
-
-.orr-button[data-icon] {
-  width: var(--hit-target-min);
-  padding: 0;
-}
-.orr-button[data-icon][data-size="s"] {
-  width: var(--space-32);
-}
-.orr-button svg {
-  flex: none;
-  width: var(--space-20);
-  height: var(--space-20);
-}
-.orr-button[data-size="s"] svg {
-  width: var(--space-16);
-  height: var(--space-16);
-}
-
-/* hover */
-@media (hover: hover) {
-  .orr-button:not([data-disabled]):hover {
-    --orr-mix: var(--orr-hover-mix);
-  }
-}
-.orr-button[data-preview~="hover"] {
-  --orr-mix: var(--orr-hover-mix);
-}
-
-/* pressed */
-.orr-button:not([data-disabled]):active,
-.orr-button[data-preview~="active"] {
-  --orr-mix: var(--orr-press-mix);
-  transform: scale(var(--orr-press-scale));
-}
-
-/* focus: the one ring */
-.orr-button:focus-visible,
-.orr-button[data-preview~="focus"] {
-  outline: var(--ring-width) solid var(--accent);
-  outline-offset: var(--ring-width);
-}
-
-/* disabled (loading keeps its variant look) */
-.orr-button[data-disabled]:not([data-loading]) {
-  --orr-fill: var(--layer-1);
-  border-color: var(--line);
-  color: var(--text-muted);
-  cursor: not-allowed;
-}
-.orr-button[data-variant="quiet"][data-disabled]:not([data-loading]) {
-  --orr-fill: transparent;
-  border-color: transparent;
-}
-
-.orr-button__label {
-  display: inline-flex;
-  align-items: center;
-  gap: inherit;
-}
-
-/* loading: the label keeps its space and its name, the spinner is drawn over it */
-.orr-button[data-loading] {
-  cursor: progress;
-}
-.orr-button[data-loading] .orr-button__label {
-  opacity: 0;
-}
-.orr-button__spinner {
-  position: absolute;
-  inset: 0;
-  margin: auto;
-  box-sizing: border-box;
-  width: var(--space-16);
-  height: var(--space-16);
-  border: var(--ring-width) solid currentColor;
-  border-right-color: transparent;
-  border-radius: var(--radius-round);
-}
-
-@media (prefers-reduced-motion: no-preference) {
+@layer orrery.kit {
   .orr-button {
-    transition:
-      background-color var(--orr-dur) var(--orr-ease),
-      border-color var(--orr-dur) var(--orr-ease),
-      color var(--orr-dur) var(--orr-ease),
-      transform var(--orr-dur) var(--orr-ease);
+    --orr-fill: transparent;
+    --orr-mix: 0%;
+    position: relative;
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-8);
+    height: var(--hit-target-min);
+    margin: 0;
+    padding: 0 var(--space-16);
+    border: var(--line-width) solid transparent;
+    border-radius: var(--radius-control);
+    /* Hover and press tint the fill with the label colour, so one rule works on every variant. */
+    background-color: color-mix(
+      in srgb,
+      var(--orr-fill),
+      currentColor var(--orr-mix)
+    );
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The hit area is never under --hit-target-min on either axis, whatever the drawn size. */
+  .orr-button::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-target-min)) / 2));
+  }
+
+  .orr-button[data-variant="primary"] {
+    --orr-fill: var(--accent);
+    color: var(--on-accent);
+  }
+  .orr-button[data-variant="secondary"] {
+    --orr-fill: var(--layer-2);
+    border-color: var(--line);
+  }
+
+  .orr-button[data-size="s"] {
+    height: var(--space-32);
+    padding: 0 var(--space-12);
+    gap: var(--space-4);
+    font-size: var(--type-size-13);
+    line-height: var(--type-line-height-13);
+  }
+
+  .orr-button[data-icon] {
+    width: var(--hit-target-min);
+    padding: 0;
+  }
+  .orr-button[data-icon][data-size="s"] {
+    width: var(--space-32);
+  }
+  .orr-button svg {
+    flex: none;
+    width: var(--space-20);
+    height: var(--space-20);
+  }
+  .orr-button[data-size="s"] svg {
+    width: var(--space-16);
+    height: var(--space-16);
+  }
+
+  /* hover (only where the pointer can hover, so touch never sticks) */
+  @media (hover: hover) {
+    .orr-button:not([data-disabled]):is(:hover, [data-preview~="hover"]) {
+      --orr-mix: var(--orr-hover-mix);
+    }
+  }
+
+  /* pressed */
+  .orr-button:not([data-disabled]):is(:active, [data-preview~="active"]) {
+    --orr-mix: var(--orr-press-mix);
+    transform: scale(var(--orr-press-scale));
+  }
+
+  /* focus: the one ring */
+  .orr-button:is(:focus-visible, [data-preview~="focus"]) {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  /* disabled (loading keeps its variant look) */
+  .orr-button[data-disabled]:not([data-loading]) {
+    --orr-fill: var(--layer-1);
+    border-color: var(--line);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  .orr-button[data-variant="quiet"][data-disabled]:not([data-loading]) {
+    --orr-fill: transparent;
+    border-color: transparent;
+  }
+
+  .orr-button__label {
+    display: inline-flex;
+    align-items: center;
+    gap: inherit;
+  }
+
+  /* loading: the label keeps its space and its name, the spinner is drawn over it */
+  .orr-button[data-loading] {
+    cursor: progress;
+  }
+  .orr-button[data-loading] .orr-button__label {
+    opacity: 0;
   }
   .orr-button__spinner {
-    animation: orr-spin var(--orr-spin-dur) linear infinite;
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    box-sizing: border-box;
+    width: var(--space-16);
+    height: var(--space-16);
+    border: var(--ring-width) solid currentColor;
+    border-right-color: transparent;
+    border-radius: var(--radius-round);
   }
-}
 
-/* Reduced motion: no press scale, no spin. The spinner stays as a still arc beside the label. */
-@media (prefers-reduced-motion: reduce) {
-  .orr-button:not([data-disabled]):active,
-  .orr-button[data-preview~="active"] {
-    transform: none;
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-button {
+      transition:
+        background-color var(--orr-dur) var(--orr-ease),
+        border-color var(--orr-dur) var(--orr-ease),
+        color var(--orr-dur) var(--orr-ease),
+        transform var(--orr-dur) var(--orr-ease);
+    }
+    .orr-button__spinner {
+      animation: orr-spin var(--orr-spin-dur) linear infinite;
+    }
   }
-}
 
-@keyframes orr-spin {
-  to {
-    transform: rotate(1turn);
+  /* Reduced motion: no press scale, no spin. The spinner stays as a still arc. */
+  @media (prefers-reduced-motion: reduce) {
+    .orr-button {
+      --orr-press-scale: 1;
+    }
+  }
+
+  @keyframes orr-spin {
+    to {
+      transform: rotate(1turn);
+    }
   }
 }

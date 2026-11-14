@@ -24,28 +24,14 @@ function Trigger({
 export type DialogPopupProps = WithClass<BaseDialog.Popup.Props> & {
   /** Where the portal mounts. Defaults to document.body. */
   container?: BaseDialog.Portal.Props["container"];
-  /** Fill the nearest positioned ancestor instead of the window. */
-  contained?: boolean;
 };
 
 /** Backdrop, viewport and popup in one part. Focus is trapped while open and returns to the trigger on close. */
-function Popup({
-  container,
-  contained,
-  className,
-  ...props
-}: DialogPopupProps) {
-  const where = contained ? "" : undefined;
+function Popup({ container, className, ...props }: DialogPopupProps) {
   return (
     <BaseDialog.Portal container={container}>
-      <BaseDialog.Backdrop
-        className="orr-dialog__backdrop"
-        data-contained={where}
-      />
-      <BaseDialog.Viewport
-        className="orr-dialog__viewport"
-        data-contained={where}
-      >
+      <BaseDialog.Backdrop className="orr-dialog__backdrop" />
+      <BaseDialog.Viewport className="orr-dialog__viewport">
         <BaseDialog.Popup {...props} className={cx("orr-dialog", className)} />
       </BaseDialog.Viewport>
     </BaseDialog.Portal>
