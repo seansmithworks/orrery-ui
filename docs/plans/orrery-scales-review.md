@@ -10,7 +10,7 @@ Redline any of these; the rest of the page is the evidence.
 2. **Line heights follow one rule.** A size Artifact already uses keeps the line height Artifact gives it. A new size takes the line height the site or Solar uses most. Two steps then differ from the site's own habit: 13 is 1.45 here (site: 1.6) and 16 is 1.6 here (site docs pages: 1.65).
 3. **28's line height is a four-way tie**, one use each. I took Solar's 1.15.
 4. **The site's "13px" body size is really 12.8px** (`0.8rem`). The step is 13, which is what Artifact, Solar and the site's own hand-typed rules use.
-5. **Breakpoints are 480, 768, 1024, 1280, 1600.** These are the four widths where the site's side margins step, plus 768, the most used width on the site and the one Iris uses. Left out: Artifact's 600, 860 and 1100, Solar's 640, and the case-study pages' 560 and 900.
+5. **Breakpoints are 480, 768, 1024, 1280, 1600.** These are the four widths where the site's side margins step, plus 768, a width the site uses heavily and the one Iris uses. Left out: Artifact's 600, 860 and 1100, Solar's 640, and the case-study pages' 560 and 900.
 6. **Hit target is 44, and the build refuses anything smaller.** 44 is used far more than 48. A brand can raise it to 48, which is what the Iris trigger and the site's phone action buttons use today.
 7. **Elevation has four levels; brand orrery draws three.** Levels 0 to 2 use fills and the hairline Artifact already has. Level 3 (things that float: menus, popovers, the Iris sheet) has no drawing, because Artifact has nothing that floats. Strawman for you to react to: page fill with the heavy `line-strong` hairline. I did not build it.
 8. **Five springs are promoted, all in the form they were dialled in.** The close-button springs are left out: they are not on `DESIGN.md`'s dialled list. If you did dial them, say so and they go in.
@@ -66,15 +66,15 @@ Left out: the site's 8px baseline (`site:src/app/globals.css:100`), vertical gap
 
 ## Breakpoints
 
-Counts are CSS rules on the site that switch at that width, in either direction.
+Rule counts are left out: the site is a separate repo, and a count that this repo cannot reproduce is not a number to decide on. Sources point at where each width appears; the choice rests on which widths the site's margins step at (480, 1024, 1280, 1600) plus 768, which Iris already uses.
 
 | Token | Value | Source | Alternatives seen |
 | --- | --- | --- | --- |
-| `breakpoint-480` | 480px | `site:src/app/globals.css:1242` (31 rules) | Case-study pages 560 (56 rules, seven copies of one file set) |
-| `breakpoint-768` | 768px | `src/useTriggerSize.ts:9`, `site:src/app/globals.css:1339` (131 rules) | Solar 640 (26 rules, `site:src/solar/ui/ui.module.css:359`); Artifact 600 and 860 (`artifact/snapshot/bundle.css:38`, `:43`) |
-| `breakpoint-1024` | 1024px | `site:src/app/globals.css:1248` (15 rules) | Site 900 (21 rules); Artifact 1100 (`artifact/snapshot/bundle.css:1105`) |
-| `breakpoint-1280` | 1280px | `site:src/app/globals.css:1254` (2 rules) | Artifact 1300 (`artifact/snapshot/bundle.css:1122`) |
-| `breakpoint-1600` | 1600px | `site:src/app/globals.css:1260` (5 rules) | None |
+| `breakpoint-480` | 480px | `site:src/app/globals.css:1242` | Case-study pages 560 |
+| `breakpoint-768` | 768px | `src/useTriggerSize.ts:9`, `site:src/app/globals.css:1339` | Solar 640 (`site:src/solar/ui/ui.module.css:359`); Artifact 600 and 860 (`artifact/snapshot/bundle.css:38`, `:43`) |
+| `breakpoint-1024` | 1024px | `site:src/app/globals.css:1248` | Site 900; Artifact 1100 (`artifact/snapshot/bundle.css:1105`) |
+| `breakpoint-1280` | 1280px | `site:src/app/globals.css:1254` | Artifact 1300 (`artifact/snapshot/bundle.css:1122`) |
+| `breakpoint-1600` | 1600px | `site:src/app/globals.css:1260` | None |
 
 ## Hit target
 
