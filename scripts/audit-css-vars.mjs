@@ -26,10 +26,11 @@
  * phantom tokens in the README with zero occurrences in src/.
  */
 import { readFileSync, readdirSync } from "node:fs";
-import { join, dirname } from "node:path";
+import { join, dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const ROOT = join(dirname(fileURLToPath(import.meta.url)), "..");
+// Optional first argument: a folder holding src/ and README.md to audit instead of this repo (the rules tests seed one).
+const ROOT = process.argv[2] ? resolve(process.argv[2]) : join(dirname(fileURLToPath(import.meta.url)), "..");
 // Single source of truth for the var prefix — every regex and log line below
 // builds off this instead of hard-coding "orrery-iris" repeatedly, so a
 // future rename is a one-line change.
