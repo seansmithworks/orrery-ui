@@ -169,5 +169,5 @@ Plan: https://claude.ai/artifact/9VC6x921ssAbtRM8WDH4bc. Gate evidence: `docs/pl
 - [ ] **Carried.** Message the "SSW Updates" session when role names, the type scale or the theming model settle.
 - [ ] **Parked, Sean's call.** Installing the repo's `artifact/` over `~/.claude/skills/artifact-house-style/` (dry run: 26 identical, 39 differ, 12 only in repo, 1 only installed). It writes outside the repo.
 - [ ] **Parked, Sean's call.** `.scratch/` (untracked evidence) in the spike worktree. The thread's own delete was denied, so it was left in place. It goes when the worktree is removed after merge.
-- [ ] **Parked, machine note.** The spike thread ran `npx playwright install chromium-headless-shell` (build 1234) and Playwright removed cached build 1228. A project pinned to the older build needs `npx playwright install` once.
+- [ ] **Parked, machine note.** The spike thread ran `npx playwright install chromium-headless-shell`, which added build 1234 to `~/Library/Caches/ms-playwright`. Build 1228 is still cached (checked 2026-11-14), so nothing needs reinstalling; the thread's report that 1228 was removed was wrong.
 - [ ] **Parked.** DTCG edges found by the spike: `em` units (layout-measure, letter-spacing) fall outside strict DTCG 2025.10; there is no "none" shadow and no spring type; Swift skips em dimensions.
