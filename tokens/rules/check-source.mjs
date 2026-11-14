@@ -15,10 +15,11 @@ const HTML_EXT = ['.html', '.htm'];
 const SKIP_DIRS = new Set(['node_modules', 'dist', '.git', 'generated']);
 
 // ---- CSS reader. Rules with their declarations; comments blanked (newlines kept) so line numbers hold.
-// A comment `/* orrery-control */` directly before a selector marks that rule as an interactive control.
+// A comment `/* orrery-control */` directly before a selector marks that rule as an interactive control;
+// `/* orrery-hit-area: pseudo */` beside it says a pseudo-element supplies the real hit area, so the rule's own box may be small.
 export function parseCss(text) {
   const rules = [], stack = [];
-  let line = 1, buf = '', bufLine = 1, paren = 0, marker = false;
+  let line = 1, buf = '', bufLine = 1, paren = 0, marker = { control: false, pseudo: false };
   const top = () => stack[stack.length - 1];
   const flush = () => {
     const m = /^\s*([^:\s][^:]*?)\s*:\s*([\s\S]*?)\s*$/.exec(buf);
@@ -30,7 +31,8 @@ export function parseCss(text) {
     if (ch === '/' && text[i + 1] === '*') {
       const end = text.indexOf('*/', i + 2) === -1 ? text.length : text.indexOf('*/', i + 2) + 2;
       const body = text.slice(i, end);
-      if (!buf.trim() && /orrery-control/.test(body)) marker = true;
+      if (!buf.trim() && /orrery-control/.test(body)) marker.control = true;
+      if (!buf.trim() && /orrery-hit-area:\s*pseudo/.test(body)) marker.pseudo = true;
       for (const c of body) { if (c === '\n') { line++; if (buf.trim()) buf += '\n'; } }
       if (buf.trim()) buf += ' ';
       i = end - 1;
@@ -49,18 +51,18 @@ export function parseCss(text) {
     if (ch === '(') paren++;
     else if (ch === ')') paren = Math.max(0, paren - 1);
     if (paren === 0 && ch === '{') {
-      const rule = { selector: buf.trim(), line: bufLine, control: marker, decls: [] };
+      const rule = { selector: buf.trim(), line: bufLine, control: marker.control, hitAreaPseudo: marker.pseudo, decls: [] };
       rules.push(rule);
       stack.push(rule);
       buf = '';
-      marker = false;
+      marker = { control: false, pseudo: false };
     } else if (paren === 0 && ch === '}') {
       flush();
       stack.pop();
-      marker = false;
+      marker = { control: false, pseudo: false };
     } else if (paren === 0 && ch === ';') {
       flush();
-      marker = false;
+      marker = { control: false, pseudo: false };
     } else buf += ch;
   }
   return rules;
@@ -90,9 +92,11 @@ function scanValue(value, onToken) {
       const word = /^-{0,2}[a-zA-Z][a-zA-Z0-9-]*/.exec(rest);
       const px = /^(\d*\.?\d+)px\b/.exec(rest);
       const prev = value[i - 1] ?? ' ';
+      const negative = prev === '-' && !/[\w.)-]/.test(value[i - 2] ?? ' ');
+      const isFunction = word && value[i + word[0].length] === '(';
       if (hex) { onToken({ kind: 'hex', text: hex[0], index: i }); i += hex[0].length - 1; }
-      else if (word && !/[\w.-]/.test(prev)) { onToken({ kind: 'word', text: word[0], index: i }); i += word[0].length - 1; }
-      else if (px && !/[\w.-]/.test(prev)) { onToken({ kind: 'px', text: px[0], px: parseFloat(px[1]), index: i }); i += px[0].length - 1; }
+      else if (word && !isFunction && !/[\w.-]/.test(prev)) { onToken({ kind: 'word', text: word[0], index: i }); i += word[0].length - 1; }
+      else if (px && (negative || !/[\w.-]/.test(prev))) { onToken({ kind: 'px', text: px[0], px: parseFloat(px[1]), index: i }); i += px[0].length - 1; }
       else if (word) i += word[0].length - 1;
     }
   }
@@ -106,28 +110,13 @@ const NAMED = new Set(('aliceblue antiquewhite aqua aquamarine azure beige bisqu
   'linen magenta maroon mediumaquamarine mediumblue mediumorchid mediumpurple mediumseagreen mediumslateblue mediumspringgreen mediumturquoise mediumvioletred midnightblue mintcream mistyrose moccasin navajowhite navy oldlace ' +
   'olive olivedrab orange orangered orchid palegoldenrod palegreen paleturquoise palevioletred papayawhip peachpuff peru pink plum powderblue purple rebeccapurple red rosybrown royalblue saddlebrown salmon sandybrown seagreen ' +
   'seashell sienna silver skyblue slateblue slategray slategrey snow springgreen steelblue tan teal thistle tomato turquoise violet wheat white whitesmoke yellow yellowgreen').split(' '));
+// CSS system colors (Canvas, ButtonText, ...). artifact/snapshot/bundle.css uses none, so they count as literals here.
+const SYSTEM = new Set('canvas canvastext linktext visitedtext activetext buttonface buttontext buttonborder field fieldtext highlight highlighttext selecteditem selecteditemtext mark marktext graytext accentcolor accentcolortext'.split(' '));
 // Properties whose value can be a color. A named color is only looked for there, so `animation-name: red` is not a finding.
-const COLOR_PROPS = /^(--[\w-]+|color|background(-color|-image)?|border(-(top|right|bottom|left|block|inline)(-(start|end))?)?(-color)?|outline(-color)?|fill|stroke|box-shadow|text-shadow|caret-color|accent-color|column-rule(-color)?|text-decoration(-color)?|text-emphasis-color|scrollbar-color|mask-image)$/;
-
-// ---- Rules. Each takes (file, text) and returns [{ line, message }].
-
-function literalColor(file, text) {
-  const out = [];
-  for (const rule of parseCss(text)) {
-    for (const d of rule.decls) {
-      scanValue(d.value, (t) => {
-        const at = d.line + (d.value.slice(0, t.index).match(/\n/g)?.length ?? 0);
-        if (t.kind === 'hex') out.push({ line: at, message: `literal color ${t.text} in ${d.prop}: use a color role, with a hex only as a var() fallback` });
-        else if (t.kind === 'function' && COLOR_FUNCTIONS.has(t.text)) out.push({ line: at, message: `literal color ${t.text}() in ${d.prop}: use a color role, with a literal only as a var() fallback` });
-        else if (t.kind === 'word' && COLOR_PROPS.test(d.prop) && NAMED.has(t.text.toLowerCase())) out.push({ line: at, message: `literal color ${t.text} in ${d.prop}: use a color role, with a literal only as a var() fallback` });
-      });
-    }
-  }
-  return out;
-}
+const COLOR_PROPS = /^(--[\w-]+|color|background(-color|-image)?|border(-(top|right|bottom|left|block|inline)(-(start|end))?)?(-color)?|outline(-color)?|fill|stroke|box-shadow|text-shadow|filter|backdrop-filter|caret-color|accent-color|column-rule(-color)?|text-decoration(-color)?|text-emphasis-color|scrollbar-color|mask(-[a-z-]+)?)$/;
 
 const RADIUS_PROP = /^(border-radius|border-(top|bottom)-(left|right)-radius|border-(start|end)-(start|end)-radius)$/;
-const SPACE_PROP = /^(padding|margin|gap|row-gap|column-gap|(padding|margin)-(top|right|bottom|left|block|inline)(-(start|end))?)$/;
+const SPACE_PROP = /^(padding|margin|gap|row-gap|column-gap|inset|top|right|bottom|left|outline-offset|(padding|margin|inset|scroll-padding|scroll-margin)-(top|right|bottom|left|block|inline)(-(start|end))?|scroll-padding|scroll-margin)$/;
 // px values of the space and radius scales, read from the committed token output so this rule never keeps its own copy.
 function scaleValues() {
   const css = fs.readFileSync(path.join(REPO, 'tokens/generated/css/orrery.css'), 'utf8');
@@ -135,17 +124,76 @@ function scaleValues() {
   for (const m of css.matchAll(/^\s*--((space|radius)-[\w-]+):\s*(\d*\.?\d+)px;/gm)) if (!scales[m[2]].has(Number(m[3]))) scales[m[2]].set(Number(m[3]), m[1]);
   return scales;
 }
-function literalSpacing(file, text) {
-  const scales = scaleValues(), out = [], seen = new Set();
-  for (const rule of parseCss(text)) {
-    for (const d of rule.decls) {
-      const scale = SPACE_PROP.test(d.prop) ? scales.space : RADIUS_PROP.test(d.prop) ? scales.radius : null;
-      if (!scale) continue;
-      scanValue(d.value, (t) => {
-        if (t.kind !== 'px' || !scale.has(t.px)) return;
-        const v = { line: d.line + (d.value.slice(0, t.index).match(/\n/g)?.length ?? 0), message: `literal ${t.text} in ${d.prop}: use var(--${scale.get(t.px)})` };
-        if (!seen.has(`${v.line} ${v.message}`)) { seen.add(`${v.line} ${v.message}`); out.push(v); }
-      });
+// Which scale a property reads from, or null. A custom property reads the radius scale when its name says radius, else the space scale.
+const scaleFor = (prop, scales) => (SPACE_PROP.test(prop) ? scales.space : RADIUS_PROP.test(prop) ? scales.radius : prop.startsWith('--') ? (/radius/.test(prop) ? scales.radius : scales.space) : null);
+
+const lineAt = (d, t) => d.line + (d.value.slice(0, t.index).match(/\n/g)?.length ?? 0);
+/** Color findings for one declaration: [{ line, message }]. `d` is { prop, value, line }. */
+function colorFindings(d) {
+  const out = [];
+  scanValue(d.value, (t) => {
+    const named = t.kind === 'word' && COLOR_PROPS.test(d.prop) && (NAMED.has(t.text.toLowerCase()) || SYSTEM.has(t.text.toLowerCase()));
+    const what = t.kind === 'hex' ? t.text : t.kind === 'function' && COLOR_FUNCTIONS.has(t.text) ? `${t.text}()` : named ? t.text : null;
+    if (what) out.push({ line: lineAt(d, t), message: `literal color ${what} in ${d.prop}: use a color role, with a ${t.kind === 'hex' ? 'hex' : 'literal'} only as a var() fallback` });
+  });
+  return out;
+}
+/** Spacing and radius findings for one declaration: a px value that a space or radius token already holds. */
+function spacingFindings(d, scales) {
+  const scale = scaleFor(d.prop, scales), out = [], seen = new Set();
+  if (!scale) return out;
+  scanValue(d.value, (t) => {
+    if (t.kind !== 'px' || !scale.has(t.px)) return;
+    const sign = d.value[t.index - 1] === '-' ? '-' : '';
+    const v = { line: lineAt(d, t), message: `literal ${sign}${t.text} in ${d.prop}: use var(--${scale.get(t.px)})` };
+    if (!seen.has(`${v.line} ${v.message}`)) { seen.add(`${v.line} ${v.message}`); out.push(v); }
+  });
+  return out;
+}
+
+// ---- Rules. Each takes (file, text) and returns [{ line, message }].
+const cssDecls = (text) => parseCss(text).flatMap((rule) => rule.decls);
+const literalColor = (file, text) => cssDecls(text).flatMap(colorFindings);
+const literalSpacing = (file, text) => { const scales = scaleValues(); return cssDecls(text).flatMap((d) => spacingFindings(d, scales)); };
+
+// Inline styles: style={{ ... }} in JSX/TSX. Each key: value pair is checked like a CSS declaration (camelCase keys become kebab-case).
+// A string value is read as CSS; a bare number is read as px. A template string or an expression is not read.
+function topLevelEntries(body) {
+  const out = [];
+  let depth = 0, quote = null, start = 0;
+  for (let i = 0; i <= body.length; i++) {
+    const ch = body[i];
+    if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
+    if (ch === '"' || ch === "'" || ch === '`') quote = ch;
+    else if (ch !== undefined && '([{'.includes(ch)) depth++;
+    else if (ch !== undefined && ')]}'.includes(ch)) depth--;
+    else if ((ch === ',' || i === body.length) && depth === 0) { out.push({ text: body.slice(start, i), at: start }); start = i + 1; }
+  }
+  return out;
+}
+function inlineStyle(file, text) {
+  const clean = blankComments(text, path.extname(file)), scales = scaleValues(), out = [];
+  for (const m of clean.matchAll(/style\s*=\s*\{\s*\{/g)) {
+    let depth = 2, i = m.index + m[0].length, quote = null;
+    const open = i;
+    for (; i < clean.length && depth > 0; i++) {
+      const ch = clean[i];
+      if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
+      if (ch === '"' || ch === "'" || ch === '`') quote = ch;
+      else if (ch === '{') depth++;
+      else if (ch === '}') depth--;
+    }
+    const body = clean.slice(open, i - 2);
+    for (const e of topLevelEntries(body)) {
+      const kv = /^\s*(?:([A-Za-z_$][\w$]*)|(["'])([^"']+)\2)\s*:\s*([\s\S]*?)\s*$/.exec(e.text);
+      if (!kv) continue;
+      const key = kv[1] ?? kv[3], raw = kv[4];
+      const prop = key.startsWith('--') ? key : key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
+      const line = clean.slice(0, open + e.at + e.text.indexOf(key)).split('\n').length;
+      const str = /^(["'])([\s\S]*)\1$/.exec(raw);
+      const value = str ? str[2] : /^-?\d*\.?\d+$/.test(raw) && Number(raw) !== 0 ? `${raw}px` : null;
+      if (value === null) continue;
+      for (const v of [...colorFindings({ prop, value, line }), ...spacingFindings({ prop, value, line }, scales)]) out.push({ line: v.line, message: `inline style: ${v.message}` });
     }
   }
   return out;
@@ -156,7 +204,7 @@ const SIZE_PROP = /^(min-height|height|min-width|width)$/;
 function controlMinSize(file, text) {
   const out = [];
   for (const rule of parseCss(text)) {
-    if (!rule.control) continue;
+    if (!rule.control || rule.hitAreaPseudo) continue;
     for (const d of rule.decls) {
       if (!SIZE_PROP.test(d.prop)) continue;
       const m = /^(\d*\.?\d+)px$/.exec(d.value.trim());
@@ -208,6 +256,7 @@ export const CHECKS = {
   'literal-color': { exts: CSS_EXT, run: literalColor },
   'literal-spacing': { exts: CSS_EXT, run: literalSpacing },
   'control-min-size': { exts: CSS_EXT, run: controlMinSize },
+  'inline-style-literal': { exts: ['.tsx', '.jsx'], run: inlineStyle },
   'em-dash': { exts: [...CSS_EXT, ...JS_EXT, ...HTML_EXT], run: emDash },
 };
 
@@ -248,7 +297,11 @@ if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) 
     else targets.push(args[i]);
   }
   if (!targets.length) usage('no paths given');
-  for (const t of targets) if (!fs.existsSync(t)) usage(`no such path: ${t}`);
+  const supported = [...CSS_EXT, ...JS_EXT, ...HTML_EXT];
+  for (const t of targets) {
+    if (!fs.existsSync(t)) usage(`no such path: ${t}`);
+    if (fs.statSync(t).isFile() && !supported.includes(path.extname(t))) usage(`${t} is not a file type any rule reads (${supported.join(' ')})`);
+  }
   const found = checkPaths(targets, only);
   for (const v of found) console.error(`${path.relative(process.cwd(), v.file)}:${v.line} ${v.rule} ${v.message}`);
   if (found.length) process.exit(1);
