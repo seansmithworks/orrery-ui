@@ -28,7 +28,7 @@
             "mass": 1
           },
           "iris-snap": {
-            "$description": "Trigger snapping to its anchor when a drag ends. Overdamped.",
+            "$description": "Trigger snapping to its anchor when a drag ends. Near critically damped (damping ratio about 0.98).",
             "stiffness": 700,
             "damping": 52,
             "mass": 1

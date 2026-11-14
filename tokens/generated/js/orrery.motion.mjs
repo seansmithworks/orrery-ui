@@ -8,5 +8,5 @@ export const irisClose = { type: "spring", stiffness: 375, damping: 32, mass: 1 
 export const irisSharedOpen = { type: "spring", stiffness: 500, damping: 45 };
 /** Shared element while Iris closes. Dialled as a set with iris-close and the 35ms lead delay. */
 export const irisSharedClose = { type: "spring", stiffness: 340, damping: 30, mass: 1 };
-/** Trigger snapping to its anchor when a drag ends. Overdamped. */
+/** Trigger snapping to its anchor when a drag ends. Near critically damped (damping ratio about 0.98). */
 export const irisSnap = { type: "spring", stiffness: 700, damping: 52, mass: 1 };
