@@ -1,0 +1,105 @@
+/* Dialog. Every value is a token or a kit-local property from kit.css.
+   Floating level ("level 3") has no drawing decided yet. STRAWMAN (Sean's call 8):
+   page fill plus the heavy --line-strong hairline, no shadow. */
+
+.orr-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  /* The page colour laid over what is behind: it washes light pages and dims dark ones. */
+  background-color: color-mix(
+    in srgb,
+    var(--page) var(--orr-scrim-mix),
+    transparent
+  );
+}
+
+/* Menus, popovers and dialogs stay inside the window with an 8px gutter. */
+.orr-dialog__viewport {
+  position: fixed;
+  inset: 0;
+  box-sizing: border-box;
+  display: grid;
+  place-items: center;
+  padding: var(--space-8);
+}
+
+/* contained: fill the nearest positioned ancestor instead of the window */
+.orr-dialog__backdrop[data-contained],
+.orr-dialog__viewport[data-contained] {
+  position: absolute;
+}
+
+.orr-dialog {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  width: min(100%, var(--orr-dialog-width));
+  max-height: 100%;
+  overflow: auto;
+  padding: var(--space-24);
+  border: var(--line-width) solid var(--line-strong);
+  border-radius: var(--radius-panel);
+  background-color: var(--page);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.orr-dialog:focus-visible {
+  outline: var(--ring-width) solid var(--accent);
+  outline-offset: var(--ring-width);
+}
+
+.orr-dialog__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-16);
+}
+/* The corner close sits on the title's first line and its glyph lines up with the popup's padding edge. */
+.orr-dialog__close {
+  flex: none;
+  margin-block: calc(-1 * var(--space-4));
+  margin-inline-end: calc(-1 * var(--space-8));
+}
+
+.orr-dialog__title {
+  margin: 0;
+  font-size: var(--type-size-17);
+  line-height: var(--type-line-height-17);
+  font-weight: 600;
+}
+.orr-dialog__description {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: var(--type-size-14);
+  line-height: var(--type-line-height-14);
+}
+
+.orr-dialog__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-8);
+  margin-top: var(--space-16);
+}
+
+/* Motion. Enter and exit fade; with motion allowed the popup also grows from --orr-enter-scale.
+   Reduced motion is opacity only. */
+.orr-dialog__backdrop,
+.orr-dialog {
+  transition: opacity var(--orr-dur) var(--orr-ease);
+}
+.orr-dialog__backdrop:is([data-starting-style], [data-ending-style]),
+.orr-dialog:is([data-starting-style], [data-ending-style]) {
+  opacity: 0;
+}
+@media (prefers-reduced-motion: no-preference) {
+  .orr-dialog {
+    transition:
+      opacity var(--orr-dur) var(--orr-ease),
+      transform var(--orr-dur) var(--orr-ease);
+  }
+  .orr-dialog:is([data-starting-style], [data-ending-style]) {
+    transform: scale(var(--orr-enter-scale));
+  }
+}

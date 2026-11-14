@@ -14,5 +14,5 @@
     "noEmit": true,
     "skipLibCheck": true
   },
-  "include": ["src", "example", "vitest.config.ts"]
+  "include": ["src", "kit", "example", "vitest.config.ts"]
 }
