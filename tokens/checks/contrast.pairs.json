@@ -1,0 +1,126 @@
+{
+  "$description": "Every role pair the build measures for WCAG 2.2 AA contrast, in every brand and mode. Each pair comes from the role's own usage note in base/roles.tokens.json (`from`). `kind` picks the ratio in `required`.",
+  "required": { "text": 4.5, "ui": 3 },
+  "pairs": [
+    {
+      "role": "color.text",
+      "surface": "color.page",
+      "kind": "text",
+      "from": "text: reads on `page`, `layer-1` and `layer-2` in both themes"
+    },
+    {
+      "role": "color.text",
+      "surface": "color.layer-1",
+      "kind": "text",
+      "from": "text: reads on `page`, `layer-1` and `layer-2` in both themes"
+    },
+    {
+      "role": "color.text",
+      "surface": "color.layer-2",
+      "kind": "text",
+      "from": "text: reads on `page`, `layer-1` and `layer-2` in both themes"
+    },
+    {
+      "role": "color.text-muted",
+      "surface": "color.page",
+      "kind": "text",
+      "from": "text-muted: reads on `page` and `layer-1` only"
+    },
+    {
+      "role": "color.text-muted",
+      "surface": "color.layer-1",
+      "kind": "text",
+      "from": "text-muted: reads on `page` and `layer-1` only"
+    },
+    {
+      "role": "color.page",
+      "surface": "color.text",
+      "kind": "text",
+      "from": "page: also the ink on `text` fills (selected segment, solid chip)"
+    },
+    {
+      "role": "color.on-accent",
+      "surface": "color.accent",
+      "kind": "text",
+      "from": "on-accent: text and icons on an `accent` fill"
+    },
+    {
+      "role": "color.accent",
+      "surface": "color.page",
+      "kind": "ui",
+      "from": "accent: the focus ring and the primary button fill"
+    },
+    {
+      "role": "color.accent",
+      "surface": "color.layer-1",
+      "kind": "ui",
+      "from": "accent: the focus ring and the primary button fill"
+    },
+    {
+      "role": "color.accent",
+      "surface": "color.layer-2",
+      "kind": "ui",
+      "from": "accent: the focus ring and the primary button fill"
+    },
+    {
+      "role": "color.line-strong",
+      "surface": "color.page",
+      "kind": "ui",
+      "from": "line-strong: the border of a highlighted index card, the strong chip"
+    },
+    {
+      "role": "color.line-strong",
+      "surface": "color.layer-1",
+      "kind": "ui",
+      "from": "line-strong: the border of a highlighted index card, the strong chip"
+    },
+    {
+      "role": "color.line-strong",
+      "surface": "color.layer-2",
+      "kind": "ui",
+      "from": "line-strong: the border of a highlighted index card, the strong chip"
+    },
+    {
+      "role": "color.line-dashed",
+      "surface": "color.page",
+      "kind": "ui",
+      "from": "line-dashed: dashed borders for absent items and incidents"
+    },
+    {
+      "role": "color.line-dashed",
+      "surface": "color.layer-1",
+      "kind": "ui",
+      "from": "line-dashed: dashed borders for absent items and incidents"
+    },
+    {
+      "role": "color.scale-1-ink",
+      "surface": "color.scale-1",
+      "kind": "text",
+      "from": "scale-1-ink: text on a `scale-1` fill"
+    },
+    {
+      "role": "color.scale-2-ink",
+      "surface": "color.scale-2",
+      "kind": "text",
+      "from": "scale-2-ink: text on a `scale-2` fill"
+    },
+    {
+      "role": "color.scale-3-ink",
+      "surface": "color.scale-3",
+      "kind": "text",
+      "from": "scale-3-ink: text on a `scale-3` fill"
+    },
+    {
+      "role": "color.scale-4-ink",
+      "surface": "color.scale-4",
+      "kind": "text",
+      "from": "scale-4-ink: text on a `scale-4` fill"
+    },
+    {
+      "role": "color.scale-5-ink",
+      "surface": "color.scale-5",
+      "kind": "text",
+      "from": "scale-5-ink: text on a `scale-5` fill"
+    }
+  ]
+}
