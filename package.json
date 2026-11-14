@@ -94,6 +94,7 @@
     "prepublishOnly": "npm run typecheck && npm test && npm run audit:vars && npm run build:lib && npm run assert:client-banner && npm run test:geometry",
     "capture:canvas": "vite-node scripts/capture-canvas.ts",
     "tokens:build": "node tokens/build.mjs",
-    "tokens:check": "node tokens/check.mjs"
+    "tokens:check": "node tokens/check.mjs",
+    "rules:check": "node tokens/rules/check-source.mjs"
   }
 }
