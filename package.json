@@ -86,6 +86,7 @@
     "typecheck": "tsc -p tsconfig.types.json",
     "test": "vitest run",
     "test:geometry": "playwright test -c example/playwright.config.ts",
+    "test:roles": "playwright test -c example/playwright.config.ts role-fallbacks --project=chromium",
     "test:browsers": "ORRERY_BROWSERS=all playwright test -c example/playwright.config.ts",
     "audit:vars": "node scripts/audit-css-vars.mjs",
     "perf": "node scripts/perf-morph.mjs",
