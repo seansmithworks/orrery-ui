@@ -17,6 +17,8 @@ const valueOf = (t) => ({ color: color, shadow, dimension: dim, fontFamily: fami
 const contractValue = (t) => (aliasOf(t.original) ? `{${aliasOf(t.original).split('.').pop()}}` : valueOf(t));
 
 // A group flagged $extensions.com.orrery.system is outside the Artifact contract; lib/system.mjs writes it.
+// New type sizes stay out of the contract by structure: they sit in type.size and type.line-height, and contract() reads only the typography groups of doc.type.
+// The other new groups (grid, breakpoint, target, elevation) stay out by the system flag.
 const groups = (doc, type) => Object.entries(doc).filter(([k, g]) => !k.startsWith('$') && g.$type === type && !ext(g).system);
 const leaves = (g) => Object.entries(g).filter(([k]) => !k.startsWith('$'));
 const themed = (doc) => ['color', 'shadow'].flatMap((type) => groups(doc, type));
