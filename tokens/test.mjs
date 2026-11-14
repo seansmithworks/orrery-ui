@@ -168,6 +168,23 @@ const tests = {
     assert.equal(fs.existsSync(out), false);
   },
 
+  'brand solar: a contrast pair that fails stops the build, naming brand solar, and writes nothing'() {
+    const out = path.join(tmp, 'solar-contrast-out');
+    // text-muted from 62% ink to 20%: unreadable on the page.
+    const r = run('build.mjs', '--source', seededSource('solar-contrast', 'brands/solar/modes/dark.tokens.json', '"alpha": 0.62', '"alpha": 0.2'), '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^contrast: brand solar, mode dark: color\.text-muted on color\.page is \d+\.\d+:1, needs 4\.5:1 \(text\)$/m);
+    assert.equal(fs.existsSync(out), false);
+  },
+
+  'brand solar: a missing required role stops the build, naming brand solar, and writes nothing'() {
+    const out = path.join(tmp, 'solar-role-out');
+    const r = run('build.mjs', '--source', seededSource('solar-role', 'brands/solar/modes/dark.tokens.json', '"line-dashed": {', '"line-dotted": {'), '--out', out);
+    assert.equal(r.status, 1, r.stderr);
+    assert.match(r.stderr, /^required role: brand solar, mode dark: color\.line-dashed is missing$/m);
+    assert.equal(fs.existsSync(out), false);
+  },
+
   ...checkTests({ tmp, run }),
   ...ruleTests({ tmp, run }),
 };
