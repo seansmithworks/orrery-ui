@@ -88,6 +88,7 @@
     "test": "vitest run",
     "test:geometry": "playwright test -c example/playwright.config.ts",
     "test:roles": "playwright test -c example/playwright.config.ts role-fallbacks --project=chromium",
+    "test:kit-baseline": "playwright test -c example/playwright.config.ts kit-baseline --project=chromium --workers=1",
     "test:bridge": "playwright test -c example/playwright.config.ts role-bridge --project=chromium",
     "test:browsers": "ORRERY_BROWSERS=all playwright test -c example/playwright.config.ts",
     "audit:vars": "node scripts/audit-css-vars.mjs",
