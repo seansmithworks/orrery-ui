@@ -323,5 +323,29 @@ export function ruleTests({ tmp, run }) {
       fs.appendFileSync(path.join(bare, 'tokens/build.mjs'), 'systemGate(tokens, doc, where);\n');
       assert.deepEqual(registryProblems(withRule(only), ctx), []);
     },
+
+    '[inline-style-literal] a tag start inside a string, a template literal, a string in an attribute or a regex literal is not a tag, while a real tag, a tag in a template interpolation and a string value in a real attribute are read'() {
+      const t = (code) => hits('k.tsx', code, 'inline-style-literal').length;
+      // five false-positive forms: clean
+      assert.equal(t('const s = "<div style={{ color: \'#fff\' }}>";'), 0);
+      assert.equal(t('const s = \'<div style={{ color: "#fff" }}>\';'), 0);
+      assert.equal(t('const s = render(`<div style={{ color: "#fff" }} />`);'), 0);
+      assert.equal(t('export const A = () => <input title=\'<b style={{ color: "#fff" }}>\' />;'), 0);
+      assert.equal(t('const re = /<div style={{ color: "#fff" }}>/;\nconst ok = x.replace(/<i style={{ padding: 8 }}>/g, "");'), 0);
+      // true-positive forms: still flagged
+      assert.equal(t('export const A = () => <div style={{ color: "#fff" }} />;'), 1);
+      assert.equal(t('const s = `text ${<X style={{ color: "#fff" }} />} more`;'), 1);
+      assert.equal(t('export const A = () => <div title="a" style={{ color: "#fff" }} />;\nconst b = "<p style={{ color: \'#000\' }}>";'), 1);
+    },
+
+    '[inline-style-literal] every element of a style array is read, a whole-object cast is read, a value cast is not, and a prose mention of orrery-allow is not a marker'() {
+      const t = (jsx) => hits('k.tsx', `export const A = () => (${jsx});`, 'inline-style-literal').length;
+      assert.equal(t('<div style={[{ color: "#fff" }, { padding: 8 }]} />'), 2);
+      assert.equal(t('<div style={[base, { color: "#fff" }]} />'), 1);
+      assert.equal(t('<div style={{ color: "#fff" } as CSSProperties} />'), 1);
+      assert.equal(t('<div style={{ color: "#fff" as string }} />'), 0);
+      assert.deepEqual(hits('k.tsx', '// The orrery-allow: marker belongs in CSS only, so a prose mention is fine.\nexport const A = 1;', 'inline-style-literal'), []);
+      assert.equal(hits('k.tsx', '// orrery-allow: literal-color brand swatch\nexport const A = 1;', 'inline-style-literal').length, 1);
+    },
   };
 }

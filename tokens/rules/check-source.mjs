@@ -260,10 +260,52 @@ function literals(raw) {
   if (tpl) { let out = '', depth = 0; for (let i = 0; i < tpl[1].length; i++) { if (tpl[1].startsWith('${', i)) { depth++; i++; out += ' '; } else if (depth && tpl[1][i] === '}') depth--; else if (!depth) out += tpl[1][i]; } return [out]; }
   return /^-?\d*\.?\d+$/.test(raw) && Number(raw) !== 0 ? [`${raw}px`] : [];
 }
+/**
+ * Which positions of `clean` (comments already blanked) are code: 1 for code, 0 inside a string, the text of a template literal
+ * (outside its ${ }) or a regex literal. A `<Tag` start is only a tag in code. A regex literal is recognised by what precedes the slash.
+ */
+function codeMask(clean) {
+  const mask = new Uint8Array(clean.length);
+  const REGEX_AFTER = /[(,=:[!&|?{};]$|^$|\breturn$|\btypeof$/;
+  const scanCode = (i, interp) => {
+    let depth = 0;
+    for (; i < clean.length; i++) {
+      const ch = clean[i];
+      if (interp && ch === '}' && depth === 0) return i;
+      if (ch === '{') depth++;
+      else if (ch === '}') depth--;
+      if ((ch === '"' || ch === "'") && !isApostrophe(clean, i)) {
+        let j = i + 1;
+        while (j < clean.length && clean[j] !== ch && clean[j] !== '\n') j += clean[j] === '\\' ? 2 : 1;
+        i = j;
+      } else if (ch === '`') {
+        i = scanTemplate(i + 1);
+      } else if (ch === '/' && clean[i + 1] !== '/' && clean[i + 1] !== '*' && REGEX_AFTER.test(clean.slice(Math.max(0, i - 12), i).trimEnd())) {
+        let j = i + 1, cls = false;
+        while (j < clean.length && clean[j] !== '\n' && (clean[j] !== '/' || cls)) { if (clean[j] === '\\') j++; else if (clean[j] === '[') cls = true; else if (clean[j] === ']') cls = false; j++; }
+        i = j;
+      } else mask[i] = 1;
+    }
+    return i;
+  };
+  // from just after the opening backtick to its closing one; returns the closing backtick's index
+  const scanTemplate = (i) => {
+    for (; i < clean.length; i++) {
+      if (clean[i] === '\\') i++;
+      else if (clean[i] === '`') return i;
+      else if (clean[i] === '$' && clean[i + 1] === '{') i = scanCode(i + 2, true);
+    }
+    return i;
+  };
+  scanCode(0, false);
+  return mask;
+}
+
 /** Attribute value expressions { name, from, to } of every JSX tag, found by walking each `<Tag` start. */
 function jsxAttributes(clean) {
-  const found = [];
+  const found = [], mask = codeMask(clean);
   for (const m of clean.matchAll(/<([A-Za-z][\w.:-]*)/g)) {
+    if (!mask[m.index]) continue;
     let i = m.index + m[0].length;
     while (i < clean.length) {
       while (/\s/.test(clean[i] ?? '')) i++;
@@ -296,7 +338,7 @@ function inlineStyle(file, text) {
       if (clean[i] === '"' || clean[i] === "'" || clean[i] === '`') { const q = clean[i]; for (i++; i < to && clean[i] !== q; i++) if (clean[i] === '\\') i++; continue; }
       if (clean[i] !== '{') continue;
       const before = clean.slice(from, i).trimEnd().slice(-2);
-      if (before === '' || /[(?:=,]$/.test(before) || /(&&|\|\||\?\?)$/.test(before)) {
+      if (before === '' || /[(?:=,\[]$/.test(before) || /(&&|\|\||\?\?)$/.test(before)) {
         const end = closing(clean, i);
         if (end === -1 || end > to) break;
         found.push([i + 1, end]);
@@ -319,7 +361,7 @@ function inlineStyle(file, text) {
     }
   }
   // JSX has no escape marker: one found in a comment is a finding
-  for (const m of text.matchAll(/orrery-allow:/g)) {
+  for (const m of text.matchAll(/orrery-allow:\s*[a-z]+(?:-[a-z]+)+\b/g)) {
     if (/^\s+$/.test(clean.slice(m.index, m.index + 12))) out.push({ line: text.slice(0, m.index).split('\n').length, message: 'orrery-allow is CSS-only; move the value into CSS' });
   }
   return out;

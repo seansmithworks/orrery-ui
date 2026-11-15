@@ -237,7 +237,7 @@
   {
     "id": "inline-style-literal",
     "layer": "rule",
-    "statement": "In JSX and TSX files given to the source checker, an object literal in a style, animate, initial, exit, whileHover or whileTap attribute of a JSX tag (directly, as a ternary, &&, || or ?? branch, or as a call argument) holds no literal color and no spacing or radius value a token already holds, with no escape; not read are style={identifier}, values computed by a call, computed keys, spreads, as casts, nested objects, transform and translate offsets, and TS outside those attributes.",
+    "statement": "In JSX and TSX files given to the source checker, an object literal in a style, animate, initial, exit, whileHover or whileTap attribute of a JSX tag (directly, as a ternary, &&, || or ?? branch, or as a call argument) holds no literal color and no spacing or radius value a token already holds, with no escape; not read are style={identifier}, values computed by a call, computed keys, spreads, casts of a single value (a whole-object cast is read), tags with an explicit generic, nested objects, transform and translate offsets, and TS outside those attributes.",
     "applies": [
       "source"
     ],
