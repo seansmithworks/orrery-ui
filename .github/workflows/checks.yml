@@ -28,6 +28,9 @@ jobs:
       # The kit catalog (kit/catalog/check.mjs): entries match the components, their examples and kit/catalog.json.
       - run: npm run catalog:check
       - run: node kit/catalog/test.mjs
+      # The specimen's forced states (example/kit-preview.css) equal a fresh build from the kit's real state rules.
+      - run: npm run kit-preview:check
+      - run: node example/kit-preview.test.mjs
 
   tokens:
     runs-on: ubuntu-latest

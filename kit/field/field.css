@@ -1,9 +1,7 @@
 /* Field (label, description, error) and Input. Every value is a token or a kit-local property from kit.css.
    States: rest, hover, focus, filled, invalid, disabled, read-only.
 
-   One rule per state, written as :is(<real pseudo-class>, [data-preview~="<state>"]) with the
-   same exclusions, so the specimen and test hook (data-preview="hover" | "focus") obeys
-   disabled and read-only exactly as real interaction does. */
+   One rule per state. */
 
 @layer orrery.kit {
   .orr-field {
@@ -64,16 +62,13 @@
 
   /* hover (only where the pointer can hover) */
   @media (hover: hover) {
-    .orr-input:not([data-disabled], [readonly]):is(
-        :hover,
-        [data-preview~="hover"]
-      ) {
+    .orr-input:not([data-disabled], [readonly]):hover {
       border-color: var(--text);
     }
   }
 
   /* focus: the one ring */
-  .orr-input:not([data-disabled]):is(:focus-visible, [data-preview~="focus"]) {
+  .orr-input:not([data-disabled]):focus-visible {
     outline: var(--ring-width) solid var(--accent);
     outline-offset: var(--ring-width);
   }

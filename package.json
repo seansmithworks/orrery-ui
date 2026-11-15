@@ -100,6 +100,8 @@
     "tokens:check": "node tokens/check.mjs",
     "rules:check": "node tokens/rules/check-source.mjs",
     "catalog:build": "node kit/catalog/build.mjs",
-    "catalog:check": "node kit/catalog/check.mjs"
+    "catalog:check": "node kit/catalog/check.mjs",
+    "kit-preview:build": "node example/build-kit-preview.mjs",
+    "kit-preview:check": "node example/build-kit-preview.mjs --check"
   }
 }
