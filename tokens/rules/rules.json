@@ -392,6 +392,19 @@
     }
   },
   {
+    "id": "design-md-names",
+    "layer": "rule",
+    "statement": "Every --custom-property, token path and SCREAMING_SNAKE src/ export that DESIGN.md writes in code formatting exists in the code (tokens/generated/css or src/styles.module.css, the token source, src/), and DESIGN.md states no hex or rgb/hsl/oklch colour and no px or ms number outside its \"Values not yet in code\" list and lines marked allow-literal; this does not show that the prose describes a value correctly.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/designmd.mjs#designMdGate",
+      "test": "[design-md-names] designMdGate: a variable, token path or export DESIGN.md names that the code does not define fails, naming the line and the name"
+    }
+  },
+  {
     "id": "catalog-matches-kit",
     "layer": "rule",
     "statement": "Every value export of kit/index.ts has one catalog entry in its folder; every kit-owned prop is listed with its real type, enum, optionality and default; compound parts match the real object; kit/catalog.json equals a fresh build.",
