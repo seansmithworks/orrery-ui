@@ -13,10 +13,14 @@ import { fileURLToPath } from "node:url";
  *
  * Why computed styles, not pixels: CI is Linux and development is macOS, so a pixel baseline
  * could not be shared. Computed values are platform-stable, with these exclusions:
- *  - Box geometry derived from text (width, height) is recorded only for elements with no text
- *    in them (icon buttons, glyphs, the spinner, the scrim), plus the dialog popup's width,
- *    which comes from its own CSS and not from its content. Everything else sizes from fonts.
- *    Inputs are excluded too (their width comes from a grid column sized by sibling text).
+ *  - Box geometry derived from text is not recorded. height is recorded on every element with no
+ *    text in it (glyphs, the spinner, the scrim) and on the two elements whose height the kit
+ *    declares in CSS: .orr-button (--hit-target-min, or --space-32 for size s) and .orr-input
+ *    (--hit-target-min). width is recorded on text-free elements (icon buttons, glyphs, spinner,
+ *    scrim) and the dialog popup, whose width comes from its own CSS. The input's width is a grid
+ *    column sized by sibling text, so it is not recorded. Text buttons' width is text-derived.
+ *  - The button's hit area (.orr-button::after) records top/right/bottom/left and height on every
+ *    button, and width on icon buttons only: its width on a text button is text-derived.
  *  - margin-left and margin-right on the loading spinner: auto margins that resolve from the
  *    label's text width (found when CI on Linux disagreed with macOS by about 1px).
  *  - transform, translate, scale are not recorded: the loading spinner rotates, and the
@@ -26,6 +30,8 @@ import { fileURLToPath } from "node:url";
  *    color-mix do not depend on the Chromium build.
  *  - The brand fonts are not loaded (Google Fonts is stubbed). font-family records the declared
  *    stack, which is what the CSS decides; the face that paints is not part of the lock.
+ * Not covered: layer membership (a kit rule moving out of @layer orrery.kit). Computed styles
+ * cannot see it; the cascade-override test in kit.spec.ts owns it.
  * Hover, pressed and focus cells are forced by the specimen's data-preview hooks.
  *
  * Rewriting the baseline is explicit: UPDATE_KIT_BASELINE=1 npm run test:kit-baseline.
@@ -80,6 +86,21 @@ const PROPS = [
   "max-height",
   "display",
   "position",
+  "top",
+  "right",
+  "bottom",
+  "left",
+  "box-sizing",
+  "visibility",
+  "overflow-x",
+  "overflow-y",
+  "align-items",
+  "justify-content",
+  "flex-direction",
+  "white-space",
+  "filter",
+  "backdrop-filter",
+  "text-shadow",
   "z-index",
   "font-family",
   "font-size",
@@ -172,11 +193,14 @@ function collectInPage(args: {
       // Geometry only where text cannot move it: see the header of kit-baseline.spec.ts.
       const cs = getComputedStyle(el);
       const popup = el.classList.contains("orr-dialog");
-      // The input fills a grid column sized by its siblings' text, so its width is not its own.
-      if ((!text(el) && el.tagName !== "INPUT") || popup) {
-        vals.width = norm(cs.width);
-        if (!popup) vals.height = norm(cs.height);
-      }
+      const button = el.classList.contains("orr-button");
+      const input = el.classList.contains("orr-input");
+      // The kit declares a fixed height on .orr-button and .orr-input, so it is recorded
+      // even though the element holds text. Width is recorded for text-free elements (not the
+      // input, whose width is a grid column sized by sibling text) and the popup.
+      if ((!text(el) && !input) || popup) vals.width = norm(cs.width);
+      if ((!text(el) && !popup) || button || input)
+        vals.height = norm(cs.height);
       // The spinner centres with auto margins, which resolve from the label's text width.
       if (el.classList.contains("orr-button__spinner"))
         for (const m of ["margin-left", "margin-right"]) delete vals[m];
@@ -184,7 +208,15 @@ function collectInPage(args: {
       for (const ps of ["::before", "::after"]) {
         const content = getComputedStyle(el, ps).getPropertyValue("content");
         if (content === "none" || content === "normal") continue;
-        out[`${key}${ps}`] = { content, ...read(el, ps) };
+        const pv: Record<string, string> = { content, ...read(el, ps) };
+        // The button's hit area (inset: min(0px, (100% - hit-target) / 2)): its height is fixed
+        // by the button's declared height; its width is fixed only on an icon button.
+        if (button && ps === "::after") {
+          const pcs = getComputedStyle(el, ps);
+          pv.height = norm(pcs.height);
+          if (el.hasAttribute("data-icon")) pv.width = norm(pcs.width);
+        }
+        out[`${key}${ps}`] = pv;
       }
       if (el.tagName === "INPUT")
         out[`${key}::placeholder`] = read(el, "::placeholder");
@@ -307,9 +339,15 @@ function serialize(b: BaselineFile): string {
       lines.push(`      ${JSON.stringify(cell)}: {`);
       const es = sorted(els);
       es.forEach(([el, vals], ei) => {
-        lines.push(
-          `        ${JSON.stringify(el)}: ${JSON.stringify(Object.fromEntries(sorted(vals)))}${ei < es.length - 1 ? "," : ""}`,
+        // One property per line, so a baseline diff names the property that changed.
+        lines.push(`        ${JSON.stringify(el)}: {`);
+        const ps = sorted(vals);
+        ps.forEach(([prop, v], pi2) =>
+          lines.push(
+            `          ${JSON.stringify(prop)}: ${JSON.stringify(v)}${pi2 < ps.length - 1 ? "," : ""}`,
+          ),
         );
+        lines.push(`        }${ei < es.length - 1 ? "," : ""}`);
       });
       lines.push(`      }${ci < cs.length - 1 ? "," : ""}`);
     });
