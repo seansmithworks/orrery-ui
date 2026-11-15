@@ -4,6 +4,7 @@
 //   2. snapshot: the generated contract tokens.json deep-equals <snapshot>/tokens.json.
 //   3. head.py: each generated CSS file declares the same tokens as head.py's output, with no brand and for every client brand.
 //   4. rules: tokens/rules/rules.json is sound (every rule has a check that resolves and is tested, or a stated reason).
+//   5. DESIGN.md: every variable, token path and export it names exists, and it states no literal colour, px or ms value (tokens/lib/designmd.mjs).
 // --snapshot defaults to artifact/snapshot, the folder head.py reads.
 import fs from 'node:fs';
 import os from 'node:os';
@@ -12,6 +13,7 @@ import { execFileSync } from 'node:child_process';
 import { REPO, TOKENS } from './lib/source.mjs';
 import { snapshotGate, cssGate, headOutput, driftGate } from './lib/gates.mjs';
 import { ruleProblems } from './rules/registry.mjs';
+import { designMdGate } from './lib/designmd.mjs';
 
 const args = process.argv.slice(2);
 let snapshot = path.join(REPO, 'artifact/snapshot');
@@ -50,9 +52,12 @@ try {
   fs.rmSync(fresh, { recursive: true, force: true });
 }
 
-const bad = [...drift, ...gates.filter(Boolean), ...ruleProblems()];
+const designMd = path.join(REPO, 'DESIGN.md');
+const designProblems = fs.existsSync(designMd) ? designMdGate(fs.readFileSync(designMd, 'utf8')) : ['DESIGN.md is missing; it is the source of truth for design decisions and names the tokens'];
+
+const bad = [...drift, ...gates.filter(Boolean), ...ruleProblems(), ...designProblems];
 if (bad.length) {
   console.error(bad.join('\n') + (drift.length ? '\nRun npm run tokens:build and commit tokens/generated/.' : ''));
   process.exit(1);
 }
-console.log('tokens:check: tokens/generated/ matches the source, the Artifact snapshot and head.py; the rules registry is sound');
+console.log('tokens:check: tokens/generated/ matches the source, the Artifact snapshot and head.py; the rules registry is sound; DESIGN.md names only what exists and states no values');
