@@ -88,6 +88,7 @@ export function ruleTests({ tmp, run }) {
         '2 literal-spacing literal 8px in padding: use var(--space-8)',
         '3 literal-spacing literal 10px in border-radius: use var(--radius-panel)',
       ]);
+      assert.deepEqual(hits('k.css', ['.a {', '  --icon-size: 16px;', '  --avatar: 40px;', '  --card-padding: 16px;', '}'].join('\n'), 'literal-spacing'), ['4 literal-spacing literal 16px in --card-padding: use var(--space-16)']);
       const more = ['.a {', '  margin: 0 -8px;', '  --pad: 16px;', '  inset: 4px;', '  top: -12px;', '  scroll-padding-top: 24px;', '  scroll-margin: 8px;', '  outline-offset: 4px;', '  --sheet-radius: 10px;', '  --size: 7px;', '}'].join('\n');
       assert.deepEqual(hits('k.css', more, 'literal-spacing'), [
         '2 literal-spacing literal -8px in margin: use var(--space-8)',
@@ -111,10 +112,10 @@ export function ruleTests({ tmp, run }) {
     '[inline-style-literal] source rules: inline-style-literal fails a literal color and a token-sized spacing number in style={{ }}, and passes var() values and off-scale numbers'() {
       const bad = ['export const A = () => (', '  <div', '    style={{', '      color: "#1d1d1f",', '      padding: 8,', '      marginTop: "-16px",', '      background: "var(--surface, #fff)",', '      borderRadius: 10,', '    }}', '  />', ');'].join('\n');
       assert.deepEqual(hits('k.tsx', bad, 'inline-style-literal'), [
-        '4 inline-style-literal inline style: literal color #1d1d1f in color: use a color role, with a hex only as a var() fallback',
-        '5 inline-style-literal inline style: literal 8px in padding: use var(--space-8)',
-        '6 inline-style-literal inline style: literal -16px in margin-top: use var(--space-16)',
-        '8 inline-style-literal inline style: literal 10px in border-radius: use var(--radius-panel)',
+        '4 inline-style-literal inline style: literal color #1d1d1f in color: use a color role, with a hex only as a var() fallback; move it into CSS or pass it as a custom property',
+        '5 inline-style-literal inline style: literal 8px in padding: use var(--space-8); move it into CSS or pass it as a custom property',
+        '6 inline-style-literal inline style: literal -16px in margin-top: use var(--space-16); move it into CSS or pass it as a custom property',
+        '8 inline-style-literal inline style: literal 10px in border-radius: use var(--radius-panel); move it into CSS or pass it as a custom property',
       ]);
       const ok = ['export const A = () => <div style={{ color: "var(--text)", padding: "var(--space-8)", marginTop: 7, width: 8, opacity: 0, transform: `translate(${x}px, 0)` }} />;', '// style={{ color: "#fff" }}'].join('\n');
       assert.deepEqual(hits('k.tsx', ok, 'inline-style-literal'), []);
@@ -207,11 +208,11 @@ export function ruleTests({ tmp, run }) {
       // A gate that exists but is not wired in: a repo root whose build and check never mention it.
       const bare = path.join(tmp, 'unwired-root');
       fs.mkdirSync(path.join(bare, 'tokens/lib'), { recursive: true });
-      fs.writeFileSync(path.join(bare, 'tokens/build.mjs'), '// no gates\n');
+      fs.writeFileSync(path.join(bare, 'tokens/build.mjs'), '// systemGate(tokens) runs here\nconst note = "systemGate(x)";\n');
       fs.writeFileSync(path.join(bare, 'tokens/check.mjs'), '// no gates\n');
       fs.copyFileSync(path.join(TOKENS, 'lib/system.mjs'), path.join(bare, 'tokens/lib/system.mjs'));
       const unwired = registryProblems(withRule((l) => { l.length = 0; l.push(rules().find((r) => r.id === 'hit-target-token')); }), { root: bare, names: new Set(rules().map((r) => r.check?.test)), artifact: [] });
-      assert.deepEqual(unwired, ['rules registry: hit-target-token check ref does not resolve: systemGate is not used by tokens/build.mjs, tokens/check.mjs or a module they import']);
+      assert.deepEqual(unwired, ['rules registry: hit-target-token check ref does not resolve: systemGate is not called by tokens/build.mjs, tokens/check.mjs or a module they import']);
     },
 
     'registry: a reason with an unknown kind, an opt-in scope that does not say opt-in, and a scope on a rule with no check each fail'() {
@@ -220,6 +221,191 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(one('no-gradients', (r) => { r.reason = 'a bare string'; }), ['rules registry: no-gradients has no check and no reason; give it a check, or say why none is possible']);
       assert.deepEqual(one('hit-target-source', (r) => { r.statement = 'A control is at least 44px.'; }), ['rules registry: hit-target-source has scope opt-in, so its statement must say "opt-in"']);
       assert.deepEqual(one('no-gradients', (r) => { r.scope = 'opt-in'; r.statement = 'Opt-in nothing.'; }), ['rules registry: no-gradients has no check, so it has no scope']);
+    },
+
+    '[no-literal-spacing] orrery-allow: a marker with a reason excuses its declaration only; no reason, an unknown id, a stale marker and a marker with no declaration are each a finding; markers stack'() {
+      const both = (text) => checkText('k.css', text, ['literal-color', 'literal-spacing']).map((v) => `${v.line} ${v.rule} ${v.message}`).sort();
+      const MSG = (n) => `${n} literal-spacing literal 8px in margin: use var(--space-8)`;
+      assert.deepEqual(hits('k.css', ['.a {', '  margin: 8px;', '}'].join('\n'), 'literal-spacing'), [MSG(2)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing optical nudge to match the icon */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing'), []);
+      const noReason = '2 orrery-allow orrery-allow: literal-spacing needs a reason, a word of 3 or more letters';
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing').sort(), [noReason, MSG(3)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing ... */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing').sort(), [noReason, MSG(3)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing optical nudge */', '  margin: 8px;', '  padding: 8px;', '}'].join('\n'), 'literal-spacing'), ['4 literal-spacing literal 8px in padding: use var(--space-8)']);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spaceing optical nudge */', '  margin: 8px;', '}'].join('\n'), 'literal-spacing').sort(), ['2 orrery-allow unknown rule id literal-spaceing; valid ids: literal-color, literal-spacing', MSG(3)]);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-spacing was needed once */', '  margin: var(--space-8);', '}'].join('\n'), 'literal-spacing'), ['2 orrery-allow unused orrery-allow: literal-spacing excuses nothing on the next declaration (stale, wrong rule, or already compliant)']);
+      assert.deepEqual(hits('k.css', ['.a {', '  margin: 0;', '  /* orrery-allow: literal-spacing nothing follows */', '}'].join('\n'), 'literal-spacing'), ['3 orrery-allow unused orrery-allow: literal-spacing has no declaration after it']);
+      // wrong rule for the declaration: a color marker on a spacing finding excuses nothing, and is stale
+      assert.deepEqual(both(['.a {', '  /* orrery-allow: literal-color brand swatch */', '  margin: 8px;', '}'].join('\n')), ['2 orrery-allow unused orrery-allow: literal-color excuses nothing on the next declaration (stale, wrong rule, or already compliant)', MSG(3)]);
+      // stacked markers, one per rule, excuse one declaration that breaks both rules; one marker covers only its own rule
+      const decl = '  --card-padding: 8px solid #fff;';
+      assert.deepEqual(both(['.a {', '  /* orrery-allow: literal-color brand swatch */', '  /* orrery-allow: literal-spacing optical nudge */', decl, '}'].join('\n')), []);
+      assert.deepEqual(both(['.a {', '  /* orrery-allow: literal-color brand swatch */', decl, '}'].join('\n')), ['3 literal-spacing literal 8px in --card-padding: use var(--space-8)']);
+      // one marker covers every finding of its rule within its one declaration
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color shadow tuned by eye */', '  box-shadow: 0 1px 2px #000, 0 4px 8px #111;', '}'].join('\n'), 'literal-color'), []);
+    },
+
+    '[no-literal-spacing] custom properties are read by name segment (pad, padding, gap, gutter, margin, space, spacing, inset, offset, indent, radius, radii), not by substring'() {
+      const src = ['.a {', '  --card-padding: 16px;', '  --page-gutter: 24px;', '  --x-offset: 4px;', '  --orr-gap-count: 8px;', '  --sheet-radii: 10px;', '  --marginalia: 8px;', '  --paddington: 8px;', '  --icon-size: 16px;', '  --avatar: 40px;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', src, 'literal-spacing'), [
+        '2 literal-spacing literal 16px in --card-padding: use var(--space-16)',
+        '3 literal-spacing literal 24px in --page-gutter: use var(--space-24)',
+        '4 literal-spacing literal 4px in --x-offset: use var(--space-4)',
+        '5 literal-spacing literal 8px in --orr-gap-count: use var(--space-8)',
+        '6 literal-spacing literal 10px in --sheet-radii: use var(--radius-panel)',
+      ]);
+    },
+
+    '[no-literal-color] orrery-allow: a marker with a reason excuses the next declaration only, and with no reason it is a finding'() {
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color brand swatch shown as data */', '  background: #123456;', '  color: #fff;', '}'].join('\n'), 'literal-color'), ['4 literal-color literal color #fff in color: use a color role, with a hex only as a var() fallback']);
+      assert.deepEqual(hits('k.css', ['.a {', '  /* orrery-allow: literal-color */', '  background: #123456;', '}'].join('\n'), 'literal-color').sort(), ['2 orrery-allow orrery-allow: literal-color needs a reason, a word of 3 or more letters', '3 literal-color literal color #123456 in background: use a color role, with a hex only as a var() fallback']);
+    },
+
+    '[inline-style-literal] orrery-allow is CSS-only: a marker in a TSX comment is a finding and excuses nothing, a marker inside a string is ignored, and keys starting -- are never flagged'() {
+      const src = ['export const A = () => (', '  <div', '    style={{', '      // orrery-allow: inline-style-literal because reasons', '      color: "#fff",', '      "--orr-x": "#000",', '      "--orr-pad": 8,', '      content: "orrery-allow: inline-style-literal",', '    }}', '  />', ');'].join('\n');
+      assert.deepEqual(hits('k.tsx', src, 'inline-style-literal').sort(), [
+        '4 inline-style-literal orrery-allow is CSS-only; move the value into CSS',
+        '5 inline-style-literal inline style: literal color #fff in color: use a color role, with a hex only as a var() fallback; move it into CSS or pass it as a custom property',
+      ]);
+    },
+
+    '[inline-style-literal] attributes: only real JSX attributes style, animate, initial, exit, whileHover and whileTap are read, with arrays, nested ternaries, ??, ||, &&, call arguments and template strings; what is not read is pinned here'() {
+      const t = (jsx) => hits('k.tsx', `export const A = () => (${jsx});`, 'inline-style-literal').length;
+      // read
+      assert.equal(t('<motion.div animate={{ backgroundColor: "#fff" }} />'), 1);
+      assert.equal(t('<motion.div initial={{ opacity: 0, padding: 8 }} exit={{ color: "red" }} whileHover={{ margin: 16 }} whileTap={{ borderColor: "#000" }} />'), 4);
+      assert.equal(t('<div style={on ? { color: "#fff" } : { padding: 8 }} />'), 2);
+      assert.equal(t('<div style={on && { color: "#fff" }} />'), 1);
+      assert.equal(t('<div style={{ color: on ? "#fff" : "var(--text)", padding: big ? 24 : 7 }} />'), 2);
+      assert.equal(t('<div style={{ border: `1px solid #fff`, width: `${w}px` }} />'), 1);
+      assert.equal(t('<motion.div animate={{ backgroundColor: ["#fff", "#000"] }} />'), 2);
+      assert.equal(t('<div style={{ color: (on ? "#fff" : (big ? "red" : "var(--t)")) }} />'), 2);
+      assert.equal(t('<div style={{ color: theme ?? "#fff", padding: gap || 8 }} />'), 2);
+      assert.equal(t('<div style={merge({ color: "#fff" }, other)} />'), 1);
+      // not an attribute of a tag
+      assert.equal(t('<div data-style={{ color: "#fff" }} />'), 0);
+      assert.equal(hits('k.tsx', 'let style = { color: "#fff" };\nconst initial = { padding: 8 };\nstyle = { color: "red" };', 'inline-style-literal').length, 0);
+      // known not read
+      assert.equal(t('<div style={styles} />'), 0);
+      assert.equal(t('<div style={{ color: pick("#fff"), padding: space(8) }} />'), 0);
+      assert.equal(t('<div style={{ [key]: "#fff" }} />'), 0);
+      assert.equal(t('<div style={{ color: "#fff" as string }} />'), 0);
+      assert.equal(t('<div style={{ ...base }} />'), 0);
+      assert.equal(t('<motion.div transition={{ duration: 8, color: "#fff" }} />'), 0);
+      assert.equal(t('<motion.div animate={{ transition: { padding: 8 }, transform: "translateX(8px)" }} />'), 0);
+    },
+
+    '[no-em-dashes] an apostrophe in JSX text is text, so a comment after it is still a comment, and a real string is still read'() {
+      const dash = '—';
+      assert.deepEqual(hits('k.tsx', `export const A = () => <p>Don't</p>; // note ${dash} fine`, 'em-dash'), []);
+      assert.deepEqual(hits('k.tsx', `export const A = () => <p>Can't won't</p>; /* ${dash} */\nconst b = 'x ${dash} y';`, 'em-dash').map((x) => x.slice(0, 12)), ['2 em-dash em']);
+    },
+
+    'source rules: the CLI counts allowed exceptions, and lists each one sorted by marker line with the marker line and the finding line'() {
+      const dir = path.join(tmp, 'cli-allow');
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, 'a.css'), '.a {\n  /* orrery-allow: literal-spacing optical nudge */\n  margin: 8px;\n  /* orrery-allow: literal-color brand swatch */\n  color: #fff;\n}\n');
+      const r = spawnSync(process.execPath, [CLI, 'a.css'], { encoding: 'utf8', cwd: dir });
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /^a\.css:2 literal-spacing allowed \(finding at line 3\): optical nudge\na\.css:4 literal-color allowed \(finding at line 5\): brand swatch$/m);
+      assert.match(r.stdout, /^rules:check: 1 path\(s\), no violations, 2 allowed exception\(s\)$/m);
+    },
+
+    'registry: a gate named only in a comment or a string, never called, fails'() {
+      const bare = path.join(tmp, 'mention-root');
+      fs.mkdirSync(path.join(bare, 'tokens/lib'), { recursive: true });
+      fs.writeFileSync(path.join(bare, 'tokens/build.mjs'), "import { systemGate } from './lib/system.mjs';\n// systemGate(tokens) is called here, honest\n/* systemGate( */\nconst s = 'systemGate(x)';\n");
+      fs.writeFileSync(path.join(bare, 'tokens/check.mjs'), '// nothing\n');
+      fs.copyFileSync(path.join(TOKENS, 'lib/system.mjs'), path.join(bare, 'tokens/lib/system.mjs'));
+      const ctx = { root: bare, names: new Set(rules().map((r) => r.check?.test)), artifact: [] };
+      const only = (l) => { l.length = 0; l.push(rules().find((r) => r.id === 'hit-target-token')); };
+      assert.deepEqual(registryProblems(withRule(only), ctx), ['rules registry: hit-target-token check ref does not resolve: systemGate is not called by tokens/build.mjs, tokens/check.mjs or a module they import']);
+      fs.appendFileSync(path.join(bare, 'tokens/build.mjs'), 'systemGate(tokens, doc, where);\n');
+      assert.deepEqual(registryProblems(withRule(only), ctx), []);
+    },
+
+    '[inline-style-literal] a tag start inside a string, a template literal, a string in an attribute or a regex literal is not a tag, while a real tag, a tag in a template interpolation and a string value in a real attribute are read'() {
+      const t = (code) => hits('k.tsx', code, 'inline-style-literal').length;
+      // five false-positive forms: clean
+      assert.equal(t('const s = "<div style={{ color: \'#fff\' }}>";'), 0);
+      assert.equal(t('const s = \'<div style={{ color: "#fff" }}>\';'), 0);
+      assert.equal(t('const s = render(`<div style={{ color: "#fff" }} />`);'), 0);
+      assert.equal(t('export const A = () => <input title=\'<b style={{ color: "#fff" }}>\' />;'), 0);
+      assert.equal(t('const re = /<div style={{ color: "#fff" }}>/;\nconst ok = x.replace(/<i style={{ padding: 8 }}>/g, "");'), 0);
+      // true-positive forms: still flagged
+      assert.equal(t('export const A = () => <div style={{ color: "#fff" }} />;'), 1);
+      assert.equal(t('const s = `text ${<X style={{ color: "#fff" }} />} more`;'), 1);
+      assert.equal(t('export const A = () => <div title="a" style={{ color: "#fff" }} />;\nconst b = "<p style={{ color: \'#000\' }}>";'), 1);
+    },
+
+    '[inline-style-literal] every element of a style array is read, a whole-object cast is read, a value cast is not, and a prose mention of orrery-allow is not a marker'() {
+      const t = (jsx) => hits('k.tsx', `export const A = () => (${jsx});`, 'inline-style-literal').length;
+      assert.equal(t('<div style={[{ color: "#fff" }, { padding: 8 }]} />'), 2);
+      assert.equal(t('<div style={[base, { color: "#fff" }]} />'), 1);
+      assert.equal(t('<div style={{ color: "#fff" } as CSSProperties} />'), 1);
+      assert.equal(t('<div style={{ color: "#fff" as string }} />'), 0);
+      assert.deepEqual(hits('k.tsx', '// The orrery-allow: marker belongs in CSS only, so a prose mention is fine.\nexport const A = 1;', 'inline-style-literal'), []);
+      assert.equal(hits('k.tsx', '// orrery-allow: literal-color brand swatch\nexport const A = 1;', 'inline-style-literal').length, 1);
+    },
+
+    '[inline-style-literal] a later tag on the same line as a self-closing tag with a {} attribute, or after a regex literal holding a quote, is still read'() {
+      const t = (code) => hits('k.tsx', code, 'inline-style-literal').map((s) => s.split(' in ')[0]);
+      const fff = '1 inline-style-literal inline style: literal color #fff', black = '1 inline-style-literal inline style: literal color #000';
+      assert.deepEqual(t('export const A = () => <div><Icon name={x} /><b style={{color:"#fff"}} /></div>;'), [fff]);
+      assert.deepEqual(t('export const A = () => <p>{a && <Icon n={x} />}<b style={{color:"#fff"}}>/</b></p>;'), [fff]);
+      assert.deepEqual(t('export const A = () => <><b style={{color:"#fff"}} />; const re = /"/; <i style={{color:"#000"}} /></>;'), [fff, black]);
+    },
+
+    '[inline-style-literal] JSX text holding a backtick, an unbalanced quote, an apostrophe, a slash or an entity does not hide later tags, on the same line or later ones'() {
+      for (const text of ['a ` b', 'say "hi', "Don't", 'and/or', 'R&amp;D', '` " \' / &amp;']) {
+        const src = [`export const A = () => <p>${text} <b style={{color:"#fff"}} /> ${text}`, `  <i style={{padding: 8}} />`, `</p>;`, `export const B = () => <u style={{margin: 16}} />;`].join('\n');
+        assert.deepEqual(hits('k.tsx', src, 'inline-style-literal').map((s) => s.split(':')[0]), ['1 inline-style-literal inline style', '2 inline-style-literal inline style', '4 inline-style-literal inline style'], text);
+      }
+    },
+
+    '[inline-style-literal] tag-looking strings, template text, regex literals and string props are not tags, a tag in a ${} interpolation is, and a tag with an explicit generic is read'() {
+      const t = (code) => hits('k.tsx', code, 'inline-style-literal').length;
+      assert.equal(t('const s = "<b style={{color:\'#fff\'}} />"; const u = `<b style={{color:"#fff"}} />`; const r = /<b style={{color:"#fff"}}>/;'), 0);
+      assert.equal(t('export const A = () => <a title="<b style={{color:\'#fff\'}} />" data-x={`<i style={{padding: 8}} />`} />;'), 0);
+      assert.equal(t('const s = `a ${<b style={{color:"#fff"}} />} b ${`<i style={{padding: 8}} />`}`;'), 1);
+      assert.equal(t('export const A = () => <Foo<Bar> style={{color:"#fff"}} />;'), 1);
+    },
+
+    '[inline-style-literal] a marker in a JSX comment {/* */} is a finding; the same words in JSX text are text'() {
+      const src = ['export const A = () => (', '  <p>', '    {/* orrery-allow: literal-color brand swatch */}', '    // orrery-allow: literal-color not a comment here', '  </p>', ');'].join('\n');
+      assert.deepEqual(hits('k.tsx', src, 'inline-style-literal'), ['3 inline-style-literal orrery-allow is CSS-only; move the value into CSS']);
+    },
+
+    'source rules: a JS or TS file with a syntax error is one parse-error finding naming the line, the CLI exits 1, and no rule passes it silently'() {
+      const src = ['export const A = () => (', '  <div style={{ color: "#fff" }}', ');'].join('\n');
+      assert.deepEqual(hits('k.tsx', src, 'inline-style-literal'), ['3 parse-error could not be parsed; source rules were not applied to this file']);
+      assert.deepEqual(hits('k.ts', 'const a = "x—y";\nconst b = ;', 'em-dash'), ['2 parse-error could not be parsed; source rules were not applied to this file']);
+      const dir = path.join(tmp, 'cli-parse');
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, 'broken.tsx'), src);
+      const r = spawnSync(process.execPath, [CLI, 'broken.tsx'], { encoding: 'utf8', cwd: dir });
+      assert.equal(r.status, 1, r.stderr);
+      assert.match(r.stderr, /^broken\.tsx:3 parse-error could not be parsed; source rules were not applied to this file$/m);
+    },
+
+    'source rules: deep nesting does not crash the checker: a 20,000-deep template and 5,000 nested parentheses each return findings or a parse-error'() {
+      const tpl = `const t = ${'`${'.repeat(20000)}<b title="—" style={{ color: "#fff" }} />${'}`'.repeat(20000)};`;
+      const parens = `export const A = () => <div style={${'('.repeat(5000)}{ color: "#fff" }${')'.repeat(5000)}} />;`;
+      for (const [name, code, rule] of [['template', tpl, 'inline-style-literal'], ['template', tpl, 'em-dash'], ['parentheses', parens, 'inline-style-literal']]) {
+        const found = checkText('k.tsx', code, [rule]);
+        assert.ok(found.length > 0, `${name} ${rule}`);
+        for (const v of found) assert.ok(v.rule === rule || v.rule === 'parse-error', `${name}: ${v.rule}`);
+      }
+    },
+
+    '[no-em-dashes] em-dash reads the syntax tree: a string, template text, JSX text and a JSX attribute string are flagged; line, block and JSX comments are not; entities and escapes are'() {
+      const dash = '—';
+      const t = (code) => hits('k.tsx', code, 'em-dash').map((s) => s.split(':')[0]);
+      assert.deepEqual(t(`const a = "x${dash}y";`), ['1 em-dash em dash (—)']);
+      assert.deepEqual(t(`const a = \`x${dash}y\`;\nconst b = \`a \${x} b${dash}\${y} c\`;`), ['1 em-dash em dash (—)', '2 em-dash em dash (—)']);
+      assert.deepEqual(t(`export const A = () => <p title="t${dash}">j${dash}k</p>;`), ['1 em-dash em dash (—)', '1 em-dash em dash (—)']);
+      assert.deepEqual(t(`// ${dash}\n/* ${dash}\n${dash} */\nexport const A = () => <p>{/* ${dash} */}ok</p>;`), []);
+      assert.deepEqual(t('export const A = () => <p>&mdash;&#8212;&#x2014;</p>;\nconst e = "\\u2014 \\u{2014}";'), ['1 em-dash em dash (&mdash;)', '1 em-dash em dash (&#8212;)', '1 em-dash em dash (&#x2014;)', '2 em-dash em dash (\\u2014)', '2 em-dash em dash (\\u{2014})']);
     },
   };
 }

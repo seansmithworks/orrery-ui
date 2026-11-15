@@ -47,7 +47,7 @@ function reachableText(root) {
     if (seen.has(rel) || !exists(rel, root)) return;
     seen.add(rel);
     const text = read(rel, root);
-    texts.push(text);
+    texts.push(stripCode(text));
     for (const m of text.matchAll(/from\s+'(\.{1,2}\/[^']+)'/g)) visit(path.posix.normalize(path.posix.join(path.posix.dirname(rel), m[1])));
   };
   ENTRY_POINTS.forEach(visit);
@@ -56,6 +56,19 @@ function reachableText(root) {
 // The name a test title must carry: the gate's function (or method), or the source check's id.
 const symbol = ({ kind, ref }) => (kind === 'token-gate' ? ref.split('#')[1].split('.').pop() : kind === 'source-check' ? ref : null);
 const count = (text, re) => (text.match(re) ?? []).length;
+/** Source text with comments and the insides of string and template literals blanked, so a mention in either is not a use. */
+export function stripCode(text) {
+  let out = '', quote = null;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i], two = text.slice(i, i + 2);
+    if (quote) {
+      if (ch === '\\') { out += '  '; i++; } else if (ch === quote) { quote = null; out += ch; } else out += ch === '\n' ? ch : ' ';
+    } else if (two === '//') { while (i < text.length && text[i] !== '\n') { out += ' '; i++; } out += '\n'; }
+    else if (two === '/*') { const end = text.indexOf('*/', i + 2) === -1 ? text.length : text.indexOf('*/', i + 2) + 2; out += text.slice(i, end).replace(/[^\n]/g, ' '); i = end - 1; }
+    else { if (ch === '"' || ch === "'" || ch === '`') quote = ch; out += ch; }
+  }
+  return out;
+}
 
 function resolveGate(ref, root) {
   const [file, sym] = ref.split('#');
@@ -66,9 +79,9 @@ function resolveGate(ref, root) {
   const [name, method] = sym.split('.');
   if (typeof mod[name] !== 'function') return `${file} exports no function ${name}`;
   if (method && typeof mod[name]()?.[method] !== 'function') return `${name}() in ${file} has no method ${method}`;
-  // Wired in: used by the build or the check, not just defined. A definition counts once; a use is a second occurrence.
+  // Wired in: called by the build or the check or a module they import, in code (a comment or a string does not count).
   const text = reachableText(root);
-  if (method ? count(text, new RegExp(`\\.${method}\\b`, 'g')) < 1 : count(text, new RegExp(`\\b${name}\\b`, 'g')) < 2) return `${method ?? name} is not used by tokens/build.mjs, tokens/check.mjs or a module they import`;
+  if (count(text, method ? new RegExp(`\\.${method}\\s*\\(`, 'g') : new RegExp(`(?<!function\\s+)\\b${name}\\s*\\(`, 'g')) < 1) return `${method ?? name} is not called by tokens/build.mjs, tokens/check.mjs or a module they import`;
   return null;
 }
 
