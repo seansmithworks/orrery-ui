@@ -552,6 +552,22 @@ test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
     await page.goto("/fixtures/kit-dialog.html");
   });
 
+  test("portal: with no container, an open dialog's portal node is a direct child of <body>", async ({
+    page,
+  }) => {
+    // The specimen's live dialogs pass a container (a per-panel wrapper that carries the brand), so
+    // this is checked here, on Dialog.Popup's default, which is what an app gets.
+    await page.getByRole("button", { name: "Open settings" }).click();
+    const dialog = page.getByRole("dialog", { name: "Orbit settings" });
+    await expect(dialog).toBeVisible();
+    expect(
+      await dialog.evaluate((d) => {
+        const portal = d.closest("[data-base-ui-portal]");
+        return portal?.parentElement?.tagName ?? "no portal";
+      }),
+    ).toBe("BODY");
+  });
+
   test("nested dialog: opens above its parent, Escape closes only the inner one, focus returns to the inner trigger", async ({
     page,
   }) => {
