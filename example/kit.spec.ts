@@ -494,21 +494,30 @@ async function transformsWhileOpening(
     const w = window as unknown as {
       seen: string[];
       transitionProperty: string;
+      opened: boolean;
     };
     w.seen = [];
-    const t0 = performance.now();
+    w.opened = false;
+    // Sample every frame until the popup has fully opened: opacity 1 and no transition left running.
     const tick = () => {
       const el = document.querySelector(sel);
       if (el) {
-        w.seen.push(getComputedStyle(el).transform);
-        w.transitionProperty = getComputedStyle(el).transitionProperty;
+        const cs = getComputedStyle(el);
+        w.seen.push(cs.transform);
+        w.transitionProperty = cs.transitionProperty;
+        if (cs.opacity === "1" && el.getAnimations().length === 0) {
+          w.opened = true;
+          return;
+        }
       }
-      if (performance.now() - t0 < 600) requestAnimationFrame(tick);
+      requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   }, LIVE_POPUP);
   await trigger(panel(page, id)).click();
-  await page.waitForTimeout(700);
+  await page.waitForFunction(
+    () => (window as unknown as { opened: boolean }).opened,
+  );
   return page.evaluate(() => {
     const w = window as unknown as {
       seen: string[];
