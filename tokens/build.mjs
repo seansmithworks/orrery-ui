@@ -11,6 +11,7 @@ import { resolve } from './lib/resolve.mjs';
 import { colorGate } from './lib/gates.mjs';
 import { systemGate, systemCss, systemSwift, motionModule } from './lib/system.mjs';
 import { checker } from './lib/checks.mjs';
+import { irisBridgeGate, irisBridgeCss } from './lib/bridge.mjs';
 
 const usage = (why) => {
   console.error(`tokens:build: ${why}\nusage: node tokens/build.mjs [--out <dir>]`);
@@ -81,10 +82,20 @@ const write = (rel, text) => files.set(rel, text);
 write(MARKER, 'Written by npm run tokens:build. A folder with this file may be pruned by the next build.\n');
 
 const orrery = await build('orrery');
+// The Iris bridge (opt-in): mapping from bridges/iris.json; a --source folder without one uses the repo's.
+const bridgeFile = path.join(fs.existsSync(path.join(source, 'bridges')) ? source : TOKENS, 'bridges/iris.json');
+const bridge = JSON.parse(fs.readFileSync(bridgeFile, 'utf8')).map;
+const light = orrery.modes.find((m) => m.id === 'light');
+const badBridge = irisBridgeGate(bridge, light.tokens, fs.readFileSync(path.join(REPO, 'README.md'), 'utf8'), fs.readFileSync(path.join(REPO, 'src/styles.module.css'), 'utf8'), `brand ${orrery.name}, mode light`);
+if (badBridge.length) {
+  console.error(badBridge.join('\n'));
+  process.exit(1);
+}
 const shape = contract(orrery.modes);
 write('tokens.json', JSON.stringify(shape, null, 2) + '\n');
 write(`css/${orrery.name}.css`, css(orrery.modes, orrery.name));
 write(`css/${orrery.name}.system.css`, systemCss(orrery.modes, orrery.name));
+write(`css/${orrery.name}.iris.css`, irisBridgeCss(bridge, orrery.name));
 write('js/orrery.motion.mjs', motionModule(orrery.modes[0].doc));
 
 const brands = [orrery];

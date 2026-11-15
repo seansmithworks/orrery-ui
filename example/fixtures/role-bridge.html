@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Orrery Iris — role-bridge fixture</title>
+    <style>
+      /* Bare on purpose: no --orrery-iris-* set here, a plain white body, no
+         text anywhere in the Iris parts. role-bridge.spec.ts reads the
+         package's own CSS fallbacks off this page. */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: #fff;
+        color: #000;
+        min-height: 100vh;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="./role-bridge.tsx"></script>
+  </body>
+</html>
