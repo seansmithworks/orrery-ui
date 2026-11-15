@@ -1,0 +1,54 @@
+{
+  "$description": "Brand solar draws elevation the way brand orrery does: fill plus hairline, never shadow. The site's chrome is a surface with a border (src/solar/look/palette.ts:24-25). `draw` is the brand's choice per level: `fill` (fill only), `hairline` (fill, line, line-width) or `shadow` (fill, shadow). A level with no drawing here is not emitted.",
+  "elevation": {
+    "level-0": {
+      "$extensions": {
+        "com.orrery": {
+          "draw": "fill"
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{color.page}"
+      }
+    },
+    "level-1": {
+      "$extensions": {
+        "com.orrery": {
+          "draw": "hairline"
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{color.layer-1}"
+      },
+      "line": {
+        "$type": "color",
+        "$value": "{color.line}"
+      },
+      "line-width": {
+        "$type": "dimension",
+        "$value": "{border.line-width}"
+      }
+    },
+    "level-2": {
+      "$extensions": {
+        "com.orrery": {
+          "draw": "hairline"
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{color.layer-2}"
+      },
+      "line": {
+        "$type": "color",
+        "$value": "{color.line}"
+      },
+      "line-width": {
+        "$type": "dimension",
+        "$value": "{border.line-width}"
+      }
+    }
+  }
+}

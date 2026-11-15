@@ -66,5 +66,7 @@ jobs:
       - run: npm ci
       - run: npx playwright install --with-deps --only-shell chromium
       - run: npm run test:roles
+      # Kit exemplars (example/kit.spec.ts): axe, keyboard, focus ring, hit area, reduced motion. Chromium only.
+      - run: npx playwright test -c example/playwright.config.ts kit.spec.ts --project=chromium
       # The opt-in Iris bridge (example/role-bridge.spec.ts): light and bridge-alone equal bare, dark is its own baseline.
       - run: npm run test:bridge

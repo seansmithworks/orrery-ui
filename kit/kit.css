@@ -1,0 +1,32 @@
+/* Orrery kit: the one CSS entry. Class prefix: orr- (first draft).
+
+   Load order: the brand's token CSS (tokens/generated/css/<brand>.css), then its system CSS
+   (<brand>.system.css), then this file. Every kit rule sits in the cascade layer `orrery.kit`,
+   so any unlayered rule of your own wins over the kit whatever its specificity or load order:
+   a single class is enough to override. If your own CSS uses layers, declare the order first,
+   for example `@layer orrery.kit, app;`, so your layers come after the kit. */
+@import "./button/button.css";
+@import "./field/field.css";
+@import "./dialog/dialog.css";
+
+@layer orrery.kit {
+  /* Kit-local properties. Only the Iris springs are dialled tokens today, so the kit's own
+     timing and amounts live here, declared once. Each is marked with where it came from.
+     UN-DIALLED: needs Sean in the Tuner before it becomes a token. */
+  :root {
+    /* UN-DIALLED: the Artifact bundle's --bundle-dur and --bundle-ease (artifact/snapshot/bundle.css:7-8). */
+    --orr-dur: 150ms;
+    --orr-ease: cubic-bezier(0.23, 1, 0.32, 1);
+    /* Borrowed from the Iris trigger, dialled there 2026-10-07 (DESIGN.md triggerFeedback). */
+    --orr-press-scale: 0.97; /* pressScale */
+    --orr-hover-mix: 7%; /* highlightColor: 7% of the text colour */
+    /* UN-DIALLED */
+    --orr-press-mix: 12%;
+    --orr-enter-scale: 0.96;
+    --orr-spin-dur: 600ms;
+    --orr-scrim-mix: 72%;
+    --orr-dialog-width: 440px; /* no width token fits a dialog */
+    /* No layer (z-index) scale in the tokens yet. */
+    --orr-z-overlay: 100;
+  }
+}

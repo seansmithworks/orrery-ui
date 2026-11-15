@@ -61,6 +61,7 @@
   },
   "devDependencies": {
     "@axe-core/playwright": "^4.13.0",
+    "@base-ui/react": "^1.9.0",
     "@playwright/test": "^1.49.0",
     "@terrazzo/parser": "^2.10.0",
     "@types/node": "^22.10.0",
