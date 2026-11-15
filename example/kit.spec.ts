@@ -456,22 +456,23 @@ test("hit area, dense row red-proof: under the documented gap (--space-4) a neig
 test("cascade layer: a consumer's single-class rule beats every kit rule, whatever the kit's specificity", async ({
   page,
 }) => {
-  // The focus-preview primary Button is styled by .orr-button:is(:focus-visible, [data-preview~="focus"]).
+  // The rest primary Button, keyboard-focused, takes its ring from the shipped .orr-button:focus-visible
+  // (two classes' weight). Unlayered, that rule would beat the one-class consumer rule below.
   const button = panel(page, "orrery-light")
     .locator("tbody tr")
-    .filter({ hasText: /^focus/i })
+    .filter({ hasText: /^rest/i })
     .locator(".orr-button")
     .first();
-  await page.addStyleTag({
-    content: ".consumer { outline-width: 5px; border-radius: 0; }",
-  });
+  await page.addStyleTag({ content: ".consumer { outline-width: 5px; }" });
   await button.evaluate((el) => el.classList.add("consumer"));
-  expect(
-    await button.evaluate((el) => {
-      const cs = getComputedStyle(el);
-      return [cs.outlineWidth, cs.borderTopLeftRadius];
-    }),
-  ).toEqual(["5px", "0px"]);
+  await button.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(button).toBeFocused();
+  // 5px only when the consumer wins: the kit's 2px if the kit rule won, 0px if no ring were drawn.
+  expect(await button.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe(
+    "5px",
+  );
 });
 
 /**
