@@ -431,6 +431,9 @@ export function ruleTests({ tmp, run }) {
       assert.match(lit('a shadow of oklch(0.5 0.1 200)\n')[0], /literal colour oklch\(\.\.\.\)/);
       assert.match(lit('it is 48px wide\n')[0], /^D\.md:1: literal 48px; .*add <!-- allow-literal: reason --> to the line\.$/);
       assert.match(lit('it lasts 150 ms\n')[0], /literal 150ms/);
+      assert.match(lit('offset -4px here\n')[0], /^D\.md:1: literal -4px;/);
+      assert.match(lit('delay (-35ms)\n')[0], /literal -35ms/);
+      assert.deepEqual(lit('use `space-12`, `--space-4` and icon-16px names\n').filter((l) => /literal/.test(l)), []);
       assert.deepEqual(lit('# T\n\n## Values not yet in code\n\n- sun `#ffb37b` and 48px\n\n## Next\n\nplain\n'), []);
       assert.match(lit('# T\n\n## Values not yet in code\n\n- x\n\n## Next\n\nback to #fff\n')[0], /^D\.md:9: literal colour #fff/);
       assert.deepEqual(lit('settles in about 640ms <!-- allow-literal: a described settle time, not a source value -->\n'), []);

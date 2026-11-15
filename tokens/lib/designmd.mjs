@@ -5,7 +5,7 @@
 //   - `--custom-property`: declared or read in tokens/generated/css/*.css or src/styles.module.css, or written by a string in src/*.ts(x). A name ending in "-" is a prefix and is skipped.
 //   - `token.path`: a lowercase dotted path (color.accent, target.hit-target-min) in the token source under tokens/base and tokens/brands. A group counts, a file name (motion.ts) does not.
 //   - `SCREAMING_SNAKE`: a named export of src/ (DEFAULT_OPEN_SPRING).
-// Literals read, outside the "Values not yet in code" section: a hex colour, an rgb/hsl/oklch/oklab/lab/lch/hwb function, and a number with px or ms.
+// Literals read, outside the "Values not yet in code" section: a hex colour, an rgb/hsl/oklch/oklab/lab/lch/hwb function, and a number with px or ms, negative included.
 // The one escape: <!-- allow-literal: reason --> on the same line excuses that line's px and ms numbers (never a colour). It is for a sentence that needs the number to read as a principle.
 // A marker with no reason, or on a line with no px or ms number, is itself a failure, so a stale marker cannot sit there.
 import fs from 'node:fs';
@@ -16,7 +16,7 @@ export const SECTION = 'Values not yet in code';
 const FILE_EXT = new Set(['ts', 'tsx', 'js', 'jsx', 'mjs', 'json', 'css', 'md', 'html', 'png', 'svg', 'py', 'swift', 'yml']);
 const HEX = /#[0-9a-fA-F]{3,8}\b/g;
 const COLOR_FN = /\b(?:rgba?|hsla?|oklch|oklab|lab|lch|hwb)\(/g;
-const UNIT = /(?<![\w.#-])\d+(?:\.\d+)?\s?(?:px|ms)\b/g;
+const UNIT = /(?:(?<![\w.#])-|(?<![\w.#-]))\d+(?:\.\d+)?\s?(?:px|ms)\b/g;
 const MARKER = /<!--\s*allow-literal:([^>]*?)-->/;
 const MARKERS = /<!--[\s\S]*?-->/g;
 
