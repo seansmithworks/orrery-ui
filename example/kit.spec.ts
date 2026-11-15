@@ -456,22 +456,23 @@ test("hit area, dense row red-proof: under the documented gap (--space-4) a neig
 test("cascade layer: a consumer's single-class rule beats every kit rule, whatever the kit's specificity", async ({
   page,
 }) => {
-  // The focus-preview primary Button is styled by .orr-button:is(:focus-visible, [data-preview~="focus"]).
+  // The rest primary Button, keyboard-focused, takes its ring from the shipped .orr-button:focus-visible
+  // (two classes' weight). Unlayered, that rule would beat the one-class consumer rule below.
   const button = panel(page, "orrery-light")
     .locator("tbody tr")
-    .filter({ hasText: /^focus/i })
+    .filter({ hasText: /^rest/i })
     .locator(".orr-button")
     .first();
-  await page.addStyleTag({
-    content: ".consumer { outline-width: 5px; border-radius: 0; }",
-  });
+  await page.addStyleTag({ content: ".consumer { outline-width: 5px; }" });
   await button.evaluate((el) => el.classList.add("consumer"));
-  expect(
-    await button.evaluate((el) => {
-      const cs = getComputedStyle(el);
-      return [cs.outlineWidth, cs.borderTopLeftRadius];
-    }),
-  ).toEqual(["5px", "0px"]);
+  await button.focus();
+  await page.keyboard.press("Shift+Tab");
+  await page.keyboard.press("Tab");
+  await expect(button).toBeFocused();
+  // 5px only when the consumer wins: the kit's 2px if the kit rule won, 0px if no ring were drawn.
+  expect(await button.evaluate((el) => getComputedStyle(el).outlineWidth)).toBe(
+    "5px",
+  );
 });
 
 /**
@@ -494,21 +495,30 @@ async function transformsWhileOpening(
     const w = window as unknown as {
       seen: string[];
       transitionProperty: string;
+      opened: boolean;
     };
     w.seen = [];
-    const t0 = performance.now();
+    w.opened = false;
+    // Sample every frame until the popup has fully opened: opacity 1 and no transition left running.
     const tick = () => {
       const el = document.querySelector(sel);
       if (el) {
-        w.seen.push(getComputedStyle(el).transform);
-        w.transitionProperty = getComputedStyle(el).transitionProperty;
+        const cs = getComputedStyle(el);
+        w.seen.push(cs.transform);
+        w.transitionProperty = cs.transitionProperty;
+        if (cs.opacity === "1" && el.getAnimations().length === 0) {
+          w.opened = true;
+          return;
+        }
       }
-      if (performance.now() - t0 < 600) requestAnimationFrame(tick);
+      requestAnimationFrame(tick);
     };
     requestAnimationFrame(tick);
   }, LIVE_POPUP);
   await trigger(panel(page, id)).click();
-  await page.waitForTimeout(700);
+  await page.waitForFunction(
+    () => (window as unknown as { opened: boolean }).opened,
+  );
   return page.evaluate(() => {
     const w = window as unknown as {
       seen: string[];
@@ -550,6 +560,22 @@ test.describe("reduced motion: no-preference (proves the check above can fail)",
 test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto("/fixtures/kit-dialog.html");
+  });
+
+  test("portal: with no container, an open dialog's portal node is a direct child of <body>", async ({
+    page,
+  }) => {
+    // The specimen's live dialogs pass a container (a per-panel wrapper that carries the brand), so
+    // this is checked here, on Dialog.Popup's default, which is what an app gets.
+    await page.getByRole("button", { name: "Open settings" }).click();
+    const dialog = page.getByRole("dialog", { name: "Orbit settings" });
+    await expect(dialog).toBeVisible();
+    expect(
+      await dialog.evaluate((d) => {
+        const portal = d.closest("[data-base-ui-portal]");
+        return portal?.parentElement?.tagName ?? "no portal";
+      }),
+    ).toBe("BODY");
   });
 
   test("nested dialog: opens above its parent, Escape closes only the inner one, focus returns to the inner trigger", async ({

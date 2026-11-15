@@ -9,6 +9,8 @@ import {
   type ButtonVariant,
 } from "../../kit";
 import "../../kit/kit.css";
+// Specimen-only forced states (data-preview), generated from the kit's rules. After kit.css.
+import "../kit-preview.css";
 import "./specimen.css";
 import { installBrandTokens } from "./scope";
 

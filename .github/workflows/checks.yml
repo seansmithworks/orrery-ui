@@ -28,6 +28,9 @@ jobs:
       # The kit catalog (kit/catalog/check.mjs): entries match the components, their examples and kit/catalog.json.
       - run: npm run catalog:check
       - run: node kit/catalog/test.mjs
+      # The specimen's forced states (example/kit-preview.css) equal a fresh build from the kit's real state rules.
+      - run: npm run kit-preview:check
+      - run: node example/kit-preview.test.mjs
 
   tokens:
     runs-on: ubuntu-latest
@@ -49,7 +52,7 @@ jobs:
       # The registry self-check runs inside tokens:check above. This runs the one source rule that passes on src/ today.
       - run: npm run rules:check -- --only literal-color src/styles.module.css
       - run: npm run audit:vars
-      # The kit does not exist yet. Once kit/ does, it is held to every source rule.
+      # kit/ is held to every source rule.
       - run: test ! -d kit || npm run rules:check -- kit
       - run: node artifact/check/test.mjs
       - run: python3 -I artifact/check/test_head.py

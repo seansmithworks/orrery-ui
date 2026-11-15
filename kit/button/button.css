@@ -1,10 +1,7 @@
 /* Button and IconButton. Every value is a token or a kit-local property from kit.css.
    States: rest, hover, pressed, focus-visible, disabled, loading.
 
-   One rule per state. Each interactive state is written once, as
-   :is(<real pseudo-class>, [data-preview~="<state>"]) with the same exclusions, so the
-   specimen and test hook (data-preview="hover" | "active" | "focus") can never show a
-   state the real interaction would not.
+   One rule per state.
 
    Layout rule: drawn size s (32px) keeps a 44px hit area by reaching 6px past its box on
    each side. Size s buttons need a gap of at least --space-12 (44 - 32) from any neighbour,
@@ -87,19 +84,19 @@
 
   /* hover (only where the pointer can hover, so touch never sticks) */
   @media (hover: hover) {
-    .orr-button:not([data-disabled]):is(:hover, [data-preview~="hover"]) {
+    .orr-button:not([data-disabled]):hover {
       --orr-mix: var(--orr-hover-mix);
     }
   }
 
   /* pressed */
-  .orr-button:not([data-disabled]):is(:active, [data-preview~="active"]) {
+  .orr-button:not([data-disabled]):active {
     --orr-mix: var(--orr-press-mix);
     transform: scale(var(--orr-press-scale));
   }
 
   /* focus: the one ring */
-  .orr-button:is(:focus-visible, [data-preview~="focus"]) {
+  .orr-button:focus-visible {
     outline: var(--ring-width) solid var(--accent);
     outline-offset: var(--ring-width);
   }
