@@ -347,5 +347,65 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(hits('k.tsx', '// The orrery-allow: marker belongs in CSS only, so a prose mention is fine.\nexport const A = 1;', 'inline-style-literal'), []);
       assert.equal(hits('k.tsx', '// orrery-allow: literal-color brand swatch\nexport const A = 1;', 'inline-style-literal').length, 1);
     },
+
+    '[inline-style-literal] a later tag on the same line as a self-closing tag with a {} attribute, or after a regex literal holding a quote, is still read'() {
+      const t = (code) => hits('k.tsx', code, 'inline-style-literal').map((s) => s.split(' in ')[0]);
+      const fff = '1 inline-style-literal inline style: literal color #fff', black = '1 inline-style-literal inline style: literal color #000';
+      assert.deepEqual(t('export const A = () => <div><Icon name={x} /><b style={{color:"#fff"}} /></div>;'), [fff]);
+      assert.deepEqual(t('export const A = () => <p>{a && <Icon n={x} />}<b style={{color:"#fff"}}>/</b></p>;'), [fff]);
+      assert.deepEqual(t('export const A = () => <><b style={{color:"#fff"}} />; const re = /"/; <i style={{color:"#000"}} /></>;'), [fff, black]);
+    },
+
+    '[inline-style-literal] JSX text holding a backtick, an unbalanced quote, an apostrophe, a slash or an entity does not hide later tags, on the same line or later ones'() {
+      for (const text of ['a ` b', 'say "hi', "Don't", 'and/or', 'R&amp;D', '` " \' / &amp;']) {
+        const src = [`export const A = () => <p>${text} <b style={{color:"#fff"}} /> ${text}`, `  <i style={{padding: 8}} />`, `</p>;`, `export const B = () => <u style={{margin: 16}} />;`].join('\n');
+        assert.deepEqual(hits('k.tsx', src, 'inline-style-literal').map((s) => s.split(':')[0]), ['1 inline-style-literal inline style', '2 inline-style-literal inline style', '4 inline-style-literal inline style'], text);
+      }
+    },
+
+    '[inline-style-literal] tag-looking strings, template text, regex literals and string props are not tags, a tag in a ${} interpolation is, and a tag with an explicit generic is read'() {
+      const t = (code) => hits('k.tsx', code, 'inline-style-literal').length;
+      assert.equal(t('const s = "<b style={{color:\'#fff\'}} />"; const u = `<b style={{color:"#fff"}} />`; const r = /<b style={{color:"#fff"}}>/;'), 0);
+      assert.equal(t('export const A = () => <a title="<b style={{color:\'#fff\'}} />" data-x={`<i style={{padding: 8}} />`} />;'), 0);
+      assert.equal(t('const s = `a ${<b style={{color:"#fff"}} />} b ${`<i style={{padding: 8}} />`}`;'), 1);
+      assert.equal(t('export const A = () => <Foo<Bar> style={{color:"#fff"}} />;'), 1);
+    },
+
+    '[inline-style-literal] a marker in a JSX comment {/* */} is a finding; the same words in JSX text are text'() {
+      const src = ['export const A = () => (', '  <p>', '    {/* orrery-allow: literal-color brand swatch */}', '    // orrery-allow: literal-color not a comment here', '  </p>', ');'].join('\n');
+      assert.deepEqual(hits('k.tsx', src, 'inline-style-literal'), ['3 inline-style-literal orrery-allow is CSS-only; move the value into CSS']);
+    },
+
+    'source rules: a JS or TS file with a syntax error is one parse-error finding naming the line, the CLI exits 1, and no rule passes it silently'() {
+      const src = ['export const A = () => (', '  <div style={{ color: "#fff" }}', ');'].join('\n');
+      assert.deepEqual(hits('k.tsx', src, 'inline-style-literal'), ['3 parse-error could not be parsed; source rules were not applied to this file']);
+      assert.deepEqual(hits('k.ts', 'const a = "x—y";\nconst b = ;', 'em-dash'), ['2 parse-error could not be parsed; source rules were not applied to this file']);
+      const dir = path.join(tmp, 'cli-parse');
+      fs.mkdirSync(dir, { recursive: true });
+      fs.writeFileSync(path.join(dir, 'broken.tsx'), src);
+      const r = spawnSync(process.execPath, [CLI, 'broken.tsx'], { encoding: 'utf8', cwd: dir });
+      assert.equal(r.status, 1, r.stderr);
+      assert.match(r.stderr, /^broken\.tsx:3 parse-error could not be parsed; source rules were not applied to this file$/m);
+    },
+
+    'source rules: deep nesting does not crash the checker: a 20,000-deep template and 5,000 nested parentheses each return findings or a parse-error'() {
+      const tpl = `const t = ${'`${'.repeat(20000)}<b title="—" style={{ color: "#fff" }} />${'}`'.repeat(20000)};`;
+      const parens = `export const A = () => <div style={${'('.repeat(5000)}{ color: "#fff" }${')'.repeat(5000)}} />;`;
+      for (const [name, code, rule] of [['template', tpl, 'inline-style-literal'], ['template', tpl, 'em-dash'], ['parentheses', parens, 'inline-style-literal']]) {
+        const found = checkText('k.tsx', code, [rule]);
+        assert.ok(found.length > 0, `${name} ${rule}`);
+        for (const v of found) assert.ok(v.rule === rule || v.rule === 'parse-error', `${name}: ${v.rule}`);
+      }
+    },
+
+    '[no-em-dashes] em-dash reads the syntax tree: a string, template text, JSX text and a JSX attribute string are flagged; line, block and JSX comments are not; entities and escapes are'() {
+      const dash = '—';
+      const t = (code) => hits('k.tsx', code, 'em-dash').map((s) => s.split(':')[0]);
+      assert.deepEqual(t(`const a = "x${dash}y";`), ['1 em-dash em dash (—)']);
+      assert.deepEqual(t(`const a = \`x${dash}y\`;\nconst b = \`a \${x} b${dash}\${y} c\`;`), ['1 em-dash em dash (—)', '2 em-dash em dash (—)']);
+      assert.deepEqual(t(`export const A = () => <p title="t${dash}">j${dash}k</p>;`), ['1 em-dash em dash (—)', '1 em-dash em dash (—)']);
+      assert.deepEqual(t(`// ${dash}\n/* ${dash}\n${dash} */\nexport const A = () => <p>{/* ${dash} */}ok</p>;`), []);
+      assert.deepEqual(t('export const A = () => <p>&mdash;&#8212;&#x2014;</p>;\nconst e = "\\u2014 \\u{2014}";'), ['1 em-dash em dash (&mdash;)', '1 em-dash em dash (&#8212;)', '1 em-dash em dash (&#x2014;)', '2 em-dash em dash (\\u2014)', '2 em-dash em dash (\\u{2014})']);
+    },
   };
 }

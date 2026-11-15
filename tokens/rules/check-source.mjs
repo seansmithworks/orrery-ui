@@ -1,12 +1,20 @@
 #!/usr/bin/env node
 // node tokens/rules/check-source.mjs [--only <rule-id>[,<rule-id>...]] <file-or-dir>...   (npm run rules:check -- <paths>)
 // Source-level rules for the kit and the package CSS. Prints `file:line rule-id message` per violation, exits 1 if any.
-// Dependency-free: this is plain text scanning, not a CSS or JS parser. The CSS reader splits on { } ; and tracks parentheses and
-// strings; the JS reader tracks strings, template strings and comments only. A regex literal holding a quote can confuse the JS
-// reader, so the em-dash rule can miss or invent a finding there. Every rule takes the paths it is given and nothing else.
+// JS, TS, JSX and TSX are parsed with the repo's TypeScript (a devDependency; parse only, no program, no type checking), and the rules
+// walk the syntax tree. A file TypeScript cannot parse is a `parse-error` finding, never a silent pass. CSS and HTML are still text
+// scanned: the CSS reader splits on { } ; and tracks parentheses and strings. Every rule takes the paths it is given and nothing else.
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
+
+let ts;
+try {
+  ts = (await import('typescript')).default;
+} catch (e) {
+  console.error(`rules:check: cannot load the typescript package (${e.code ?? e.message}); the JS, TS and TSX rules need it. Install dev dependencies (npm ci) and run again.`);
+  process.exit(2);
+}
 
 const REPO = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
 const CSS_EXT = ['.css'];
@@ -174,195 +182,119 @@ function spacingFindings(d, scales) {
   return out;
 }
 
-// ---- Rules. Each takes (file, text) and returns [{ line, message }].
+// ---- Rules. Each takes (file, text, sf) and returns [{ line, message }]; sf is the parsed tree for a JS or TS file, else undefined.
 const cssDecls = (text) => parseCss(text).flatMap((rule) => rule.decls);
 const literalColor = (file, text) => cssDecls(text).flatMap(colorFindings);
 const literalSpacing = (file, text) => { const scales = scaleValues(); return cssDecls(text).flatMap((d) => spacingFindings(d, scales)); };
 
-// Inline styles: object literals in the JSX attributes style, animate, initial, exit, whileHover and whileTap (not transition).
-// There is no escape in JSX: move the value into CSS (where orrery-allow exists) or pass it as a custom property (keys starting -- are never read).
-// What is read: a real attribute of a JSX tag (not `data-style`, not a plain assignment), whose value is an object literal, or an object literal
-// in a ternary, && / || / ?? branch or a call argument. Each key: value pair is checked like a CSS declaration (camelCase becomes kebab-case).
-// A value is read when it is a string, a bare number, a template string (its ${} parts dropped), an array of those, a ternary or a
-// parenthesised expression of those, or the literal side of && / || / ??.
-// Not read: style={identifier}; values computed by a call; computed keys; spreads; `as` casts; nested objects (transition inside animate);
-// transform and translate offsets; color literals in TS outside these attributes.
-const INLINE_ATTRS = new Set(['style', 'animate', 'initial', 'exit', 'whileHover', 'whileTap']);
-const OPEN = '([{', CLOSE = ')]}';
-function topLevelEntries(body) {
-  const out = [];
-  let depth = 0, quote = null, start = 0;
-  for (let i = 0; i <= body.length; i++) {
-    const ch = body[i];
-    if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
-    if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-    else if (ch !== undefined && OPEN.includes(ch)) depth++;
-    else if (ch !== undefined && CLOSE.includes(ch)) depth--;
-    else if ((ch === ',' || i === body.length) && depth === 0) { out.push({ text: body.slice(start, i), at: start }); start = i + 1; }
+// ---- JS, TS, JSX and TSX: the syntax tree. Walks are loops, not recursion, so deep nesting cannot overflow the stack.
+const SCRIPT_KIND = { '.ts': 'TS', '.tsx': 'TSX', '.js': 'JS', '.jsx': 'JSX', '.mjs': 'JS', '.cjs': 'JS' };
+const PARSE_ERROR = 'could not be parsed; source rules were not applied to this file';
+/** { sf } for a file TypeScript parses cleanly; { error: line } for a syntax error, or for a parser that gave up (a stack overflow). */
+function parseScript(file, text) {
+  let sf;
+  try {
+    sf = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind[SCRIPT_KIND[path.extname(file)]]);
+  } catch (e) {
+    if (e instanceof RangeError) return { error: 1 };
+    throw e;
   }
-  return out;
+  const first = sf.parseDiagnostics[0];
+  return first ? { error: lineOf(sf, first.start) } : { sf };
 }
-/** Index of the bracket that closes the one at `open`, skipping strings, or -1. */
-function closing(text, open) {
-  let depth = 0, quote = null;
-  for (let i = open; i < text.length; i++) {
-    const ch = text[i];
-    if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
-    if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-    else if (OPEN.includes(ch)) depth++;
-    else if (CLOSE.includes(ch) && --depth === 0) return i;
+const lineOf = (sf, pos) => sf.getLineAndCharacterOfPosition(pos).line + 1;
+/** Every node of the tree, in source order. */
+function* nodes(sf) {
+  const stack = [sf];
+  while (stack.length) {
+    const node = stack.pop();
+    yield node;
+    const kids = [];
+    ts.forEachChild(node, (c) => { kids.push(c); });
+    for (let i = kids.length - 1; i >= 0; i--) stack.push(kids[i]);
   }
-  return -1;
 }
-/** Splits `raw` at its top-level occurrences of any operator in `ops`, or returns [raw]. */
-function splitTop(raw, ops) {
-  const parts = [];
-  let depth = 0, quote = null, start = 0;
-  for (let i = 0; i < raw.length; i++) {
-    const ch = raw[i];
-    if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
-    if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-    else if (OPEN.includes(ch)) depth++;
-    else if (CLOSE.includes(ch)) depth--;
-    else if (depth === 0) {
-      const op = ops.find((o) => raw.startsWith(o, i) && !(o === '?' && (raw[i + 1] === '?' || raw[i + 1] === '.' || raw[i - 1] === '?')));
-      if (op) { parts.push(raw.slice(start, i)); start = i + op.length; i += op.length - 1; }
+/** Every comment in the file, as TypeScript's comment ranges: the trivia before each token. JSX text is text, not trivia. */
+function comments(sf) {
+  const found = new Map(), stack = [sf];
+  while (stack.length) {
+    const node = stack.pop();
+    if (ts.isJSDoc(node)) continue; // its comment is also the trivia of the token after it
+    if (node.kind >= ts.SyntaxKind.FirstNode) {
+      const kids = node.getChildren(sf);
+      for (let i = kids.length - 1; i >= 0; i--) stack.push(kids[i]);
+    } else if (node.kind !== ts.SyntaxKind.JsxText) {
+      for (const r of [...(ts.getTrailingCommentRanges(sf.text, node.pos) ?? []), ...(ts.getLeadingCommentRanges(sf.text, node.pos) ?? [])]) found.set(r.pos, r);
     }
   }
-  return parts.length ? [...parts, raw.slice(start)] : [raw];
-}
-/** Every CSS string this rule can read out of a value expression. */
-function literals(raw) {
-  raw = raw.trim();
-  while (raw.startsWith('(') && closing(raw, 0) === raw.length - 1) raw = raw.slice(1, -1).trim();
-  if (raw.startsWith('[') && closing(raw, 0) === raw.length - 1) return topLevelEntries(raw.slice(1, -1)).flatMap((e) => literals(e.text));
-  const logical = splitTop(raw, ['&&', '||', '??']);
-  if (logical.length > 1) return logical.flatMap(literals);
-  // a ternary: a ? b : c, nested to the right or in parentheses
-  const q = splitTop(raw, ['?']);
-  if (q.length > 1) {
-    const rest = raw.slice(q[0].length + 1);
-    let depth = 0, quote = null, nested = 0, colon = -1;
-    for (let i = 0; i < rest.length && colon === -1; i++) {
-      const ch = rest[i];
-      if (quote) { if (ch === '\\') i++; else if (ch === quote) quote = null; continue; }
-      if (ch === '"' || ch === "'" || ch === '`') quote = ch;
-      else if (OPEN.includes(ch)) depth++;
-      else if (CLOSE.includes(ch)) depth--;
-      else if (depth === 0 && ch === '?' && rest[i + 1] !== '?' && rest[i + 1] !== '.') nested++;
-      else if (depth === 0 && ch === ':') { if (nested === 0) colon = i; else nested--; }
-    }
-    if (colon !== -1) return [...literals(rest.slice(0, colon)), ...literals(rest.slice(colon + 1))];
-  }
-  const str = /^(["'])([\s\S]*)\1$/.exec(raw);
-  if (str) return [str[2]];
-  const tpl = /^`([\s\S]*)`$/.exec(raw);
-  if (tpl) { let out = '', depth = 0; for (let i = 0; i < tpl[1].length; i++) { if (tpl[1].startsWith('${', i)) { depth++; i++; out += ' '; } else if (depth && tpl[1][i] === '}') depth--; else if (!depth) out += tpl[1][i]; } return [out]; }
-  return /^-?\d*\.?\d+$/.test(raw) && Number(raw) !== 0 ? [`${raw}px`] : [];
-}
-/**
- * Which positions of `clean` (comments already blanked) are code: 1 for code, 0 inside a string, the text of a template literal
- * (outside its ${ }) or a regex literal. A `<Tag` start is only a tag in code. A regex literal is recognised by what precedes the slash.
- */
-function codeMask(clean) {
-  const mask = new Uint8Array(clean.length);
-  const REGEX_AFTER = /[(,=:[!&|?{};]$|^$|\breturn$|\btypeof$/;
-  const scanCode = (i, interp) => {
-    let depth = 0;
-    for (; i < clean.length; i++) {
-      const ch = clean[i];
-      if (interp && ch === '}' && depth === 0) return i;
-      if (ch === '{') depth++;
-      else if (ch === '}') depth--;
-      if ((ch === '"' || ch === "'") && !isApostrophe(clean, i)) {
-        let j = i + 1;
-        while (j < clean.length && clean[j] !== ch && clean[j] !== '\n') j += clean[j] === '\\' ? 2 : 1;
-        i = j;
-      } else if (ch === '`') {
-        i = scanTemplate(i + 1);
-      } else if (ch === '/' && clean[i + 1] !== '/' && clean[i + 1] !== '*' && REGEX_AFTER.test(clean.slice(Math.max(0, i - 12), i).trimEnd())) {
-        let j = i + 1, cls = false;
-        while (j < clean.length && clean[j] !== '\n' && (clean[j] !== '/' || cls)) { if (clean[j] === '\\') j++; else if (clean[j] === '[') cls = true; else if (clean[j] === ']') cls = false; j++; }
-        i = j;
-      } else mask[i] = 1;
-    }
-    return i;
-  };
-  // from just after the opening backtick to its closing one; returns the closing backtick's index
-  const scanTemplate = (i) => {
-    for (; i < clean.length; i++) {
-      if (clean[i] === '\\') i++;
-      else if (clean[i] === '`') return i;
-      else if (clean[i] === '$' && clean[i + 1] === '{') i = scanCode(i + 2, true);
-    }
-    return i;
-  };
-  scanCode(0, false);
-  return mask;
+  return [...found.values()].sort((a, b) => a.pos - b.pos);
 }
 
-/** Attribute value expressions { name, from, to } of every JSX tag, found by walking each `<Tag` start. */
-function jsxAttributes(clean) {
-  const found = [], mask = codeMask(clean);
-  for (const m of clean.matchAll(/<([A-Za-z][\w.:-]*)/g)) {
-    if (!mask[m.index]) continue;
-    let i = m.index + m[0].length;
-    while (i < clean.length) {
-      while (/\s/.test(clean[i] ?? '')) i++;
-      if (clean[i] === '>' || clean.startsWith('/>', i) || i >= clean.length) break;
-      if (clean[i] === '{') { const e = closing(clean, i); if (e === -1) break; i = e + 1; continue; }
-      const name = /^[A-Za-z_$][\w$:.-]*/.exec(clean.slice(i))?.[0];
-      if (!name) break;
-      i += name.length;
-      while (/\s/.test(clean[i] ?? '')) i++;
-      if (clean[i] !== '=') continue;
-      i++;
-      while (/\s/.test(clean[i] ?? '')) i++;
-      if (clean[i] === '"' || clean[i] === "'") { const e = clean.indexOf(clean[i], i + 1); if (e === -1) break; i = e + 1; }
-      else if (clean[i] === '{') {
-        const e = closing(clean, i);
-        if (e === -1) break;
-        if (INLINE_ATTRS.has(name)) found.push({ name, from: i + 1, to: e });
-        i = e + 1;
-      } else break;
-    }
+// Inline styles: object literals in the JSX attributes style, animate, initial, exit, whileHover and whileTap (not transition).
+// There is no escape in JSX: move the value into CSS (where orrery-allow exists) or pass it as a custom property (keys starting -- are never read).
+// What is read: a JSX attribute with exactly one of those names (not `data-style`, not a plain assignment), whose value is an object literal,
+// or an object literal inside parentheses, an `as` or `satisfies` cast, a ternary branch, a && / || / ?? side, an array element or a call
+// argument. Each key: value pair (an identifier or string key) is checked like a CSS declaration (camelCase becomes kebab-case).
+// A value is read when it is a string, a number (or a negated one), a template string (its ${} parts dropped), an array of those,
+// a ternary or a parenthesised expression of those, or a side of && / || / ??.
+// Not read: style={identifier}; member access; values computed by a call; computed keys; spreads; a cast of a single value; nested objects
+// (transition inside animate); transform and translate offsets; color literals in TS outside these attributes.
+const INLINE_ATTRS = new Set(['style', 'animate', 'initial', 'exit', 'whileHover', 'whileTap']);
+const LOGICAL = new Set([ts.SyntaxKind.AmpersandAmpersandToken, ts.SyntaxKind.BarBarToken, ts.SyntaxKind.QuestionQuestionToken]);
+const isLogical = (e) => ts.isBinaryExpression(e) && LOGICAL.has(e.operatorToken.kind);
+/** The object literals an attribute value holds, in source order. */
+function objectsIn(expr) {
+  const found = [], todo = [expr];
+  while (todo.length) {
+    const e = todo.pop();
+    if (ts.isObjectLiteralExpression(e)) found.push(e);
+    else if (ts.isParenthesizedExpression(e) || ts.isAsExpression(e) || ts.isSatisfiesExpression(e)) todo.push(e.expression);
+    else if (ts.isConditionalExpression(e)) todo.push(e.whenFalse, e.whenTrue);
+    else if (isLogical(e)) todo.push(e.right, e.left);
+    else if (ts.isArrayLiteralExpression(e)) todo.push(...[...e.elements].reverse());
+    else if (ts.isCallExpression(e)) todo.push(...[...e.arguments].reverse());
   }
   return found;
 }
-function inlineStyle(file, text) {
-  const clean = blankComments(text, path.extname(file)), scales = scaleValues(), out = [];
-  // an object literal directly in the expression, or after ( ? : = , && || ??
-  const objectsIn = (from, to) => {
-    const found = [];
-    for (let i = from; i < to; i++) {
-      if (clean[i] === '"' || clean[i] === "'" || clean[i] === '`') { const q = clean[i]; for (i++; i < to && clean[i] !== q; i++) if (clean[i] === '\\') i++; continue; }
-      if (clean[i] !== '{') continue;
-      const before = clean.slice(from, i).trimEnd().slice(-2);
-      if (before === '' || /[(?:=,\[]$/.test(before) || /(&&|\|\||\?\?)$/.test(before)) {
-        const end = closing(clean, i);
-        if (end === -1 || end > to) break;
-        found.push([i + 1, end]);
-        i = end;
-      }
+/** Every CSS string this rule can read out of a value expression, in source order. */
+function literals(expr, sf) {
+  const out = [], todo = [expr];
+  while (todo.length) {
+    const e = todo.pop();
+    if (ts.isParenthesizedExpression(e)) todo.push(e.expression);
+    else if (ts.isArrayLiteralExpression(e)) todo.push(...[...e.elements].reverse());
+    else if (isLogical(e)) todo.push(e.right, e.left);
+    else if (ts.isConditionalExpression(e)) todo.push(e.whenFalse, e.whenTrue);
+    else if (ts.isStringLiteral(e) || ts.isNoSubstitutionTemplateLiteral(e)) out.push(e.text);
+    else if (ts.isTemplateExpression(e)) out.push([e.head.text, ...e.templateSpans.map((s) => s.literal.text)].join(' '));
+    else {
+      const negated = ts.isPrefixUnaryExpression(e) && e.operator === ts.SyntaxKind.MinusToken && ts.isNumericLiteral(e.operand);
+      const num = negated ? `-${e.operand.getText(sf)}` : ts.isNumericLiteral(e) ? e.getText(sf) : null;
+      if (num && /^-?\d*\.?\d+$/.test(num) && Number(num) !== 0) out.push(`${num}px`);
     }
-    return found;
-  };
-  for (const attr of jsxAttributes(clean)) {
-    for (const [from, to] of objectsIn(attr.from, attr.to)) {
-      for (const e of topLevelEntries(clean.slice(from, to))) {
-        const kv = /^\s*(?:([A-Za-z_$][\w$]*)|(["'])([^"']+)\2)\s*:\s*([\s\S]*?)\s*$/.exec(e.text);
-        if (!kv) continue;
-        const key = kv[1] ?? kv[3];
+  }
+  return out;
+}
+function inlineStyle(file, text, sf) {
+  const scales = scaleValues(), out = [];
+  for (const node of nodes(sf)) {
+    if (!ts.isJsxAttribute(node) || !ts.isIdentifier(node.name) || !INLINE_ATTRS.has(node.name.text)) continue;
+    const expr = node.initializer && ts.isJsxExpression(node.initializer) ? node.initializer.expression : undefined;
+    if (!expr) continue;
+    for (const obj of objectsIn(expr)) {
+      for (const p of obj.properties) {
+        if (!ts.isPropertyAssignment(p) || !(ts.isIdentifier(p.name) || ts.isStringLiteral(p.name))) continue;
+        const key = p.name.text;
         if (key.startsWith('--')) continue; // a custom property is how a value gets from component code into CSS
         const prop = key.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`);
-        const line = clean.slice(0, from + e.at + e.text.indexOf(key)).split('\n').length;
-        for (const value of literals(kv[4])) for (const v of [...colorFindings({ prop, value, line }), ...spacingFindings({ prop, value, line }, scales)]) out.push({ line: v.line, message: `inline style: ${v.message}; move it into CSS or pass it as a custom property` });
+        const line = lineOf(sf, p.name.getStart(sf));
+        for (const value of literals(p.initializer, sf)) for (const v of [...colorFindings({ prop, value, line }), ...spacingFindings({ prop, value, line }, scales)]) out.push({ line: v.line, message: `inline style: ${v.message}; move it into CSS or pass it as a custom property` });
       }
     }
   }
-  // JSX has no escape marker: one found in a comment is a finding
-  for (const m of text.matchAll(/orrery-allow:\s*[a-z]+(?:-[a-z]+)+\b/g)) {
-    if (/^\s+$/.test(clean.slice(m.index, m.index + 12))) out.push({ line: text.slice(0, m.index).split('\n').length, message: 'orrery-allow is CSS-only; move the value into CSS' });
+  // JSX has no escape marker: one found in a comment (a JSX comment {/* */} included) is a finding
+  for (const c of comments(sf)) {
+    for (const m of text.slice(c.pos, c.end).matchAll(/orrery-allow:\s*[a-z]+(?:-[a-z]+)+\b/g)) out.push({ line: lineOf(sf, c.pos + m.index), message: 'orrery-allow is CSS-only; move the value into CSS' });
   }
   return out;
 }
@@ -385,43 +317,53 @@ function controlMinSize(file, text) {
 // Em dash, U+2014. The Artifact checker has no em dash rule in code (artifact/SKILL.md lists none either), so this is the only definition:
 // the character, its HTML entities and its escapes, anywhere outside a comment.
 const EM_DASH = /—|&mdash;|&#0*8212;|&#x0*2014;|\\u\{?0*2014\}?|\\0*2014(?![0-9a-fA-F])/gi;
-// A ' or " glued to the end of a word (Don't) is text; one after whitespace, an operator or a bracket opens a string.
-const isApostrophe = (text, i) => /[A-Za-z0-9]/.test(text[i - 1] ?? ' ');
+const emDashMessage = (what) => `em dash (${what}): write it with a comma, colon, period or parentheses`;
+// CSS and HTML: comments blanked (newlines kept) so line numbers hold. CSS strings are tracked so a /* inside one is not a comment;
+// a ' or " glued to the end of a word (Don't) is text, one after whitespace, an operator or a bracket opens a string.
 function blankComments(text, ext) {
   let out = '', i = 0, quote = null;
   const blank = (s) => s.replace(/[^\n]/g, ' ');
-  const css = CSS_EXT.includes(ext), html = HTML_EXT.includes(ext);
+  const html = HTML_EXT.includes(ext);
   while (i < text.length) {
     const two = text.slice(i, i + 2), ch = text[i];
     if (quote) {
       if (ch === '\\') { out += text.slice(i, i + 2); i += 2; continue; }
-      if (ch === quote || (ch === '\n' && quote !== '`')) quote = null;
+      if (ch === quote || ch === '\n') quote = null;
       out += ch; i++;
     } else if (two === '/*') {
       const end = text.indexOf('*/', i + 2) === -1 ? text.length : text.indexOf('*/', i + 2) + 2;
-      out += blank(text.slice(i, end)); i = end;
-    } else if (two === '//' && !css && !html && text[i - 1] !== ':') {
-      const end = text.indexOf('\n', i) === -1 ? text.length : text.indexOf('\n', i);
       out += blank(text.slice(i, end)); i = end;
     } else if (html && text.startsWith('<!--', i)) {
       const end = text.indexOf('-->', i) === -1 ? text.length : text.indexOf('-->', i) + 3;
       out += blank(text.slice(i, end)); i = end;
     } else {
-      if (!html && (ch === '`' ? !css : (ch === '"' || ch === "'") && !isApostrophe(text, i))) quote = ch;
+      if (!html && (ch === '"' || ch === "'") && !/[A-Za-z0-9]/.test(text[i - 1] ?? ' ')) quote = ch;
       out += ch; i++;
     }
   }
   return out;
 }
-function emDash(file, text) {
+// JS and TS: the text of every string, template piece, JSX text (attribute strings are strings) and regex literal. Comments are trivia,
+// never nodes, so they are never read. The source text is matched, so entities and escapes count; the cooked value is checked too.
+const TEXT_KINDS = new Set(['StringLiteral', 'NoSubstitutionTemplateLiteral', 'TemplateHead', 'TemplateMiddle', 'TemplateTail', 'JsxText', 'RegularExpressionLiteral'].map((k) => ts.SyntaxKind[k]));
+function emDash(file, text, sf) {
   const out = [];
-  blankComments(text, path.extname(file)).split('\n').forEach((l, i) => {
-    for (const m of l.matchAll(EM_DASH)) out.push({ line: i + 1, message: `em dash (${m[0]}): write it with a comma, colon, period or parentheses` });
-  });
+  if (!sf) {
+    blankComments(text, path.extname(file)).split('\n').forEach((l, i) => {
+      for (const m of l.matchAll(EM_DASH)) out.push({ line: i + 1, message: emDashMessage(m[0]) });
+    });
+    return out;
+  }
+  for (const node of nodes(sf)) {
+    if (!TEXT_KINDS.has(node.kind)) continue;
+    const start = node.getStart(sf), found = [...text.slice(start, node.end).matchAll(EM_DASH)];
+    for (const m of found) out.push({ line: lineOf(sf, start + m.index), message: emDashMessage(m[0]) });
+    if (!found.length && node.text.includes('—')) out.push({ line: lineOf(sf, start), message: emDashMessage('—') });
+  }
   return out;
 }
 
-/** Rule id -> { exts, run }. The registry's `source-check` refs are these keys. */
+/** Rule id -> { exts, run }. The registry's `source-check` refs are these keys. A JS/TS rule's run gets the parsed tree as its third argument. */
 export const CHECKS = {
   'literal-color': { exts: CSS_EXT, run: literalColor },
   'literal-spacing': { exts: CSS_EXT, run: literalSpacing },
@@ -430,10 +372,20 @@ export const CHECKS = {
   'em-dash': { exts: [...CSS_EXT, ...JS_EXT, ...HTML_EXT], run: emDash },
 };
 
-/** Violations for one file's text: [{ file, line, rule, message }]. Findings excused by an orrery-allow marker go to `allowedOut` instead. */
+/**
+ * Violations for one file's text: [{ file, line, rule, message }]. Findings excused by an orrery-allow marker go to `allowedOut` instead.
+ * A JS or TS file that does not parse gives one `parse-error` finding instead of any rule's findings.
+ */
 export function checkText(file, text, only = Object.keys(CHECKS), allowedOut = []) {
   const ext = path.extname(file);
-  const all = only.filter((id) => CHECKS[id].exts.includes(ext)).flatMap((id) => CHECKS[id].run(file, text).map((v) => ({ file, rule: id, ...v })));
+  const ids = only.filter((id) => CHECKS[id].exts.includes(ext));
+  let sf;
+  if (JS_EXT.includes(ext) && ids.length) {
+    const parsed = parseScript(file, text);
+    if (parsed.error) return [{ file, rule: 'parse-error', line: parsed.error, message: PARSE_ERROR }];
+    sf = parsed.sf;
+  }
+  const all = ids.flatMap((id) => CHECKS[id].run(file, text, sf).map((v) => ({ file, rule: id, ...v })));
   const marker = (line, message) => ({ file, rule: 'orrery-allow', line, message });
   if (CSS_EXT.includes(ext) && only.some((id) => ALLOWABLE.includes(id))) {
     const parsed = parseCss(text);
