@@ -1,0 +1,15 @@
+/* SPIKE: what the UI SDK Dialog needs on top of kit/dialog/dialog.css. UI SDK puts the backdrop
+   and the popup in the browser's top layer (popover="manual"), with no viewport part, so the
+   kit's .orr-dialog__viewport (centring, gutter) has nothing to sit on. The popup centres itself
+   here, inside the same --space-8 gutter. The top layer stacks above every z-index, so
+   --orr-z-overlay is not used. */
+@layer orrery.kit {
+  .orr-dialog--top-layer {
+    position: fixed;
+    inset: 0;
+    margin: auto;
+    width: min(100% - 2 * var(--space-8), var(--orr-dialog-width));
+    height: fit-content;
+    max-height: calc(100% - 2 * var(--space-8));
+  }
+}
