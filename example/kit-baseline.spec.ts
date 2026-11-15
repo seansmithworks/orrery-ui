@@ -16,6 +16,9 @@ import { fileURLToPath } from "node:url";
  *  - Box geometry derived from text (width, height) is recorded only for elements with no text
  *    in them (icon buttons, glyphs, the spinner, the scrim), plus the dialog popup's width,
  *    which comes from its own CSS and not from its content. Everything else sizes from fonts.
+ *    Inputs are excluded too (their width comes from a grid column sized by sibling text).
+ *  - margin-left and margin-right on the loading spinner: auto margins that resolve from the
+ *    label's text width (found when CI on Linux disagreed with macOS by about 1px).
  *  - transform, translate, scale are not recorded: the loading spinner rotates, and the
  *    transform of a box can be derived from its measured size. The popup's enter scale is
  *    covered through transition-property and duration, and the spinner through animation-*.
@@ -169,10 +172,14 @@ function collectInPage(args: {
       // Geometry only where text cannot move it: see the header of kit-baseline.spec.ts.
       const cs = getComputedStyle(el);
       const popup = el.classList.contains("orr-dialog");
-      if (!text(el) || popup) {
+      // The input fills a grid column sized by its siblings' text, so its width is not its own.
+      if ((!text(el) && el.tagName !== "INPUT") || popup) {
         vals.width = norm(cs.width);
         if (!popup) vals.height = norm(cs.height);
       }
+      // The spinner centres with auto margins, which resolve from the label's text width.
+      if (el.classList.contains("orr-button__spinner"))
+        for (const m of ["margin-left", "margin-right"]) delete vals[m];
       out[key] = vals;
       for (const ps of ["::before", "::after"]) {
         const content = getComputedStyle(el, ps).getPropertyValue("content");
