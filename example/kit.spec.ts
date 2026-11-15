@@ -658,4 +658,20 @@ test.describe("golden examples (fixtures/kit-examples.html)", () => {
     ).toEqual([]);
     expect(errors).toEqual([]);
   });
+
+  test("Field example: its error state shows the error text, and the input is described by it", async ({
+    page,
+  }) => {
+    await page.goto("/fixtures/kit-examples.html");
+    const field = page.locator('[data-example="kit/field/Field.example.tsx"]');
+    const email = field.getByRole("textbox", { name: "Email" });
+    await expect(email).toHaveAttribute("aria-invalid", "true");
+    const error = field.getByText("Add the part after the @");
+    await expect(error).toBeVisible();
+    const errorId = await error.getAttribute("id");
+    expect(errorId).toBeTruthy();
+    expect((await email.getAttribute("aria-describedby"))?.split(" ")).toContain(
+      errorId,
+    );
+  });
 });

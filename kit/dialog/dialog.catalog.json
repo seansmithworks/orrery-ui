@@ -54,7 +54,7 @@
           }
         },
         "Popup": {
-          "description": "The backdrop, viewport and dialog box in one part, mounted in a portal on document.body.",
+          "description": "The backdrop, viewport and dialog box in one part, in a portal on document.body (a nested dialog's goes in its parent's).",
           "inside": "Root",
           "passthrough": "@base-ui/react/dialog#Dialog.Popup.Props",
           "slots": ["default"],
@@ -68,12 +68,12 @@
               "finalFocus": {
                 "x-type": "object",
                 "x-from": "base-ui",
-                "description": "A ref to the element that takes focus on close; needed when the trigger may be gone by then."
+                "description": "What takes focus on close: a ref, a function returning an element, or false. Needed when the trigger may be gone by then."
               },
               "initialFocus": {
                 "x-type": "object",
                 "x-from": "base-ui",
-                "description": "A ref to the element that takes focus on open, when the first focusable one is the wrong start."
+                "description": "What takes focus on open: a ref, a function returning an element, or false. Default: the first tabbable element."
               }
             },
             "required": []

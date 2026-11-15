@@ -14,7 +14,7 @@
               "invalid": {
                 "type": "boolean",
                 "x-from": "base-ui",
-                "description": "Marks the control aria-invalid and data-invalid (the heavy outline) and shows Field.Error."
+                "description": "Marks the control aria-invalid and data-invalid (the heavy outline). It does not show Field.Error; that needs match."
               },
               "disabled": {
                 "type": "boolean",
@@ -45,11 +45,39 @@
           "props": { "type": "object", "properties": {}, "required": [] }
         },
         "Error": {
-          "description": "The error message, rendered while Field.Root is invalid and joined to the control's aria-describedby.",
+          "description": "The error message, joined to aria-describedby; it renders only on match, a failed native check or a form error.",
           "inside": "Root",
           "passthrough": "@base-ui/react/field#Field.Error.Props",
           "slots": ["default"],
-          "props": { "type": "object", "properties": {}, "required": [] }
+          "props": {
+            "type": "object",
+            "properties": {
+              "match": {
+                "anyOf": [
+                  { "type": "boolean" },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "badInput",
+                      "customError",
+                      "patternMismatch",
+                      "rangeOverflow",
+                      "rangeUnderflow",
+                      "stepMismatch",
+                      "tooLong",
+                      "tooShort",
+                      "typeMismatch",
+                      "valid",
+                      "valueMissing"
+                    ]
+                  }
+                ],
+                "x-from": "base-ui",
+                "description": "true renders it, even when disabled; a ValidityState key renders it while that native check fails. Use match={!!error}."
+              }
+            },
+            "required": []
+          }
         }
       },
       "requiredParts": ["Root", "Label"],
@@ -64,7 +92,7 @@
       ],
       "a11y": [
         "Give every Field.Root a Field.Label; a placeholder is not a label.",
-        "When the value is wrong, set invalid on Field.Root and say what to fix in Field.Error, in words.",
+        "When the value is wrong, set invalid on Field.Root and match on Field.Error, and say what to fix in words.",
         "Put format rules in Field.Description before the person types, not only in the error."
       ]
     },

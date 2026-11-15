@@ -30,6 +30,11 @@
             "x-from": "base-ui",
             "description": "Blocks presses and removes the button from the tab order; prefer loading while an action is in progress."
           },
+          "focusableWhenDisabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Keeps a disabled button in the tab order. The kit forces it on while loading, whatever you pass."
+          },
           "type": {
             "type": "string",
             "enum": ["button", "submit", "reset"],

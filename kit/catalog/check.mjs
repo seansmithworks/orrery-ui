@@ -182,16 +182,27 @@ function shapes(checker, type) {
 function typeMismatch(checker, decl, types) {
   const all = types.flatMap((t) => shapes(checker, t)), node = types.some((t) => shapes(checker, t).node);
   const kinds = [...new Set(all.map((s) => s.k))];
+  const text = checker.typeToString(types[0]);
+  // One JSON branch ({ type, enum? }) against the constituents of its kind.
+  const branch = (b, of, at) => {
+    const lits = of.every((s) => s.lit !== undefined) ? [...new Set(of.map((s) => s.lit))] : null;
+    if (lits && b.type !== 'boolean') {
+      if (!Array.isArray(b.enum)) return `${at}has no enum, but the type is the literal union ${list(lits.map(String))}`;
+      if (!sameSet(b.enum.map(String), lits.map(String))) return `${at}enum is ${list(b.enum.map(String))}, but the type allows ${list(lits.map(String))}`;
+    } else if (b.enum !== undefined) return `${at}has an enum, but the type ${text} is not a literal union`;
+    return null;
+  };
   if (decl.type) {
-    if (kinds.length !== 1 || kinds[0] !== decl.type) return `type is ${decl.type}, but the component's type is ${checker.typeToString(types[0])}`;
-    const lits = all.every((s) => s.lit !== undefined) ? [...new Set(all.map((s) => s.lit))] : null;
-    if (lits && decl.type !== 'boolean') {
-      if (!Array.isArray(decl.enum)) return `has no enum, but the type is the literal union ${list(lits.map(String))}`;
-      if (!sameSet(decl.enum.map(String), lits.map(String))) return `enum is ${list(decl.enum.map(String))}, but the type allows ${list(lits.map(String))}`;
-    } else if (decl.enum !== undefined) return `has an enum, but the type ${checker.typeToString(types[0])} is not a literal union`;
+    if (kinds.length !== 1 || kinds[0] !== decl.type) return `type is ${decl.type}, but the component's type is ${text}`;
+    return branch(decl, all, '');
+  }
+  if (decl.anyOf) {
+    const types = decl.anyOf.map((b) => b.type);
+    if (!sameSet(types, kinds)) return `anyOf types are ${list(types)}, but the type ${text} holds ${list(kinds)}`;
+    for (const b of decl.anyOf) { const why = branch(b, all.filter((s) => s.k === b.type), `anyOf ${b.type} branch `); if (why) return why; }
     return null;
   }
-  if (kinds.length === 1 && JSON_TYPES.includes(kinds[0])) return `x-type is ${decl['x-type']}, but the type ${checker.typeToString(types[0])} is plain JSON; use "type": "${kinds[0]}"`;
+  if (kinds.every((k) => JSON_TYPES.includes(k))) return `x-type is ${decl['x-type']}, but the type ${text} is plain JSON; use ${kinds.length === 1 ? `"type": "${kinds[0]}"` : `"anyOf": [${kinds.map((k) => `{ "type": "${k}" }`).join(', ')}]`}`;
   const want = decl['x-type'];
   const ok = want === 'node' ? node : kinds.includes(want);
   return ok ? null : `x-type is ${want}, but the type ${checker.typeToString(types[0])} holds no ${want}`;
@@ -231,10 +242,13 @@ function propsShape(props, at) {
     const pa = `${at}.properties.${n}`;
     if (n === 'className') { bad.push(`${pa}: className is accepted everywhere and is never listed`); continue; }
     if (!isObj(p)) { bad.push(`${pa} is not an object`); continue; }
-    const keys = p.type !== undefined ? ['type', 'enum', 'default', 'description', 'x-from'] : ['x-type', 'description', 'x-from'];
-    for (const k of Object.keys(p)) if (!keys.includes(k)) bad.push(`${pa} has key ${k}, which a ${p.type !== undefined ? '"type"' : '"x-type"'} prop does not take`);
+    // Three forms: { type, enum?, default? }, { anyOf: [{ type, enum? }, ...] } for a value that is one of several JSON types, or { x-type }.
+    const form = p.type !== undefined ? 'type' : p.anyOf !== undefined ? 'anyOf' : 'x-type';
+    const keys = { type: ['type', 'enum', 'default', 'description', 'x-from'], anyOf: ['anyOf', 'description', 'x-from'], 'x-type': ['x-type', 'description', 'x-from'] }[form];
+    for (const k of Object.keys(p)) if (!keys.includes(k)) bad.push(`${pa} has key ${k}, which a "${form}" prop does not take`);
     if (p.type !== undefined && !JSON_TYPES.includes(p.type)) bad.push(`${pa}.type ${JSON.stringify(p.type)} is not one of ${JSON_TYPES.join(', ')}`);
-    if (p.type === undefined && !X_TYPES.includes(p['x-type'])) bad.push(`${pa} needs "type" (${JSON_TYPES.join(', ')}) or "x-type" (${X_TYPES.join(', ')})`);
+    if (form === 'anyOf' && !(Array.isArray(p.anyOf) && p.anyOf.length > 1 && p.anyOf.every((b) => isObj(b) && JSON_TYPES.includes(b.type) && Object.keys(b).every((k) => ['type', 'enum'].includes(k)) && (b.enum === undefined || (Array.isArray(b.enum) && b.enum.length && b.enum.every((v) => typeof v === b.type)))) && new Set(p.anyOf.map((b) => b.type)).size === p.anyOf.length)) bad.push(`${pa}.anyOf must be two or more { "type", "enum"? } branches, one per JSON type`);
+    if (form === 'x-type' && !X_TYPES.includes(p['x-type'])) bad.push(`${pa} needs "type" (${JSON_TYPES.join(', ')}), "anyOf" or "x-type" (${X_TYPES.join(', ')})`);
     if (p.enum !== undefined && !(Array.isArray(p.enum) && p.enum.length && p.enum.every((v) => typeof v === p.type))) bad.push(`${pa}.enum must be a list of ${p.type} values`);
     if (p.default !== undefined && typeof p.default !== p.type) bad.push(`${pa}.default must be a ${p.type}`);
     if (p.default !== undefined && Array.isArray(p.enum) && !p.enum.includes(p.default)) bad.push(`${pa}.default ${JSON.stringify(p.default)} is not in its enum`);

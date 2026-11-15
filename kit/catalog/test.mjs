@@ -103,6 +103,35 @@ const tests = {
     has(bad, /^catalog: kit\/button\/button\.catalog\.json Button\.props\.variant enum is primary, secondary, quiet, but the type allows primary, secondary, quiet, danger$/);
   },
 
+  '[catalog-matches-kit] props: a passthrough that does not resolve fails, naming the entry and the ref'() {
+    const c = seeded((f) => { f.button.components.Button.passthrough = '@base-ui/react/button#Button.Propz'; });
+    const bad = propsProblems(readKit(c), c);
+    has(bad, /^catalog: kit\/button\/button\.catalog\.json Button\.passthrough @base-ui\/react\/button#Button\.Propz does not resolve: /);
+  },
+
+  '[catalog-matches-kit] props: className false on a part that takes className fails, and a missing false where it takes none fails'() {
+    const bad = propsProblems(kit, seeded((f) => {
+      const parts = f.dialog.components.Dialog.parts;
+      parts.Title.className = false;
+      delete parts.CloseIcon.className;
+    }));
+    has(bad, /Dialog\.parts\.Title says className: false, but the component takes className$/);
+    has(bad, /Dialog\.parts\.CloseIcon: the component takes no className; say "className": false/);
+  },
+
+  '[catalog-matches-kit] props: a prop of several JSON types fails with a wrong anyOf branch enum, and as a single type'() {
+    const bad = propsProblems(kit, seeded((f) => {
+      f.field.components.Field.parts.Error.props.properties.match.anyOf[1].enum = ['valid', 'valueMissing'];
+    }));
+    has(bad, /Field\.parts\.Error\.props\.match anyOf string branch enum is valid, valueMissing, but the type allows badInput, /);
+    const single = propsProblems(kit, seeded((f) => {
+      const m = f.field.components.Field.parts.Error.props.properties.match;
+      delete m.anyOf;
+      m.type = 'boolean';
+    }));
+    has(single, /Field\.parts\.Error\.props\.match type is boolean, but the component's type is /);
+  },
+
   '[catalog-matches-kit] defaults: a default that differs from the initializer fails, and an unstated one fails'() {
     const bad = defaultsProblems(kit, seeded((f) => {
       f.button.components.Button.props.properties.size.default = 's';

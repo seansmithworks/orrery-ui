@@ -47,6 +47,11 @@
             "x-from": "base-ui",
             "description": "Blocks presses and removes the button from the tab order; prefer loading while an action is in progress."
           },
+          "focusableWhenDisabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Keeps a disabled button in the tab order. The kit forces it on while loading, whatever you pass."
+          },
           "type": {
             "type": "string",
             "enum": [
@@ -204,7 +209,7 @@
           }
         },
         "Popup": {
-          "description": "The backdrop, viewport and dialog box in one part, mounted in a portal on document.body.",
+          "description": "The backdrop, viewport and dialog box in one part, in a portal on document.body (a nested dialog's goes in its parent's).",
           "inside": "Root",
           "passthrough": "@base-ui/react/dialog#Dialog.Popup.Props",
           "slots": [
@@ -220,12 +225,12 @@
               "finalFocus": {
                 "x-type": "object",
                 "x-from": "base-ui",
-                "description": "A ref to the element that takes focus on close; needed when the trigger may be gone by then."
+                "description": "What takes focus on close: a ref, a function returning an element, or false. Needed when the trigger may be gone by then."
               },
               "initialFocus": {
                 "x-type": "object",
                 "x-from": "base-ui",
-                "description": "A ref to the element that takes focus on open, when the first focusable one is the wrong start."
+                "description": "What takes focus on open: a ref, a function returning an element, or false. Default: the first tabbable element."
               }
             },
             "required": []
@@ -385,7 +390,7 @@
               "invalid": {
                 "type": "boolean",
                 "x-from": "base-ui",
-                "description": "Marks the control aria-invalid and data-invalid (the heavy outline) and shows Field.Error."
+                "description": "Marks the control aria-invalid and data-invalid (the heavy outline). It does not show Field.Error; that needs match."
               },
               "disabled": {
                 "type": "boolean",
@@ -428,7 +433,7 @@
           }
         },
         "Error": {
-          "description": "The error message, rendered while Field.Root is invalid and joined to the control's aria-describedby.",
+          "description": "The error message, joined to aria-describedby; it renders only on match, a failed native check or a form error.",
           "inside": "Root",
           "passthrough": "@base-ui/react/field#Field.Error.Props",
           "slots": [
@@ -436,7 +441,33 @@
           ],
           "props": {
             "type": "object",
-            "properties": {},
+            "properties": {
+              "match": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "badInput",
+                      "customError",
+                      "patternMismatch",
+                      "rangeOverflow",
+                      "rangeUnderflow",
+                      "stepMismatch",
+                      "tooLong",
+                      "tooShort",
+                      "typeMismatch",
+                      "valid",
+                      "valueMissing"
+                    ]
+                  }
+                ],
+                "x-from": "base-ui",
+                "description": "true renders it, even when disabled; a ValidityState key renders it while that native check fails. Use match={!!error}."
+              }
+            },
             "required": []
           }
         }
@@ -456,12 +487,12 @@
       ],
       "a11y": [
         "Give every Field.Root a Field.Label; a placeholder is not a label.",
-        "When the value is wrong, set invalid on Field.Root and say what to fix in Field.Error, in words.",
+        "When the value is wrong, set invalid on Field.Root and match on Field.Error, and say what to fix in words.",
         "Put format rules in Field.Description before the person types, not only in the error."
       ],
       "example": {
         "file": "kit/field/Field.example.tsx",
-        "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+        "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     },
     "Input": {
@@ -507,7 +538,7 @@
       ],
       "example": {
         "file": "kit/field/Field.example.tsx",
-        "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+        "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     }
   }

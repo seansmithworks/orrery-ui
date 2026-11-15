@@ -51,7 +51,7 @@ export default function SignInWithLink() {
         <Field.Description>
           We send a sign-in link to this address. No password needed.
         </Field.Description>
-        <Field.Error>{error}</Field.Error>
+        <Field.Error match={error !== null}>{error}</Field.Error>
       </Field.Root>
       <div
         style={{
