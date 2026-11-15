@@ -403,5 +403,30 @@
       "ref": "tokens/lib/designmd.mjs#designMdGate",
       "test": "[design-md-names] designMdGate: a variable, token path or export DESIGN.md names that the code does not define fails, naming the line and the name"
     }
+  },
+  {
+    "id": "catalog-matches-kit",
+    "layer": "rule",
+    "statement": "Every value export of kit/index.ts has one catalog entry in its folder; every kit-owned prop is listed with its real type, enum, optionality and default; compound parts match the real object; kit/catalog.json equals a fresh build.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "test",
+      "ref": "kit/catalog/test.mjs"
+    }
+  },
+  {
+    "id": "golden-example-valid",
+    "layer": "rule",
+    "statement": "Each kit folder's golden example exists, default-exports a component, imports the kit only from ../index and uses every component in its folder and every required part; example/kit.spec.ts proves each one renders with no console error and no axe violation.",
+    "applies": [
+      "source",
+      "page"
+    ],
+    "check": {
+      "kind": "test",
+      "ref": "kit/catalog/test.mjs"
+    }
   }
 ]

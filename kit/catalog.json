@@ -1,0 +1,545 @@
+{
+  "version": 1,
+  "module": "kit/index.ts",
+  "conventions": {
+    "import": "Import components from kit/index.ts and the styles once from kit/kit.css, after the brand token CSS.",
+    "className": "Every component and part accepts className unless its entry says \"className\": false; className is never listed in props.",
+    "passthrough": "Props not listed forward to the passthrough type; a listed one marked \"x-from\": \"base-ui\" is a passthrough prop worth knowing.",
+    "x-type": "A prop JSON cannot carry: node (any React child), element (one React element), function, or object (a DOM node or a ref).",
+    "brands": "Brands differ through token values only. There is no brand, theme or style variant prop."
+  },
+  "components": {
+    "Button": {
+      "description": "A button on Base UI with a text label; while loading it ignores presses, stays focusable, is announced busy and keeps its width.",
+      "passthrough": "@base-ui/react/button#Button.Props",
+      "slots": [
+        "default"
+      ],
+      "props": {
+        "type": "object",
+        "properties": {
+          "variant": {
+            "type": "string",
+            "enum": [
+              "primary",
+              "secondary",
+              "quiet"
+            ],
+            "default": "secondary",
+            "description": "primary: accent fill, one per view for the main action. secondary: layer fill with a hairline. quiet: text only."
+          },
+          "size": {
+            "type": "string",
+            "enum": [
+              "s",
+              "m"
+            ],
+            "default": "m",
+            "description": "m is 44px tall. s draws 32px and keeps a 44px hit area that reaches past its box."
+          },
+          "loading": {
+            "type": "boolean",
+            "default": false,
+            "description": "Shows a spinner over the label, blocks presses, stays focusable and sets aria-busy."
+          },
+          "disabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Blocks presses and removes the button from the tab order; prefer loading while an action is in progress."
+          },
+          "focusableWhenDisabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Keeps a disabled button in the tab order. The kit forces it on while loading, whatever you pass."
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "button",
+              "submit",
+              "reset"
+            ],
+            "x-from": "base-ui",
+            "description": "The native button type; set submit on the button that sends a form."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "A press runs an action on this page: save, send, delete, open a dialog.",
+        "Submitting a form, with type submit."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The press goes to another page or URL.",
+          "instead": "a"
+        },
+        {
+          "text": "The action has no words, only an icon.",
+          "instead": "IconButton"
+        }
+      ],
+      "a11y": [
+        "Write a label that names the action (Save changes), not Click here or OK.",
+        "Give size s buttons at least var(--space-12) between neighbours, so each keeps its whole 44px hit area.",
+        "Keep the label while loading: it stays the accessible name."
+      ],
+      "example": {
+        "file": "kit/button/Button.example.tsx",
+        "code": "// Golden example: the footer of an edit form. Cancel and Save, with Save showing progress while it works,\n// and an undo icon in the dense toolbar above. Spacing is token variables only.\nimport { useEffect, useState } from \"react\";\nimport { Button, IconButton } from \"../index\";\n\nfunction UndoGlyph() {\n  return (\n    <svg\n      viewBox=\"0 0 20 20\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth={1.5}\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n      aria-hidden=\"true\"\n    >\n      <path d=\"M8 4L4 8l4 4M4 8h7a5 5 0 010 10H8\" />\n    </svg>\n  );\n}\n\nexport default function EditOrbitFooter() {\n  const [saving, setSaving] = useState(false);\n  const [edits, setEdits] = useState(2);\n\n  useEffect(() => {\n    if (!saving) return;\n    const done = setTimeout(() => {\n      setSaving(false);\n      setEdits(0);\n    }, 1200);\n    return () => clearTimeout(done);\n  }, [saving]);\n\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-16)\",\n      }}\n    >\n      {/* A dense toolbar of size s controls keeps --space-12 between them, so each keeps its 44px hit area. */}\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <IconButton\n          variant=\"quiet\"\n          size=\"s\"\n          aria-label=\"Undo last edit\"\n          disabled={edits === 0 || saving}\n          onClick={() => setEdits((n) => Math.max(0, n - 1))}\n        >\n          <UndoGlyph />\n        </IconButton>\n        <span style={{ color: \"var(--text-muted)\" }}>\n          {edits === 0 ? \"All changes saved\" : `${edits} unsaved edits`}\n        </span>\n      </div>\n      <div\n        style={{\n          display: \"flex\",\n          justifyContent: \"flex-end\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"quiet\" disabled={saving} onClick={() => setEdits(0)}>\n          Discard edits\n        </Button>\n        <Button\n          variant=\"primary\"\n          loading={saving}\n          disabled={edits === 0}\n          onClick={() => setSaving(true)}\n        >\n          Save changes\n        </Button>\n      </div>\n    </div>\n  );\n}\n"
+      }
+    },
+    "IconButton": {
+      "description": "A square Button holding one icon and no visible text; it warns in development when it has no accessible name.",
+      "extends": "Button",
+      "passthrough": "@base-ui/react/button#Button.Props",
+      "slots": [
+        "default"
+      ],
+      "props": {
+        "type": "object",
+        "properties": {
+          "aria-label": {
+            "type": "string",
+            "description": "The accessible name, naming the action: Undo, Close, Add orbit."
+          },
+          "aria-labelledby": {
+            "type": "string",
+            "description": "The id of a visible element that names the action, instead of aria-label."
+          }
+        },
+        "required": [],
+        "anyOf": [
+          {
+            "required": [
+              "aria-label"
+            ]
+          },
+          {
+            "required": [
+              "aria-labelledby"
+            ]
+          }
+        ]
+      },
+      "useWhen": [
+        "A familiar action in a toolbar or a dense row where the icon alone is understood: close, undo, more."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The action needs words to be understood.",
+          "instead": "Button"
+        },
+        {
+          "text": "The press goes to another page or URL.",
+          "instead": "a"
+        }
+      ],
+      "a11y": [
+        "Give it an aria-label or aria-labelledby that names the action; the icon alone announces nothing.",
+        "Mark the icon svg aria-hidden=\"true\" so it adds nothing to the name.",
+        "Give size s icon buttons at least var(--space-12) between neighbours, so each keeps its 44px hit area."
+      ],
+      "example": {
+        "file": "kit/button/Button.example.tsx",
+        "code": "// Golden example: the footer of an edit form. Cancel and Save, with Save showing progress while it works,\n// and an undo icon in the dense toolbar above. Spacing is token variables only.\nimport { useEffect, useState } from \"react\";\nimport { Button, IconButton } from \"../index\";\n\nfunction UndoGlyph() {\n  return (\n    <svg\n      viewBox=\"0 0 20 20\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth={1.5}\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n      aria-hidden=\"true\"\n    >\n      <path d=\"M8 4L4 8l4 4M4 8h7a5 5 0 010 10H8\" />\n    </svg>\n  );\n}\n\nexport default function EditOrbitFooter() {\n  const [saving, setSaving] = useState(false);\n  const [edits, setEdits] = useState(2);\n\n  useEffect(() => {\n    if (!saving) return;\n    const done = setTimeout(() => {\n      setSaving(false);\n      setEdits(0);\n    }, 1200);\n    return () => clearTimeout(done);\n  }, [saving]);\n\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-16)\",\n      }}\n    >\n      {/* A dense toolbar of size s controls keeps --space-12 between them, so each keeps its 44px hit area. */}\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <IconButton\n          variant=\"quiet\"\n          size=\"s\"\n          aria-label=\"Undo last edit\"\n          disabled={edits === 0 || saving}\n          onClick={() => setEdits((n) => Math.max(0, n - 1))}\n        >\n          <UndoGlyph />\n        </IconButton>\n        <span style={{ color: \"var(--text-muted)\" }}>\n          {edits === 0 ? \"All changes saved\" : `${edits} unsaved edits`}\n        </span>\n      </div>\n      <div\n        style={{\n          display: \"flex\",\n          justifyContent: \"flex-end\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"quiet\" disabled={saving} onClick={() => setEdits(0)}>\n          Discard edits\n        </Button>\n        <Button\n          variant=\"primary\"\n          loading={saving}\n          disabled={edits === 0}\n          onClick={() => setSaving(true)}\n        >\n          Save changes\n        </Button>\n      </div>\n    </div>\n  );\n}\n"
+      }
+    },
+    "Dialog": {
+      "description": "A modal dialog on Base UI: focus is trapped while open, Escape and an outside press close it, and focus returns to the trigger.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@base-ui/react/dialog#Dialog.Root.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "defaultOpen": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Opens the dialog on first render when the state is not controlled."
+              },
+              "onOpenChange": {
+                "x-type": "function",
+                "x-from": "base-ui",
+                "description": "Called with the next open state whenever the dialog asks to open or close."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The button that opens the dialog; it renders a kit Button.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/dialog#Dialog.Trigger.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "quiet"
+                ],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": [
+                  "s",
+                  "m"
+                ],
+                "description": "The Button size; unset, it is the Button default, m."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "The backdrop, viewport and dialog box in one part, in a portal on document.body (a nested dialog's goes in its parent's).",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/dialog#Dialog.Popup.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+              },
+              "finalFocus": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "What takes focus on close: a ref, a function returning an element, or false. Needed when the trigger may be gone by then."
+              },
+              "initialFocus": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "What takes focus on open: a ref, a function returning an element, or false. Default: the first tabbable element."
+              }
+            },
+            "required": []
+          }
+        },
+        "Header": {
+          "description": "A layout row for the title and the corner close control.",
+          "inside": "Popup",
+          "passthrough": "react#ComponentProps<\"div\">",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Title": {
+          "description": "The heading that names the dialog; Base UI points the popup's aria-labelledby at it.",
+          "inside": [
+            "Popup",
+            "Header"
+          ],
+          "passthrough": "@base-ui/react/dialog#Dialog.Title.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Description": {
+          "description": "The supporting text; Base UI points the popup's aria-describedby at it.",
+          "inside": "Popup",
+          "passthrough": "@base-ui/react/dialog#Dialog.Description.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Actions": {
+          "description": "A layout row for the dialog's buttons, at the end of the popup.",
+          "inside": "Popup",
+          "passthrough": "react#ComponentProps<\"div\">",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Close": {
+          "description": "A button that closes the dialog; it renders a kit Button unless render gives another element.",
+          "inside": [
+            "Actions",
+            "Popup"
+          ],
+          "passthrough": "@base-ui/react/dialog#Dialog.Close.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "quiet"
+                ],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": [
+                  "s",
+                  "m"
+                ],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "render": {
+                "x-type": "element",
+                "x-from": "base-ui",
+                "description": "Another element to close with, in place of the kit Button."
+              }
+            },
+            "required": []
+          }
+        },
+        "CloseIcon": {
+          "description": "The corner close control, a quiet size s IconButton already named for screen readers.",
+          "inside": "Header",
+          "className": false,
+          "props": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "default": "Close",
+                "description": "The accessible name; change it only to translate it or to name what closes."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root",
+        "Popup",
+        "Title"
+      ],
+      "useWhen": [
+        "A decision or a short task that must be finished or dismissed before going on: confirm a delete, rename."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The content is long or is a page of its own.",
+          "instead": "a"
+        },
+        {
+          "text": "A short message that needs no answer.",
+          "instead": "p"
+        }
+      ],
+      "a11y": [
+        "Give every Dialog.Popup a Dialog.Title; it is the dialog's accessible name.",
+        "If the trigger can unmount while the dialog is open, pass finalFocus on Dialog.Popup.",
+        "Offer a visible way out: a Dialog.CloseIcon in the header or a Dialog.Close in the actions."
+      ],
+      "example": {
+        "file": "kit/dialog/Dialog.example.tsx",
+        "code": "// Golden example: confirm before deleting an orbit. Deleting removes the row, and the trigger with it, so\n// the popup passes finalFocus to the list heading instead of leaving focus on <body>. Spacing is token variables only.\nimport { useRef, useState } from \"react\";\nimport { Dialog } from \"../index\";\n\nconst ORBITS = [\n  { id: \"kepler\", name: \"Kepler\", moons: 12 },\n  { id: \"vesta\", name: \"Vesta\", moons: 3 },\n];\n\nexport default function DeleteOrbit() {\n  const [orbits, setOrbits] = useState(ORBITS);\n  const heading = useRef<HTMLHeadingElement>(null);\n\n  return (\n    <section aria-labelledby=\"orbits-heading\">\n      <h2 id=\"orbits-heading\" ref={heading} tabIndex={-1} style={{ margin: 0 }}>\n        Orbits\n      </h2>\n      <ul\n        style={{\n          display: \"flex\",\n          flexDirection: \"column\",\n          gap: \"var(--space-12)\",\n          margin: 0,\n          padding: 0,\n          listStyle: \"none\",\n        }}\n      >\n        {orbits.map((orbit) => (\n          <li\n            key={orbit.id}\n            style={{\n              display: \"flex\",\n              alignItems: \"center\",\n              justifyContent: \"space-between\",\n              gap: \"var(--space-16)\",\n            }}\n          >\n            <span>{orbit.name}</span>\n            <Dialog.Root>\n              <Dialog.Trigger\n                variant=\"secondary\"\n                aria-label={`Delete ${orbit.name}`}\n              >\n                Delete\n              </Dialog.Trigger>\n              <Dialog.Popup finalFocus={heading}>\n                <Dialog.Header>\n                  <Dialog.Title>Delete {orbit.name}?</Dialog.Title>\n                  <Dialog.CloseIcon />\n                </Dialog.Header>\n                <Dialog.Description>\n                  Its {orbit.moons} moons and their notes go with it. This\n                  cannot be undone.\n                </Dialog.Description>\n                <Dialog.Actions>\n                  <Dialog.Close variant=\"secondary\">Keep orbit</Dialog.Close>\n                  <Dialog.Close\n                    variant=\"primary\"\n                    onClick={() =>\n                      setOrbits((all) => all.filter((o) => o.id !== orbit.id))\n                    }\n                  >\n                    Delete orbit\n                  </Dialog.Close>\n                </Dialog.Actions>\n              </Dialog.Popup>\n            </Dialog.Root>\n          </li>\n        ))}\n      </ul>\n    </section>\n  );\n}\n"
+      }
+    },
+    "Field": {
+      "description": "A labelled form field on Base UI that wires its label, description and error to the control inside it.",
+      "parts": {
+        "Root": {
+          "description": "Groups one control with its label, description and error, and holds the field's invalid and disabled state.",
+          "passthrough": "@base-ui/react/field#Field.Root.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "invalid": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Marks the control aria-invalid and data-invalid (the heavy outline). It does not show Field.Error; that needs match."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Disables the control and mutes the label."
+              },
+              "name": {
+                "type": "string",
+                "x-from": "base-ui",
+                "description": "The control's name when the form is submitted."
+              }
+            },
+            "required": []
+          }
+        },
+        "Label": {
+          "description": "The visible label; it is the control's accessible name through a for/id pair set by Base UI.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/field#Field.Label.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Description": {
+          "description": "A hint below the control, joined to its aria-describedby.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/field#Field.Description.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Error": {
+          "description": "The error message, joined to aria-describedby; it renders only on match, a failed native check or a form error.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/field#Field.Error.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "match": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "badInput",
+                      "customError",
+                      "patternMismatch",
+                      "rangeOverflow",
+                      "rangeUnderflow",
+                      "stepMismatch",
+                      "tooLong",
+                      "tooShort",
+                      "typeMismatch",
+                      "valid",
+                      "valueMissing"
+                    ]
+                  }
+                ],
+                "x-from": "base-ui",
+                "description": "true renders it, even when disabled; a ValidityState key renders it while that native check fails. Use match={!!error}."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root",
+        "Label"
+      ],
+      "useWhen": [
+        "Any text input, so it has a visible label, an optional hint and an error said in words."
+      ],
+      "avoidWhen": [
+        {
+          "text": "One question answered with several controls, such as a set of radios.",
+          "instead": "fieldset"
+        }
+      ],
+      "a11y": [
+        "Give every Field.Root a Field.Label; a placeholder is not a label.",
+        "When the value is wrong, set invalid on Field.Root and match on Field.Error, and say what to fix in words.",
+        "Put format rules in Field.Description before the person types, not only in the error."
+      ],
+      "example": {
+        "file": "kit/field/Field.example.tsx",
+        "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+      }
+    },
+    "Input": {
+      "description": "A text input; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
+      "passthrough": "@base-ui/react/input#Input.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The native input type: text, email, password, search, tel, url, number."
+          },
+          "readOnly": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
+          },
+          "autoComplete": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The autofill hint, such as email, name or current-password."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "One line of text inside Field.Root: a name, an email, a URL, a search term."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The text runs to more than one line.",
+          "instead": "textarea"
+        },
+        {
+          "text": "The person picks from a fixed short list.",
+          "instead": "select"
+        }
+      ],
+      "a11y": [
+        "Place it inside Field.Root with a Field.Label; on its own it has no name unless you give it aria-label.",
+        "Set autoComplete on fields that ask for the person's own data, such as email or name."
+      ],
+      "example": {
+        "file": "kit/field/Field.example.tsx",
+        "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+      }
+    }
+  }
+}

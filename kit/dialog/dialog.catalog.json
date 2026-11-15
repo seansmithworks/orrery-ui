@@ -1,0 +1,172 @@
+{
+  "example": "Dialog.example.tsx",
+  "components": {
+    "Dialog": {
+      "description": "A modal dialog on Base UI: focus is trapped while open, Escape and an outside press close it, and focus returns to the trigger.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@base-ui/react/dialog#Dialog.Root.Props",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "defaultOpen": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Opens the dialog on first render when the state is not controlled."
+              },
+              "onOpenChange": {
+                "x-type": "function",
+                "x-from": "base-ui",
+                "description": "Called with the next open state whenever the dialog asks to open or close."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The button that opens the dialog; it renders a kit Button.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/dialog#Dialog.Trigger.Props",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": ["primary", "secondary", "quiet"],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": ["s", "m"],
+                "description": "The Button size; unset, it is the Button default, m."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "The backdrop, viewport and dialog box in one part, in a portal on document.body (a nested dialog's goes in its parent's).",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/dialog#Dialog.Popup.Props",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+              },
+              "finalFocus": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "What takes focus on close: a ref, a function returning an element, or false. Needed when the trigger may be gone by then."
+              },
+              "initialFocus": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "What takes focus on open: a ref, a function returning an element, or false. Default: the first tabbable element."
+              }
+            },
+            "required": []
+          }
+        },
+        "Header": {
+          "description": "A layout row for the title and the corner close control.",
+          "inside": "Popup",
+          "passthrough": "react#ComponentProps<\"div\">",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Title": {
+          "description": "The heading that names the dialog; Base UI points the popup's aria-labelledby at it.",
+          "inside": ["Popup", "Header"],
+          "passthrough": "@base-ui/react/dialog#Dialog.Title.Props",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Description": {
+          "description": "The supporting text; Base UI points the popup's aria-describedby at it.",
+          "inside": "Popup",
+          "passthrough": "@base-ui/react/dialog#Dialog.Description.Props",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Actions": {
+          "description": "A layout row for the dialog's buttons, at the end of the popup.",
+          "inside": "Popup",
+          "passthrough": "react#ComponentProps<\"div\">",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Close": {
+          "description": "A button that closes the dialog; it renders a kit Button unless render gives another element.",
+          "inside": ["Actions", "Popup"],
+          "passthrough": "@base-ui/react/dialog#Dialog.Close.Props",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": ["primary", "secondary", "quiet"],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": ["s", "m"],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "render": {
+                "x-type": "element",
+                "x-from": "base-ui",
+                "description": "Another element to close with, in place of the kit Button."
+              }
+            },
+            "required": []
+          }
+        },
+        "CloseIcon": {
+          "description": "The corner close control, a quiet size s IconButton already named for screen readers.",
+          "inside": "Header",
+          "className": false,
+          "props": {
+            "type": "object",
+            "properties": {
+              "label": {
+                "type": "string",
+                "default": "Close",
+                "description": "The accessible name; change it only to translate it or to name what closes."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": ["Root", "Popup", "Title"],
+      "useWhen": [
+        "A decision or a short task that must be finished or dismissed before going on: confirm a delete, rename."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The content is long or is a page of its own.",
+          "instead": "a"
+        },
+        { "text": "A short message that needs no answer.", "instead": "p" }
+      ],
+      "a11y": [
+        "Give every Dialog.Popup a Dialog.Title; it is the dialog's accessible name.",
+        "If the trigger can unmount while the dialog is open, pass finalFocus on Dialog.Popup.",
+        "Offer a visible way out: a Dialog.CloseIcon in the header or a Dialog.Close in the actions."
+      ]
+    }
+  }
+}

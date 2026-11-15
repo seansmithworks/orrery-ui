@@ -25,6 +25,9 @@ jobs:
       - run: npm ci
       - run: npm run typecheck
       - run: npm test
+      # The kit catalog (kit/catalog/check.mjs): entries match the components, their examples and kit/catalog.json.
+      - run: npm run catalog:check
+      - run: node kit/catalog/test.mjs
 
   tokens:
     runs-on: ubuntu-latest

@@ -1,0 +1,104 @@
+{
+  "example": "Button.example.tsx",
+  "components": {
+    "Button": {
+      "description": "A button on Base UI with a text label; while loading it ignores presses, stays focusable, is announced busy and keeps its width.",
+      "passthrough": "@base-ui/react/button#Button.Props",
+      "slots": ["default"],
+      "props": {
+        "type": "object",
+        "properties": {
+          "variant": {
+            "type": "string",
+            "enum": ["primary", "secondary", "quiet"],
+            "default": "secondary",
+            "description": "primary: accent fill, one per view for the main action. secondary: layer fill with a hairline. quiet: text only."
+          },
+          "size": {
+            "type": "string",
+            "enum": ["s", "m"],
+            "default": "m",
+            "description": "m is 44px tall. s draws 32px and keeps a 44px hit area that reaches past its box."
+          },
+          "loading": {
+            "type": "boolean",
+            "default": false,
+            "description": "Shows a spinner over the label, blocks presses, stays focusable and sets aria-busy."
+          },
+          "disabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Blocks presses and removes the button from the tab order; prefer loading while an action is in progress."
+          },
+          "focusableWhenDisabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Keeps a disabled button in the tab order. The kit forces it on while loading, whatever you pass."
+          },
+          "type": {
+            "type": "string",
+            "enum": ["button", "submit", "reset"],
+            "x-from": "base-ui",
+            "description": "The native button type; set submit on the button that sends a form."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "A press runs an action on this page: save, send, delete, open a dialog.",
+        "Submitting a form, with type submit."
+      ],
+      "avoidWhen": [
+        { "text": "The press goes to another page or URL.", "instead": "a" },
+        {
+          "text": "The action has no words, only an icon.",
+          "instead": "IconButton"
+        }
+      ],
+      "a11y": [
+        "Write a label that names the action (Save changes), not Click here or OK.",
+        "Give size s buttons at least var(--space-12) between neighbours, so each keeps its whole 44px hit area.",
+        "Keep the label while loading: it stays the accessible name."
+      ]
+    },
+    "IconButton": {
+      "description": "A square Button holding one icon and no visible text; it warns in development when it has no accessible name.",
+      "extends": "Button",
+      "passthrough": "@base-ui/react/button#Button.Props",
+      "slots": ["default"],
+      "props": {
+        "type": "object",
+        "properties": {
+          "aria-label": {
+            "type": "string",
+            "description": "The accessible name, naming the action: Undo, Close, Add orbit."
+          },
+          "aria-labelledby": {
+            "type": "string",
+            "description": "The id of a visible element that names the action, instead of aria-label."
+          }
+        },
+        "required": [],
+        "anyOf": [
+          { "required": ["aria-label"] },
+          { "required": ["aria-labelledby"] }
+        ]
+      },
+      "useWhen": [
+        "A familiar action in a toolbar or a dense row where the icon alone is understood: close, undo, more."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The action needs words to be understood.",
+          "instead": "Button"
+        },
+        { "text": "The press goes to another page or URL.", "instead": "a" }
+      ],
+      "a11y": [
+        "Give it an aria-label or aria-labelledby that names the action; the icon alone announces nothing.",
+        "Mark the icon svg aria-hidden=\"true\" so it adds nothing to the name.",
+        "Give size s icon buttons at least var(--space-12) between neighbours, so each keeps its 44px hit area."
+      ]
+    }
+  }
+}

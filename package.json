@@ -98,6 +98,8 @@
     "capture:canvas": "vite-node scripts/capture-canvas.ts",
     "tokens:build": "node tokens/build.mjs",
     "tokens:check": "node tokens/check.mjs",
-    "rules:check": "node tokens/rules/check-source.mjs"
+    "rules:check": "node tokens/rules/check-source.mjs",
+    "catalog:build": "node kit/catalog/build.mjs",
+    "catalog:check": "node kit/catalog/check.mjs"
   }
 }
