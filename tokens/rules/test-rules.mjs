@@ -8,6 +8,7 @@ import { REPO, TOKENS } from '../lib/source.mjs';
 import { driftGate } from '../lib/gates.mjs';
 import { checkText } from './check-source.mjs';
 import { registryProblems, ruleProblems, RULES_FILE } from './registry.mjs';
+import { designMdGate } from '../lib/designmd.mjs';
 
 const readJson = (f) => JSON.parse(fs.readFileSync(f, 'utf8'));
 const CLI = path.join(TOKENS, 'rules/check-source.mjs');
@@ -406,6 +407,51 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(t(`export const A = () => <p title="t${dash}">j${dash}k</p>;`), ['1 em-dash em dash (—)', '1 em-dash em dash (—)']);
       assert.deepEqual(t(`// ${dash}\n/* ${dash}\n${dash} */\nexport const A = () => <p>{/* ${dash} */}ok</p>;`), []);
       assert.deepEqual(t('export const A = () => <p>&mdash;&#8212;&#x2014;</p>;\nconst e = "\\u2014 \\u{2014}";'), ['1 em-dash em dash (&mdash;)', '1 em-dash em dash (&#8212;)', '1 em-dash em dash (&#x2014;)', '2 em-dash em dash (\\u2014)', '2 em-dash em dash (\\u{2014})']);
+    },
+
+    '[design-md-names] designMdGate: the real DESIGN.md passes, so the gate is not vacuous on the tree it guards'() {
+      const text = fs.readFileSync(path.join(REPO, 'DESIGN.md'), 'utf8');
+      assert.deepEqual(designMdGate(text), []);
+      assert.ok(/`--orrery-iris-[a-z-]+`/.test(text) && /`[A-Z]+(_[A-Z]+)+`/.test(text) && /`target\.hit-target-min`/.test(text), 'DESIGN.md must name a variable, an export and a token path for this gate to read');
+    },
+
+    '[design-md-names] designMdGate: a variable, token path or export DESIGN.md names that the code does not define fails, naming the line and the name'() {
+      const bad = designMdGate('ok `--orrery-iris-text` and `color.accent` and `DEFAULT_OPEN_SPRING`\nbad `--orrery-iris-no-such` here\nbad `color.no-such-role` here\nbad `NO_SUCH_CONSTANT` here\nprefix `--orrery-iris-*` and `motion.ts` and `<Iris.Shadow>` are not names\n', { file: 'D.md' });
+      assert.deepEqual(bad, [
+        'D.md:2: `--orrery-iris-no-such` is not defined in tokens/generated/css, src/styles.module.css or src/*.ts(x); rename it in DESIGN.md or add the token.',
+        'D.md:3: token path `color.no-such-role` is not in the token source under tokens/base or tokens/brands; rename it in DESIGN.md or add the token.',
+        'D.md:4: `NO_SUCH_CONSTANT` is not exported from src/; rename it in DESIGN.md or export it from the code that owns the value.',
+      ]);
+    },
+
+    '[design-md-names] designMdGate: a literal colour, px or ms number fails; the Values-not-yet-in-code list and an allow-literal line pass; a stale or reasonless marker fails'() {
+      const lit = (t) => designMdGate(t, { file: 'D.md' });
+      assert.match(lit('the page is #fafafa\n')[0], /^D\.md:1: literal colour #fafafa; DESIGN\.md names tokens and holds no values\. Name the variable that owns it, or list it under "Values not yet in code"\.$/);
+      assert.match(lit('a ring of rgba(0, 0, 0, .1)\n')[0], /^D\.md:1: literal colour rgba\(\.\.\.\)/);
+      assert.match(lit('a shadow of oklch(0.5 0.1 200)\n')[0], /literal colour oklch\(\.\.\.\)/);
+      assert.match(lit('it is 48px wide\n')[0], /^D\.md:1: literal 48px; .*add <!-- allow-literal: reason --> to the line\.$/);
+      assert.match(lit('it lasts 150 ms\n')[0], /literal 150ms/);
+      assert.deepEqual(lit('# T\n\n## Values not yet in code\n\n- sun `#ffb37b` and 48px\n\n## Next\n\nplain\n'), []);
+      assert.match(lit('# T\n\n## Values not yet in code\n\n- x\n\n## Next\n\nback to #fff\n')[0], /^D\.md:9: literal colour #fff/);
+      assert.deepEqual(lit('settles in about 640ms <!-- allow-literal: a described settle time, not a source value -->\n'), []);
+      assert.match(lit('a colour #fff <!-- allow-literal: a colour is never excused here -->\n').join('\n'), /D\.md:1: allow-literal excuses nothing[\s\S]*literal colour #fff/);
+      assert.match(lit('no number here <!-- allow-literal: a stale marker -->\n')[0], /^D\.md:1: allow-literal excuses nothing: this line has no px or ms number \(stale marker\); remove it\.$/);
+      assert.match(lit('about 5px <!-- allow-literal: -->\n')[0], /^D\.md:1: allow-literal needs a reason/);
+    },
+
+    '[design-md-names] designMdGate: a name that exists in a seeded repo passes and one removed from it fails, so the check reads the code and not a fixed list'() {
+      const root = path.join(tmp, 'design-root');
+      fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+      fs.mkdirSync(path.join(root, 'tokens/generated/css'), { recursive: true });
+      fs.cpSync(path.join(TOKENS, 'base'), path.join(root, 'tokens/base'), { recursive: true });
+      fs.cpSync(path.join(TOKENS, 'brands'), path.join(root, 'tokens/brands'), { recursive: true });
+      fs.writeFileSync(path.join(root, 'src/styles.module.css'), '.a { color: var(--orrery-iris-only-here, red); }\n');
+      fs.writeFileSync(path.join(root, 'src/motion.ts'), 'export const ONLY_HERE_SPRING = 1;\n');
+      const text = '`--orrery-iris-only-here` `ONLY_HERE_SPRING`\n';
+      assert.deepEqual(designMdGate(text, { root }), []);
+      fs.writeFileSync(path.join(root, 'src/styles.module.css'), '.a { color: red; }\n');
+      fs.writeFileSync(path.join(root, 'src/motion.ts'), 'export const RENAMED_SPRING = 1;\n');
+      assert.equal(designMdGate(text, { root }).length, 2);
     },
   };
 }

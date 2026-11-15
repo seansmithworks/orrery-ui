@@ -390,5 +390,18 @@
       "ref": "tokens/lib/bridge.mjs#irisBridgeGate",
       "test": "[iris-bridge-matches-fallbacks] irisBridgeGate: a role whose light value no longer equals the Iris literal fails the build, naming both values, and writes nothing"
     }
+  },
+  {
+    "id": "design-md-names",
+    "layer": "rule",
+    "statement": "Every --custom-property, token path and SCREAMING_SNAKE src/ export that DESIGN.md writes in code formatting exists in the code (tokens/generated/css or src/styles.module.css, the token source, src/), and DESIGN.md states no hex or rgb/hsl/oklch colour and no px or ms number outside its \"Values not yet in code\" list and lines marked allow-literal; this does not show that the prose describes a value correctly.",
+    "applies": [
+      "source"
+    ],
+    "check": {
+      "kind": "token-gate",
+      "ref": "tokens/lib/designmd.mjs#designMdGate",
+      "test": "[design-md-names] designMdGate: a variable, token path or export DESIGN.md names that the code does not define fails, naming the line and the name"
+    }
   }
 ]
