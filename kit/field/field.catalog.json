@@ -1,0 +1,114 @@
+{
+  "example": "Field.example.tsx",
+  "components": {
+    "Field": {
+      "description": "A labelled form field on Base UI that wires its label, description and error to the control inside it.",
+      "parts": {
+        "Root": {
+          "description": "Groups one control with its label, description and error, and holds the field's invalid and disabled state.",
+          "passthrough": "@base-ui/react/field#Field.Root.Props",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "invalid": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Marks the control aria-invalid and data-invalid (the heavy outline) and shows Field.Error."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Disables the control and mutes the label."
+              },
+              "name": {
+                "type": "string",
+                "x-from": "base-ui",
+                "description": "The control's name when the form is submitted."
+              }
+            },
+            "required": []
+          }
+        },
+        "Label": {
+          "description": "The visible label; it is the control's accessible name through a for/id pair set by Base UI.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/field#Field.Label.Props",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Description": {
+          "description": "A hint below the control, joined to its aria-describedby.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/field#Field.Description.Props",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Error": {
+          "description": "The error message, rendered while Field.Root is invalid and joined to the control's aria-describedby.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/field#Field.Error.Props",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        }
+      },
+      "requiredParts": ["Root", "Label"],
+      "useWhen": [
+        "Any text input, so it has a visible label, an optional hint and an error said in words."
+      ],
+      "avoidWhen": [
+        {
+          "text": "One question answered with several controls, such as a set of radios.",
+          "instead": "fieldset"
+        }
+      ],
+      "a11y": [
+        "Give every Field.Root a Field.Label; a placeholder is not a label.",
+        "When the value is wrong, set invalid on Field.Root and say what to fix in Field.Error, in words.",
+        "Put format rules in Field.Description before the person types, not only in the error."
+      ]
+    },
+    "Input": {
+      "description": "A text input; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
+      "passthrough": "@base-ui/react/input#Input.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The native input type: text, email, password, search, tel, url, number."
+          },
+          "readOnly": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
+          },
+          "autoComplete": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The autofill hint, such as email, name or current-password."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "One line of text inside Field.Root: a name, an email, a URL, a search term."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The text runs to more than one line.",
+          "instead": "textarea"
+        },
+        {
+          "text": "The person picks from a fixed short list.",
+          "instead": "select"
+        }
+      ],
+      "a11y": [
+        "Place it inside Field.Root with a Field.Label; on its own it has no name unless you give it aria-label.",
+        "Set autoComplete on fields that ask for the person's own data, such as email or name."
+      ]
+    }
+  }
+}
