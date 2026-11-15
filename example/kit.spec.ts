@@ -612,3 +612,50 @@ test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
     expect(errors).toEqual([]);
   });
 });
+
+test.describe("golden examples (fixtures/kit-examples.html)", () => {
+  test("every example in kit/catalog.json mounts, with no console error and no axe violation", async ({
+    page,
+  }) => {
+    const { readFileSync } = await import("node:fs");
+    const catalog = JSON.parse(
+      readFileSync(new URL("../kit/catalog.json", import.meta.url), "utf8"),
+    ) as { components: Record<string, { example: { file: string } }> };
+    const files = [
+      ...new Set(Object.values(catalog.components).map((c) => c.example.file)),
+    ].sort();
+    expect(files.length).toBeGreaterThan(0);
+
+    const errors: string[] = [];
+    page.on("pageerror", (e) => errors.push(e.message));
+    page.on("console", (m) => {
+      if (m.type() === "error") errors.push(m.text());
+    });
+    await page.goto("/fixtures/kit-examples.html");
+
+    const sections = page.locator("[data-example]");
+    await expect(sections).toHaveCount(files.length);
+    const mounted = await sections.evaluateAll((els) =>
+      els.map((el) => ({
+        file: el.getAttribute("data-example"),
+        children: el.childElementCount,
+      })),
+    );
+    expect(mounted.map((m) => m.file).sort()).toEqual(files);
+    for (const m of mounted) expect(m.children, m.file ?? "").toBeGreaterThan(0);
+
+    const scope = (b: AxeBuilder) =>
+      b.include("main").exclude("[data-base-ui-focus-guard]");
+    const wcag = await scope(new AxeBuilder({ page })).withTags(TAGS).analyze();
+    const labelInName = await scope(new AxeBuilder({ page }))
+      .withRules(["label-content-name-mismatch"])
+      .analyze();
+    expect(
+      [...wcag.violations, ...labelInName.violations].map((v) => ({
+        id: v.id,
+        nodes: v.nodes.map((n) => n.target.join(" ")),
+      })),
+    ).toEqual([]);
+    expect(errors).toEqual([]);
+  });
+});
