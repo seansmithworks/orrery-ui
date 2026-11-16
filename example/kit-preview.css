@@ -40,3 +40,16 @@
     outline-offset: var(--ring-width);
   }
 }
+
+/* kit/checkbox/checkbox.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-checkbox:not([data-disabled])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+  }
+  .orr-checkbox[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}

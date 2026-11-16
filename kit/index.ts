@@ -10,3 +10,4 @@ export { Field, Input } from "./field/Field";
 export type { InputProps } from "./field/Field";
 export { Dialog } from "./dialog/Dialog";
 export type { DialogPopupProps } from "./dialog/Dialog";
+export { Checkbox, type CheckboxProps } from "./checkbox/Checkbox";

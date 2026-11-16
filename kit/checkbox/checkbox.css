@@ -1,0 +1,131 @@
+/* Checkbox, and the control-plus-label row it makes inside Field. Every value is a token, a kit-local
+   property from kit.css, or a kit-local property declared below.
+   States: unchecked, checked, indeterminate, hover, focus-visible, disabled, invalid.
+
+   One rule per state.
+
+   The row: Field.Label wraps the box and its text (Checkbox.tsx), so the label is a flex row and a press
+   on the text toggles the box. The box draws --space-16 and keeps a --hit-target-min hit area by reaching
+   past its box on each side, as Button size s does. */
+
+@layer orrery.kit {
+  .orr-checkbox {
+    /* The selected colours: checked and indeterminate fill, and the mark drawn on it. Pending Sean's
+       decision on the selected colour; the accent stays reserved for focus rings (DESIGN.md, Visual Theme).
+       Declared on the control, not :root, so var(--text) and var(--page) resolve in the brand scope the
+       control sits in. */
+    --orr-selected-fill: var(--text);
+    --orr-selected-mark: var(--page);
+    /* UN-DIALLED: the tick and dash stroke, in the glyph's 16-unit viewBox. */
+    --orr-checkbox-mark-width: 2;
+    position: relative;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    width: var(--space-16);
+    height: var(--space-16);
+    margin: 0;
+    padding: 0;
+    border: var(--line-width) solid var(--text-muted);
+    border-radius: var(--radius-tick);
+    background-color: var(--page);
+    color: var(--orr-selected-mark);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The hit area is never under --hit-target-min on either axis. */
+  .orr-checkbox::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-target-min)) / 2));
+  }
+
+  .orr-checkbox__indicator {
+    display: flex;
+    width: 100%;
+    height: 100%;
+  }
+  .orr-checkbox__indicator svg {
+    flex: none;
+    width: 100%;
+    height: 100%;
+    stroke-width: var(--orr-checkbox-mark-width);
+  }
+  .orr-checkbox__indicator[data-indeterminate] .orr-checkbox__tick,
+  .orr-checkbox__indicator:not([data-indeterminate]) .orr-checkbox__dash {
+    display: none;
+  }
+
+  /* checked and indeterminate */
+  .orr-checkbox:is([data-checked], [data-indeterminate]) {
+    border-color: var(--orr-selected-fill);
+    background-color: var(--orr-selected-fill);
+  }
+
+  /* hover (only where the pointer can hover, so touch never sticks) */
+  @media (hover: hover) {
+    .orr-checkbox:not([data-disabled]):hover {
+      border-color: var(--text);
+    }
+  }
+
+  /* focus: the one ring */
+  .orr-checkbox:focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  /* invalid: Field's heavy line, drawn twice as thick with an inset stroke so the box does not move */
+  .orr-checkbox[data-invalid] {
+    border-color: var(--line-strong);
+    box-shadow: inset 0 0 0 var(--line-width) var(--line-strong);
+  }
+
+  /* disabled */
+  .orr-checkbox[data-disabled] {
+    border-color: var(--line);
+    background-color: var(--layer-1);
+    cursor: not-allowed;
+  }
+  /* disabled and selected: the muted text colour fills the box, so the mark still reads */
+  .orr-checkbox[data-disabled]:is([data-checked], [data-indeterminate]) {
+    border-color: var(--text-muted);
+    background-color: var(--text-muted);
+  }
+
+  /* The row: a Field.Label holding a Checkbox reads as an option, not a field heading. The box sits
+     centred on the first line of the text, however many lines the text wraps to. */
+  .orr-field__label:has(> .orr-checkbox) {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-8);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    font-weight: 400;
+    cursor: pointer;
+  }
+  .orr-field__label > .orr-checkbox {
+    margin-top: calc((1lh - var(--space-16)) / 2);
+  }
+  .orr-field[data-disabled] > .orr-field__label:has(> .orr-checkbox) {
+    cursor: not-allowed;
+  }
+  /* Description and error line up with the label text, past the box. */
+  .orr-field:has(> .orr-field__label > .orr-checkbox)
+    > :is(.orr-field__description, .orr-field__error) {
+    margin-inline-start: calc(var(--space-16) + var(--space-8));
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-checkbox {
+      transition:
+        background-color var(--orr-dur) var(--orr-ease),
+        border-color var(--orr-dur) var(--orr-ease);
+    }
+  }
+}
