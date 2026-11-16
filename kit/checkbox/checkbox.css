@@ -1,21 +1,15 @@
-/* Checkbox, and the control-plus-label row it makes inside Field. Every value is a token, a kit-local
-   property from kit.css, or a kit-local property declared below.
+/* Checkbox. Every value is a token, a kit-local property from kit.css, or a kit-local property declared below.
    States: unchecked, checked, indeterminate, hover, focus-visible, disabled, invalid.
 
    One rule per state.
 
-   The row: Field.Label wraps the box and its text (Checkbox.tsx), so the label is a flex row and a press
-   on the text toggles the box. The box draws --space-16 and keeps a --hit-target-min hit area by reaching
-   past its box on each side, as Button size s does. */
+   The box renders cx("orr-checkbox", "orr-control", className), its own class first (Checkbox.tsx). The selected
+   colours and the control-plus-label row it makes inside Field live in control.css, shared with Switch. The box
+   draws --space-16 and keeps a --hit-target-min hit area by reaching past its box on each side, as Button size s
+   does. */
 
 @layer orrery.kit {
   .orr-checkbox {
-    /* The selected colours: checked and indeterminate fill, and the mark drawn on it. Pending Sean's
-       decision on the selected colour; the accent stays reserved for focus rings (DESIGN.md, Visual Theme).
-       Declared on the control, not :root, so var(--text) and var(--page) resolve in the brand scope the
-       control sits in. */
-    --orr-selected-fill: var(--text);
-    --orr-selected-mark: var(--page);
     /* UN-DIALLED: the tick and dash stroke, in the glyph's 16-unit viewBox. */
     --orr-checkbox-mark-width: 2;
     position: relative;
@@ -98,27 +92,10 @@
     background-color: var(--text-muted);
   }
 
-  /* The row: a Field.Label holding a Checkbox reads as an option, not a field heading. The box sits
-     centred on the first line of the text, however many lines the text wraps to. */
-  .orr-field__label:has(> .orr-checkbox) {
-    display: flex;
-    align-items: flex-start;
-    gap: var(--space-8);
-    font-size: var(--type-size-14);
-    line-height: var(--type-line-height-14);
-    font-weight: 400;
-    cursor: pointer;
-  }
-  .orr-field__label > .orr-checkbox {
-    margin-top: calc((1lh - var(--space-16)) / 2);
-  }
-  .orr-field[data-disabled] > .orr-field__label:has(> .orr-checkbox) {
-    cursor: not-allowed;
-  }
-  /* Description and error line up with the label text, past the box. */
-  .orr-field:has(> .orr-field__label > .orr-checkbox)
-    > :is(.orr-field__description, .orr-field__error) {
-    margin-inline-start: calc(var(--space-16) + var(--space-8));
+  /* The box's drawn size, for the shared row in control.css. */
+  .orr-field:has(> .orr-field__label > .orr-checkbox) {
+    --orr-control-width: var(--space-16);
+    --orr-control-height: var(--space-16);
   }
 
   @media (prefers-reduced-motion: no-preference) {

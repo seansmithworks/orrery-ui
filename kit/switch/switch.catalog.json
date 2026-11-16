@@ -1,0 +1,67 @@
+{
+  "example": "Switch.example.tsx",
+  "components": {
+    "Switch": {
+      "description": "A switch on Base UI whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
+      "passthrough": "@base-ui/react/switch#Switch.Root.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "checked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it is on, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
+          },
+          "defaultChecked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it starts on, when it manages its own state."
+          },
+          "onCheckedChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new value when the person turns it on or off."
+          },
+          "disabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
+          },
+          "name": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The name submitted with the form, with the value \"on\" when on and nothing when off. Inside Field.Root, the field's name wins."
+          },
+          "uncheckedValue": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The value submitted when it is off. Without it, an off switch submits nothing, as a native checkbox does."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "A setting that is on or off and stays that way, such as notifications or grid lines.",
+        "A row in a settings list, where the label says what turns on."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The person must tick before an action, such as agreeing to terms.",
+          "instead": "Checkbox"
+        },
+        {
+          "text": "Exactly one option of a set may be picked.",
+          "instead": "fieldset"
+        },
+        {
+          "text": "The press runs an action once, not a setting that stays.",
+          "instead": "Button"
+        }
+      ],
+      "a11y": [
+        "Wrap the Switch and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
+        "Name what turns on (Show grid lines), never the state: the switch already says on or off."
+      ]
+    }
+  }
+}

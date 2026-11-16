@@ -608,6 +608,72 @@
         "file": "kit/field/Field.example.tsx",
         "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
+    },
+    "Switch": {
+      "description": "A switch on Base UI whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
+      "passthrough": "@base-ui/react/switch#Switch.Root.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "checked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it is on, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
+          },
+          "defaultChecked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it starts on, when it manages its own state."
+          },
+          "onCheckedChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new value when the person turns it on or off."
+          },
+          "disabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
+          },
+          "name": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The name submitted with the form, with the value \"on\" when on and nothing when off. Inside Field.Root, the field's name wins."
+          },
+          "uncheckedValue": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The value submitted when it is off. Without it, an off switch submits nothing, as a native checkbox does."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "A setting that is on or off and stays that way, such as notifications or grid lines.",
+        "A row in a settings list, where the label says what turns on."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The person must tick before an action, such as agreeing to terms.",
+          "instead": "Checkbox"
+        },
+        {
+          "text": "Exactly one option of a set may be picked.",
+          "instead": "fieldset"
+        },
+        {
+          "text": "The press runs an action once, not a setting that stays.",
+          "instead": "Button"
+        }
+      ],
+      "a11y": [
+        "Wrap the Switch and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
+        "Name what turns on (Show grid lines), never the state: the switch already says on or off."
+      ],
+      "example": {
+        "file": "kit/switch/Switch.example.tsx",
+        "code": "// Golden example: chart settings. Two settings that stay on or off, each named for what turns on, saved with the\n// form. An on switch submits its name with the value \"on\"; an off switch submits nothing, as a native checkbox.\n// Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Field, Switch } from \"../index\";\n\nexport default function ChartSettings() {\n  const [saved, setSaved] = useState(false);\n\n  return (\n    <Form\n      onFormSubmit={() => setSaved(true)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"gridLines\" defaultChecked />\n          Show grid lines\n        </Field.Label>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"orbitEmails\" />\n          Email me when an orbit changes\n        </Field.Label>\n        <Field.Description>At most one email a day.</Field.Description>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Save settings\n        </Button>\n        <span role=\"status\">{saved ? \"Settings saved.\" : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+      }
     }
   }
 }

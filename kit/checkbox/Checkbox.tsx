@@ -10,7 +10,7 @@ export type CheckboxProps = Omit<
 };
 
 /**
- * Checkbox on Base UI: a box with a tick or, when indeterminate, a dash. Styles: kit.css (.orr-checkbox).
+ * Checkbox on Base UI: a box with a tick or, when indeterminate, a dash. Styles: kit.css (.orr-checkbox, .orr-control).
  * Inside Field.Root it takes the field's label, description, error and state. The label wraps the box
  * and its text, so a click anywhere on the label toggles it:
  *
@@ -27,7 +27,11 @@ export type CheckboxProps = Omit<
  */
 export function Checkbox({ className, ...props }: CheckboxProps) {
   return (
-    <BaseCheckbox.Root {...props} className={cx("orr-checkbox", className)}>
+    // Component class first: the kit baseline keys each element by its first orr- class.
+    <BaseCheckbox.Root
+      {...props}
+      className={cx("orr-checkbox", "orr-control", className)}
+    >
       <BaseCheckbox.Indicator className="orr-checkbox__indicator">
         <svg
           className="orr-checkbox__tick"

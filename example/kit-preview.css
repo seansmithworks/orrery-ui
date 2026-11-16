@@ -53,3 +53,31 @@
     outline-offset: var(--ring-width);
   }
 }
+
+/* kit/switch/switch.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-switch:not([data-disabled])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+    .orr-switch:not([data-disabled])[data-preview~="hover"] > .orr-switch__thumb[data-unchecked] {
+      background-color: var(--text);
+    }
+    .orr-switch[data-checked]:not([data-disabled])[data-preview~="hover"] {
+      --orr-switch-on-fill: color-mix(
+      in srgb,
+      var(--orr-selected-fill),
+      var(--orr-selected-mark) var(--orr-hover-mix)
+      );
+      border-color: var(--orr-switch-on-fill);
+      background-color: var(--orr-switch-on-fill);
+    }
+  }
+  .orr-switch:not([data-disabled])[data-preview~="active"] > .orr-switch__thumb {
+    scale: var(--orr-press-scale);
+  }
+  .orr-switch[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}

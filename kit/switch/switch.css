@@ -1,0 +1,144 @@
+/* Switch. Every value is a token, a kit-local property from kit.css, or a kit-local property declared below.
+   States: off, on, hover, pressed, focus-visible, disabled, invalid.
+
+   One rule per state.
+
+   The track renders cx("orr-switch", "orr-control", className), its own class first (Switch.tsx). The selected
+   colours and the control-plus-label row it makes inside Field live in control.css, shared with Checkbox.
+   On: the selected fill under the selected mark. Off: the page under a --text-muted border, with a --text-muted
+   thumb, as an unticked Checkbox. The track draws --space-20 high and keeps a --hit-target-min hit area by
+   reaching past its box on each side, as Button size s does. */
+
+@layer orrery.kit {
+  .orr-switch {
+    /* UN-DIALLED: the track's width. */
+    --orr-switch-width: 36px;
+    /* UN-DIALLED: the gap between the thumb and the inside of the track's border. */
+    --orr-switch-thumb-inset: 2px;
+    /* The thumb fills the track's height inside the border and the inset. */
+    --orr-switch-thumb-size: calc(
+      var(--space-20) - 2 * (var(--line-width) + var(--orr-switch-thumb-inset))
+    );
+    /* On, the thumb travels to the far inset: the track's width less its height. */
+    --orr-switch-travel: calc(var(--orr-switch-width) - var(--space-20));
+    position: relative;
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    width: var(--orr-switch-width);
+    height: var(--space-20);
+    margin: 0;
+    padding: 0 var(--orr-switch-thumb-inset);
+    border: var(--line-width) solid var(--text-muted);
+    border-radius: var(--radius-round);
+    background-color: var(--page);
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The hit area is never under --hit-target-min on either axis. */
+  .orr-switch::after {
+    content: "";
+    position: absolute;
+    inset: min(0px, calc((100% - var(--hit-target-min)) / 2));
+  }
+
+  .orr-switch__thumb {
+    display: block;
+    flex: none;
+    width: var(--orr-switch-thumb-size);
+    height: var(--orr-switch-thumb-size);
+    border-radius: var(--radius-round);
+    background-color: var(--text-muted);
+  }
+
+  /* on */
+  .orr-switch[data-checked] {
+    border-color: var(--orr-selected-fill);
+    background-color: var(--orr-selected-fill);
+  }
+  .orr-switch__thumb[data-checked] {
+    background-color: var(--orr-selected-mark);
+    translate: var(--orr-switch-travel) 0;
+  }
+
+  /* hover (only where the pointer can hover, so touch never sticks): off firms to the text colour, on tints the
+     track toward the thumb by the kit's hover share */
+  @media (hover: hover) {
+    .orr-switch:not([data-disabled]):hover {
+      border-color: var(--text);
+    }
+    .orr-switch:not([data-disabled]):hover
+      > .orr-switch__thumb[data-unchecked] {
+      background-color: var(--text);
+    }
+    .orr-switch[data-checked]:not([data-disabled]):hover {
+      --orr-switch-on-fill: color-mix(
+        in srgb,
+        var(--orr-selected-fill),
+        var(--orr-selected-mark) var(--orr-hover-mix)
+      );
+      border-color: var(--orr-switch-on-fill);
+      background-color: var(--orr-switch-on-fill);
+    }
+  }
+
+  /* pressed: the thumb gives, as a pressed Button does */
+  .orr-switch:not([data-disabled]):active > .orr-switch__thumb {
+    scale: var(--orr-press-scale);
+  }
+
+  /* focus: the one ring */
+  .orr-switch:focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  /* invalid: Field's heavy line, drawn twice as thick with an inset stroke so the track does not move */
+  .orr-switch[data-invalid] {
+    border-color: var(--line-strong);
+    box-shadow: inset 0 0 0 var(--line-width) var(--line-strong);
+  }
+
+  /* disabled: the track steps back to the first layer, the thumb keeps --text-muted so it still reads */
+  .orr-switch[data-disabled] {
+    border-color: var(--line);
+    background-color: var(--layer-1);
+    cursor: not-allowed;
+  }
+  /* disabled and on: the muted text colour fills the track, so the thumb still reads */
+  .orr-switch[data-disabled][data-checked] {
+    border-color: var(--text-muted);
+    background-color: var(--text-muted);
+  }
+
+  /* The track's drawn size, for the shared row in control.css. */
+  .orr-field:has(> .orr-field__label > .orr-switch) {
+    --orr-control-width: var(--orr-switch-width);
+    --orr-control-height: var(--space-20);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-switch {
+      transition:
+        background-color var(--orr-dur) var(--orr-ease),
+        border-color var(--orr-dur) var(--orr-ease);
+    }
+    .orr-switch__thumb {
+      transition:
+        background-color var(--orr-dur) var(--orr-ease),
+        translate var(--orr-dur) var(--orr-ease),
+        scale var(--orr-dur) var(--orr-ease);
+    }
+  }
+
+  /* Reduced motion: the thumb jumps to its side with no travel, and does not give on press. */
+  @media (prefers-reduced-motion: reduce) {
+    .orr-switch {
+      --orr-press-scale: 1;
+    }
+  }
+}
