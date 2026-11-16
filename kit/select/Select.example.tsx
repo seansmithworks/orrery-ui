@@ -1,46 +1,30 @@
 // Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a
-// placeholder; submitting empty says what to fix in words. Root gets `items` so the trigger shows the
-// label, not the raw value. Spacing is token variables only.
-import { useState, type FormEvent } from "react";
+// placeholder. Validation is Base UI's own: Form runs each field's check on submit, blocks the submit,
+// focuses the first invalid control, and Field.Error match="valueMissing" says what to fix. Root gets
+// `items` so the trigger shows the label, not the raw value. Spacing is token variables only.
+import { useState } from "react";
+import { Form } from "@base-ui/react/form";
 import { Button, Field, Select } from "../index";
 
 const INNER = { mercury: "Mercury", venus: "Venus", mars: "Mars" };
 const OUTER = { jupiter: "Jupiter", saturn: "Saturn", neptune: "Neptune" };
-const ITEMS = { ...INNER, ...OUTER };
+const ITEMS: Record<string, string> = { ...INNER, ...OUTER };
 
 export default function NewChart() {
-  const [body, setBody] = useState<string | null>(null);
-  const [error, setError] = useState<string | null>(null);
   const [made, setMade] = useState<string | null>(null);
 
-  function submit(event: FormEvent) {
-    event.preventDefault();
-    const problem = body ? null : "Choose a body for the chart to follow.";
-    setError(problem);
-    setMade(problem ? null : ITEMS[body as keyof typeof ITEMS]);
-  }
-
   return (
-    <form
-      noValidate
-      onSubmit={submit}
+    <Form
+      onFormSubmit={(values) => setMade(ITEMS[String(values.body)] ?? null)}
       style={{
         display: "flex",
         flexDirection: "column",
         gap: "var(--space-20)",
       }}
     >
-      <Field.Root name="body" invalid={error !== null}>
+      <Field.Root name="body">
         <Field.Label>Body</Field.Label>
-        <Select.Root
-          items={ITEMS}
-          value={body}
-          onValueChange={(next) => {
-            setBody(next);
-            setError(null);
-            setMade(null);
-          }}
-        >
+        <Select.Root items={ITEMS} required onValueChange={() => setMade(null)}>
           <Select.Trigger placeholder="Choose a body" />
           <Select.Popup>
             <Select.Group>
@@ -65,7 +49,9 @@ export default function NewChart() {
         <Field.Description>
           The chart centres on this body and follows its orbit.
         </Field.Description>
-        <Field.Error match={error !== null}>{error}</Field.Error>
+        <Field.Error match="valueMissing">
+          Choose a body for the chart to follow.
+        </Field.Error>
       </Field.Root>
       <div
         style={{
@@ -79,6 +65,6 @@ export default function NewChart() {
         </Button>
         <span role="status">{made ? `Chart made for ${made}.` : ""}</span>
       </div>
-    </form>
+    </Form>
   );
 }

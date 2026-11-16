@@ -1,0 +1,28 @@
+/* The floating level ("level 3"): the drawing every floating surface shares. Dialog's popup and
+   Select's popup carry the class .orr-floating; a later Menu or Popover adds the same class and edits
+   nothing here. Imported by kit.css before the components, so a component's own one-class rule can
+   still refine it.
+
+   STRAWMAN (Sean's call 8), no drawing decided yet: page fill plus the heavy --line-strong hairline,
+   no shadow. The highlight is a STRAWMAN awaiting sign-off too: the highlighted item of a list
+   inverts (text-colour fill, page-colour text), which reads at well over 3:1 against the fill in
+   every brand and spends no accent. The decision changes the property values below and nothing else.
+
+   The properties are declared on the surface, not :root, so each one resolves the roles of the theme
+   it sits in (a var() on :root would resolve against the root's theme). */
+
+@layer orrery.kit {
+  .orr-floating {
+    --orr-floating-fill: var(--page);
+    --orr-floating-border: var(--line-width) solid var(--line-strong);
+    --orr-floating-radius: var(--radius-panel);
+    --orr-floating-shadow: none;
+    /* The keyboard and pointer position in a floating list: a fill and the text drawn on it. */
+    --orr-highlight-fill: var(--text);
+    --orr-highlight-text: var(--page);
+    border: var(--orr-floating-border);
+    border-radius: var(--orr-floating-radius);
+    background-color: var(--orr-floating-fill);
+    box-shadow: var(--orr-floating-shadow);
+  }
+}

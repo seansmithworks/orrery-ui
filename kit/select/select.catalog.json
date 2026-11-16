@@ -8,7 +8,9 @@
           "description": "Holds the value and the open state; it renders no element of its own.",
           "className": false,
           "passthrough": "@base-ui/react/select#Select.Root.Props<unknown>",
-          "slots": ["default"],
+          "slots": [
+            "default"
+          ],
           "props": {
             "type": "object",
             "properties": {
@@ -41,6 +43,21 @@
                 "type": "string",
                 "x-from": "base-ui",
                 "description": "The value's name when the form is submitted, if Field.Root does not give one."
+              },
+              "required": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "A value must be chosen; inside Base UI's Form, submitting empty fails with valueMissing for Field.Error."
+              },
+              "open": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "modal": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Unset, true: while open, page scroll locks and outside presses only close. false leaves the page usable."
               }
             },
             "required": []
@@ -65,13 +82,50 @@
           "description": "Portal, positioner, popup and list in one part; it opens below the trigger, at least as wide, on document.body.",
           "inside": "Root",
           "passthrough": "@base-ui/react/select#Select.Popup.Props",
-          "slots": ["default"],
+          "slots": [
+            "default"
+          ],
           "props": {
             "type": "object",
             "properties": {
               "container": {
                 "x-type": "object",
                 "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "top",
+                  "bottom",
+                  "left",
+                  "right",
+                  "inline-end",
+                  "inline-start"
+                ],
+                "description": "The trigger's side the popup opens on; unset, Base UI's bottom. It flips when there is no room."
+              },
+              "align": {
+                "type": "string",
+                "enum": [
+                  "start",
+                  "center",
+                  "end"
+                ],
+                "description": "The popup's alignment along that side; unset, Base UI's center."
+              },
+              "sideOffset": {
+                "description": "Extra gap from the trigger in px, added to the kit's own offset.",
+                "type": "number"
+              },
+              "collisionPadding": {
+                "type": "number",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter. Base UI's is 5."
+              },
+              "alignItemWithTrigger": {
+                "type": "boolean",
+                "default": false,
+                "description": "Kit-set off: the popup opens below the trigger. On, it covers the trigger with the selected item over the value."
               },
               "finalFocus": {
                 "x-type": "object",
@@ -84,9 +138,14 @@
         },
         "Item": {
           "description": "One option; its text is the label used for typeahead, and a check in the text colour marks the selected one.",
-          "inside": ["Popup", "Group"],
+          "inside": [
+            "Popup",
+            "Group"
+          ],
           "passthrough": "@base-ui/react/select#Select.Item.Props",
-          "slots": ["default"],
+          "slots": [
+            "default"
+          ],
           "props": {
             "type": "object",
             "properties": {
@@ -113,24 +172,45 @@
           "description": "Groups related items under a GroupLabel.",
           "inside": "Popup",
           "passthrough": "@base-ui/react/select#Select.Group.Props",
-          "slots": ["default"],
-          "props": { "type": "object", "properties": {}, "required": [] }
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
         },
         "GroupLabel": {
           "description": "The muted heading of a group; Base UI points the group's aria-labelledby at it.",
           "inside": "Group",
           "passthrough": "@base-ui/react/select#Select.GroupLabel.Props",
-          "slots": ["default"],
-          "props": { "type": "object", "properties": {}, "required": [] }
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
         },
         "Separator": {
           "description": "A hairline between groups.",
           "inside": "Popup",
           "passthrough": "@base-ui/react/select#Select.Separator.Props",
-          "props": { "type": "object", "properties": {}, "required": [] }
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
         }
       },
-      "requiredParts": ["Root", "Trigger", "Popup", "Item"],
+      "requiredParts": [
+        "Root",
+        "Trigger",
+        "Popup",
+        "Item"
+      ],
       "useWhen": [
         "One choice from a fixed list of about five to twenty-five options, inside a form.",
         "The options are known up front and need no search."

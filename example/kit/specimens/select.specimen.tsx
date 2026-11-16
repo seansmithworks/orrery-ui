@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from "react";
+import { Fragment, useState, type ReactNode } from "react";
 import { Field, Select } from "../../../kit";
 import type { SpecimenProps } from "../specimen";
 import "./select.specimen.css";
@@ -115,6 +115,61 @@ function ClosedCell({ cell }: { cell: Cell }) {
   );
 }
 
+const MOONS: Record<string, Record<string, string>> = {
+  Earth: { moon: "Moon" },
+  Mars: { phobos: "Phobos", deimos: "Deimos" },
+  Jupiter: {
+    io: "Io",
+    europa: "Europa",
+    ganymede: "Ganymede",
+    callisto: "Callisto",
+  },
+  Saturn: {
+    titan: "Titan",
+    enceladus: "Enceladus",
+    mimas: "Mimas",
+    rhea: "Rhea",
+  },
+};
+const ALL_MOONS = Object.assign({}, ...Object.values(MOONS));
+
+/**
+ * A live grouped list longer than the popup's max height, so the clamp and the scroll run for real
+ * (the held-open frames below pin their placement, so they cannot show either). Closed at rest.
+ */
+function LongListCell() {
+  const [portal, setPortal] = useState<HTMLDivElement | null>(null);
+  return (
+    <div className="spec-cell" data-cell="long list">
+      <span className="spec-label" aria-hidden="true">
+        long list
+      </span>
+      <Field.Root>
+        <Field.Label>Moon</Field.Label>
+        <Select.Root items={ALL_MOONS} defaultValue="europa">
+          <Select.Trigger />
+          <Select.Popup container={portal}>
+            {Object.entries(MOONS).map(([planet, moons], i) => (
+              <Fragment key={planet}>
+                {i > 0 && <Select.Separator />}
+                <Select.Group>
+                  <Select.GroupLabel>{planet}</Select.GroupLabel>
+                  {Object.entries(moons).map(([value, label]) => (
+                    <Select.Item key={value} value={value}>
+                      {label}
+                    </Select.Item>
+                  ))}
+                </Select.Group>
+              </Fragment>
+            ))}
+          </Select.Popup>
+        </Select.Root>
+      </Field.Root>
+      <div className="spec-select-portal" ref={setPortal} />
+    </div>
+  );
+}
+
 /**
  * The open state, held open inside its own frame (specimen CSS: contain), never the panel's live
  * portal. Not modal, so the rest of the page stays usable. The frame is held in state: the
@@ -160,6 +215,7 @@ export default function SelectSpecimen(_: SpecimenProps) {
       {CELLS.map((c) => (
         <ClosedCell key={c.name} cell={c} />
       ))}
+      <LongListCell />
       <OpenCell name="open" label="Orbit" items={ORBITS} value="vesta">
         <OrbitItems highlight="ceres" />
       </OpenCell>

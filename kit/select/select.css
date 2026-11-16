@@ -1,6 +1,7 @@
 /* Select. Every value is a token, a kit-local property from kit.css, or one of the UN-DIALLED
    properties below. The trigger has the Input's look; the popup has the floating level's drawing
-   (the --orr-floating-* properties, declared once in dialog.css).
+   and highlight (the .orr-floating class in kit/floating.css, which Select.tsx adds to the popup).
+   A value marked UN-DIALLED is a token chosen here without a decision behind it.
    States: rest, hover, focus, open, placeholder, invalid, disabled; item highlighted, selected, disabled.
 
    One rule per state. No accent except the focus ring: the selected item is a check in the text colour. */
@@ -53,6 +54,8 @@
     flex: none;
     color: var(--text-muted);
   }
+  /* UN-DIALLED: a spacing token used as the glyph size (no icon-size role exists); the same as the
+     Button's icon size. */
   .orr-select__icon svg {
     width: var(--space-20);
     height: var(--space-20);
@@ -109,10 +112,6 @@
       var(--orr-select-max-height),
       calc(var(--available-height) - var(--orr-select-offset))
     );
-    border: var(--orr-floating-border);
-    border-radius: var(--orr-floating-radius);
-    background-color: var(--orr-floating-fill);
-    box-shadow: var(--orr-floating-shadow);
     color: var(--text);
     font-family: var(--font-sans);
     font-size: var(--type-size-14);
@@ -129,7 +128,7 @@
   .orr-select__list {
     box-sizing: border-box;
     min-height: 0;
-    padding: var(--space-4);
+    padding: var(--space-4); /* UN-DIALLED */
     overflow-y: auto;
     overscroll-behavior: contain;
     outline: 0;
@@ -139,10 +138,12 @@
   .orr-select__item {
     box-sizing: border-box;
     display: grid;
+    /* UN-DIALLED: the check column's width (the glyph size). */
     grid-template-columns: minmax(0, 1fr) var(--space-20);
     align-items: center;
     gap: var(--space-8);
     min-height: var(--hit-target-min);
+    /* UN-DIALLED: with the list padding, puts the item text in line with the trigger's value. */
     padding: 0 var(--space-4) 0 var(--space-8);
     border-radius: var(--radius-control);
     cursor: default;
@@ -156,23 +157,26 @@
     text-overflow: ellipsis;
     white-space: nowrap;
   }
+  /* The check takes the item's text colour: --text at rest, the highlight's text when highlighted. */
   .orr-select__check {
     display: flex;
     grid-column: 2;
-    color: var(--text);
   }
+  /* UN-DIALLED: a spacing token used as the glyph size, as on the trigger's chevron. */
   .orr-select__check svg {
     width: var(--space-20);
     height: var(--space-20);
   }
 
-  /* item highlighted: keyboard or pointer is on it; a layer fill, never the accent */
+  /* item highlighted: keyboard or pointer is on it. The floating level's highlight (kit/floating.css),
+     never the accent. */
   .orr-select__item[data-highlighted] {
-    background-color: var(--layer-2);
+    background-color: var(--orr-highlight-fill);
+    color: var(--orr-highlight-text);
   }
 
-  /* item selected: the check alone marks it. Select.ItemIndicator renders only on the selected item,
-     so no [data-selected] rule is needed. */
+  /* item selected: the check alone marks it, in --text on the popup fill. Select.ItemIndicator renders
+     only on the selected item, so no [data-selected] rule is needed. */
 
   /* item disabled */
   .orr-select__item[data-disabled] {
@@ -181,14 +185,15 @@
   }
 
   .orr-select__group-label {
-    padding: var(--space-8) var(--space-8) var(--space-4);
+    padding: var(--space-8) var(--space-8) var(--space-4); /* UN-DIALLED */
     color: var(--text-muted);
     font-size: var(--type-size-13);
     line-height: var(--type-line-height-13);
-    font-weight: 500;
+    font-weight: 500; /* UN-DIALLED */
   }
   .orr-select__separator {
     height: var(--line-width);
+    /* UN-DIALLED: the vertical gap; the negative inline margin runs the line across the list padding. */
     margin: var(--space-4) calc(-1 * var(--space-4));
     background-color: var(--line);
   }

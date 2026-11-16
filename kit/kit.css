@@ -5,6 +5,7 @@
    so any unlayered rule of your own wins over the kit whatever its specificity or load order:
    a single class is enough to override. If your own CSS uses layers, declare the order first,
    for example `@layer orrery.kit, app;`, so your layers come after the kit. */
+@import "./floating.css";
 @import "./button/button.css";
 @import "./field/field.css";
 @import "./dialog/dialog.css";

@@ -62,6 +62,33 @@ async function settledOpen(list: Locator) {
 const highlighted = (list: Locator) =>
   list.locator('[role="option"][data-highlighted]');
 
+/** The grouped "long list" select: more items than the popup's max height holds. */
+function longList(page: Page, id: string) {
+  const c = cell(page, id, "long list");
+  return {
+    cell: c,
+    trigger: c.getByRole("combobox", { name: "Moon" }),
+    list: listIn(c),
+  };
+}
+
+/** Puts the trigger at the top of the window, so the popup has room to open below it. */
+const toTop = (trigger: Locator) =>
+  trigger.evaluate((el) => el.scrollIntoView({ block: "start" }));
+
+/** WCAG contrast ratio between two computed colours (both opaque rgb()). */
+function contrastInPage([a, b]: [string, string]) {
+  const lum = (c: string) => {
+    const [r, g, bl] = (c.match(/[\d.]+/g) ?? []).slice(0, 3).map((v) => {
+      const s = Number(v) / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    });
+    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+  };
+  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  return (hi + 0.05) / (lo + 0.05);
+}
+
 for (const id of PANELS) {
   test.describe(`panel ${id}: Select`, () => {
     test("trigger: a combobox named by the field label, collapsed, described by the field description", async ({
@@ -232,6 +259,110 @@ for (const id of PANELS) {
       expectRing(await focusRing(page, id));
     });
 
+    test("highlight: the highlighted item's fill is at least 3:1 against the popup fill; the selected check is --text on the popup fill", async ({
+      page,
+    }) => {
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await page.keyboard.press("ArrowDown");
+      await settledOpen(list);
+      await page.keyboard.press("ArrowDown");
+      await expect(highlighted(list)).toHaveText("Vesta");
+      const colours = await list.evaluate((l) => {
+        const popup = l.closest(".orr-select__popup")!;
+        const item = l.querySelector("[data-highlighted]")!;
+        const check = l.querySelector(
+          "[data-selected]:not([data-highlighted]) .orr-select__check",
+        )!;
+        const probe = document.createElement("span");
+        probe.style.color = "var(--text)";
+        popup.append(probe);
+        const text = getComputedStyle(probe).color;
+        probe.remove();
+        return {
+          popupFill: getComputedStyle(popup).backgroundColor,
+          highlightFill: getComputedStyle(item).backgroundColor,
+          highlightText: getComputedStyle(item).color,
+          check: getComputedStyle(check).color,
+          text,
+        };
+      });
+      const fill = contrastInPage([colours.highlightFill, colours.popupFill]);
+      const label = contrastInPage([
+        colours.highlightText,
+        colours.highlightFill,
+      ]);
+      test.info().annotations.push({
+        type: "contrast",
+        description: `${id}: highlight fill vs popup fill ${fill.toFixed(2)}:1, text on highlight ${label.toFixed(2)}:1`,
+      });
+      console.log(
+        `contrast ${id}: highlight fill vs popup fill ${fill.toFixed(2)}:1, text on highlight ${label.toFixed(2)}:1`,
+      );
+      expect(fill).toBeGreaterThanOrEqual(3);
+      expect(label).toBeGreaterThanOrEqual(4.5);
+      // Selected but not highlighted: a --text check on the popup fill.
+      expect(colours.check).toBe(colours.text);
+    });
+
+    test("placement: opens below the trigger at the kit's offset; a long list is clamped to the kit's max height and scrolls", async ({
+      page,
+    }) => {
+      const { trigger, list } = longList(page, id);
+      await toTop(trigger);
+      await trigger.click();
+      await settledOpen(list);
+      const m = await list.evaluate((l) => {
+        const popup = l.closest(".orr-select__popup") as HTMLElement;
+        const positioner = popup.parentElement as HTMLElement;
+        const button = document.querySelector(
+          `[aria-controls="${l.id}"]`,
+        ) as HTMLElement;
+        const pcs = getComputedStyle(positioner);
+        const before = l.scrollTop;
+        l.scrollTop = l.scrollHeight;
+        return {
+          side: popup.getAttribute("data-side"),
+          gap:
+            popup.getBoundingClientRect().top -
+            button.getBoundingClientRect().bottom,
+          offset: parseFloat(pcs.getPropertyValue("--orr-select-offset")),
+          height: popup.getBoundingClientRect().height,
+          maxHeight: parseFloat(getComputedStyle(popup).maxHeight),
+          // The property is a calc(), so resolve it through a probe's height.
+          kitMax: (() => {
+            const probe = document.createElement("div");
+            probe.style.height = "var(--orr-select-max-height)";
+            positioner.append(probe);
+            const h = parseFloat(getComputedStyle(probe).height);
+            probe.remove();
+            return h;
+          })(),
+          overflows: l.scrollHeight > l.clientHeight,
+          scrolled: l.scrollTop > before,
+        };
+      });
+      expect(m.side).toBe("bottom");
+      expect(m.offset).toBeGreaterThan(0);
+      expect(Math.abs(m.gap - m.offset)).toBeLessThan(0.5);
+      expect(m.maxHeight).toBe(m.kitMax);
+      expect(Math.abs(m.height - m.kitMax)).toBeLessThan(0.5);
+      expect(m.overflows).toBe(true);
+      expect(m.scrolled).toBe(true);
+    });
+
+    test("axe: no violations, a live grouped list with separators open", async ({
+      page,
+    }) => {
+      const { trigger, list } = longList(page, id);
+      await trigger.click();
+      await settledOpen(list);
+      await expect(list.getByRole("group")).toHaveCount(4);
+      // Base UI renders a select's separator as role="presentation" inside the listbox.
+      await expect(list.locator(".orr-select__separator")).toHaveCount(3);
+      expect(await violations(page, id)).toEqual([]);
+    });
+
     test("axe: no violations, closed", async ({ page }) => {
       expect(await violations(page, id)).toEqual([]);
     });
@@ -265,4 +396,36 @@ test.describe("reduced motion", () => {
       expect(property).toContain("opacity");
     });
   }
+});
+
+test.describe("golden example (fixtures/kit-examples.html)", () => {
+  test("Select example: submitting empty shows valueMissing and does not submit; choosing a value submits body=<value>", async ({
+    page,
+  }) => {
+    await page.goto("/fixtures/kit-examples.html");
+    const example = page.locator(
+      '[data-example="kit/select/Select.example.tsx"]',
+    );
+    const trigger = example.getByRole("combobox", { name: "Body" });
+    const status = example.getByRole("status");
+    const submit = example.getByRole("button", { name: "Make chart" });
+
+    await submit.click();
+    const error = example.getByText("Choose a body for the chart to follow.");
+    await expect(error).toBeVisible();
+    await expect(trigger).toHaveAttribute("aria-invalid", "true");
+    await expect(trigger).toHaveAccessibleDescription(/Choose a body/);
+    await expect(trigger).toBeFocused();
+    await expect(status).toHaveText("");
+
+    await trigger.click();
+    // The example's popup portals to <body>, outside the example's section.
+    await page.getByRole("option", { name: "Saturn" }).click();
+    await expect(trigger).toHaveText("Saturn");
+    await submit.click();
+    // The status reads the submitted form values: body=saturn, shown as its label.
+    await expect(status).toHaveText("Chart made for Saturn.");
+    await expect(error).toBeHidden();
+    await expect(trigger).not.toHaveAttribute("aria-invalid", "true");
+  });
 });

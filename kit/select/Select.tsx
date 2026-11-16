@@ -58,22 +58,56 @@ function Trigger({ placeholder, className, ...props }: SelectTriggerProps) {
   );
 }
 
-export type SelectPopupProps = WithClass<BaseSelect.Popup.Props> & {
-  /** Where the portal mounts. Defaults to document.body. */
-  container?: BaseSelect.Portal.Props["container"];
+type Positioner = BaseSelect.Positioner.Props;
+/** The positioner's placement, forwarded by Popup. */
+type PositionerProps = {
+  /** The trigger's side the popup opens on. Default: bottom. */
+  side?: Positioner["side"];
+  /** The popup's alignment along that side. Default: center. */
+  align?: Positioner["align"];
+  /** Extra gap from the trigger in px, added to the kit's offset. */
+  sideOffset?: number;
+  /** The gap in px the popup keeps from the window's edges, on every side. */
+  collisionPadding?: number;
+  /** Lay the popup over the trigger, the selected item on the value (mouse input only). */
+  alignItemWithTrigger?: Positioner["alignItemWithTrigger"];
 };
 
-/** Portal, positioner, popup and list in one part. It opens below the trigger, at least as wide as it. */
-function Popup({ container, className, children, ...props }: SelectPopupProps) {
+export type SelectPopupProps = WithClass<BaseSelect.Popup.Props> &
+  PositionerProps & {
+    /** Where the portal mounts. Defaults to document.body. */
+    container?: BaseSelect.Portal.Props["container"];
+  };
+
+/**
+ * Portal, positioner, popup and list in one part. By default it opens below the trigger, at least as
+ * wide as it, never laid over it, and keeps the kit's 8px gutter from the window edge (the same gutter
+ * as the Dialog's viewport). The gap to the trigger is the kit's --orr-select-offset; sideOffset adds to it.
+ */
+function Popup({
+  container,
+  className,
+  children,
+  side,
+  align,
+  sideOffset,
+  collisionPadding = 8,
+  alignItemWithTrigger = false,
+  ...props
+}: SelectPopupProps) {
   return (
     <BaseSelect.Portal container={container}>
       <BaseSelect.Positioner
         className="orr-select__positioner"
-        alignItemWithTrigger={false}
+        side={side}
+        align={align}
+        sideOffset={sideOffset}
+        collisionPadding={collisionPadding}
+        alignItemWithTrigger={alignItemWithTrigger}
       >
         <BaseSelect.Popup
           {...props}
-          className={cx("orr-select__popup", className)}
+          className={cx("orr-select__popup", "orr-floating", className)}
         >
           <BaseSelect.List className="orr-select__list">
             {children}

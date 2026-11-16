@@ -20,9 +20,13 @@
 
 /* Floating UI places a popup against the window. Held open, the frame is usually below the window
    (always, in the tests), so it would flip the popup above the trigger, out of the frame, and shrink
-   --available-height. The picture pins the popup where it opens on screen: under the trigger (the
-   frame's padding, the label line, the field gap, the trigger), the kit's offset below it. Only the
-   placement is pinned; the popup's drawing, items and max height are the kit's. */
+   --available-height. The picture pins only the positioner: its box starts under the trigger (the
+   frame's padding, the label line, the field gap, the trigger), and --available-height is the kit's
+   max height plus offset, so the kit's own clamp resolves to its max height. The popup's margin
+   (the offset), drawing, items and max height all come from the kit's rules. When Floating UI has
+   flipped the popup (data-side="top"), the kit puts the offset below the popup instead of above, so
+   the pin moves the box down by the offset to keep the same picture. The live "long list" cell and
+   select.kit.spec.ts check the real placement, offset and clamp. */
 .spec-select-frame .orr-select__positioner {
   top: calc(
     var(--space-16) + var(--type-line-height-13) + var(--space-8) +
@@ -34,6 +38,9 @@
     var(--orr-select-max-height) + var(--orr-select-offset)
   ) !important;
 }
-.spec-select-frame .orr-select__popup {
-  margin: var(--orr-select-offset) 0 0 !important;
+.spec-select-frame .orr-select__positioner[data-side="top"] {
+  top: calc(
+    var(--space-16) + var(--type-line-height-13) + var(--space-8) +
+      var(--hit-target-min) + var(--orr-select-offset)
+  ) !important;
 }
