@@ -61,6 +61,7 @@ export default defineConfig({
         anchorKeyboard: resolve(__dirname, "fixtures/anchor-keyboard.html"),
         roleFallbacks: resolve(__dirname, "fixtures/role-fallbacks.html"),
         kitDialog: resolve(__dirname, "fixtures/kit-dialog.html"),
+        kitExamples: resolve(__dirname, "fixtures/kit-examples.html"),
       },
     },
   },
