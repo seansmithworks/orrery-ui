@@ -145,6 +145,94 @@
         "code": "// Golden example: the footer of an edit form. Cancel and Save, with Save showing progress while it works,\n// and an undo icon in the dense toolbar above. Spacing is token variables only.\nimport { useEffect, useState } from \"react\";\nimport { Button, IconButton } from \"../index\";\n\nfunction UndoGlyph() {\n  return (\n    <svg\n      viewBox=\"0 0 20 20\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth={1.5}\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n      aria-hidden=\"true\"\n    >\n      <path d=\"M8 4L4 8l4 4M4 8h7a5 5 0 010 10H8\" />\n    </svg>\n  );\n}\n\nexport default function EditOrbitFooter() {\n  const [saving, setSaving] = useState(false);\n  const [edits, setEdits] = useState(2);\n\n  useEffect(() => {\n    if (!saving) return;\n    const done = setTimeout(() => {\n      setSaving(false);\n      setEdits(0);\n    }, 1200);\n    return () => clearTimeout(done);\n  }, [saving]);\n\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-16)\",\n      }}\n    >\n      {/* A dense toolbar of size s controls keeps --space-12 between them, so each keeps its 44px hit area. */}\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <IconButton\n          variant=\"quiet\"\n          size=\"s\"\n          aria-label=\"Undo last edit\"\n          disabled={edits === 0 || saving}\n          onClick={() => setEdits((n) => Math.max(0, n - 1))}\n        >\n          <UndoGlyph />\n        </IconButton>\n        <span style={{ color: \"var(--text-muted)\" }}>\n          {edits === 0 ? \"All changes saved\" : `${edits} unsaved edits`}\n        </span>\n      </div>\n      <div\n        style={{\n          display: \"flex\",\n          justifyContent: \"flex-end\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"quiet\" disabled={saving} onClick={() => setEdits(0)}>\n          Discard edits\n        </Button>\n        <Button\n          variant=\"primary\"\n          loading={saving}\n          disabled={edits === 0}\n          onClick={() => setSaving(true)}\n        >\n          Save changes\n        </Button>\n      </div>\n    </div>\n  );\n}\n"
       }
     },
+    "Card": {
+      "description": "A plain in-flow surface that groups related content on a raised layer; it has no role, no tab stop and no state of its own.",
+      "parts": {
+        "Root": {
+          "description": "The surface; it renders a div unless render swaps in another element such as section, article or li.",
+          "passthrough": "@base-ui/react/use-render#useRender.ComponentProps<\"div\">",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "render": {
+                "x-type": "element",
+                "x-from": "base-ui",
+                "description": "Replaces the div with another element, for example render={<article />} or render={<li />}."
+              }
+            },
+            "required": []
+          }
+        },
+        "Header": {
+          "description": "The top slot for a heading and an optional line under it; a heading placed here is sized as the card title.",
+          "inside": "Root",
+          "passthrough": "react#ComponentPropsWithRef<\"div\">",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Body": {
+          "description": "The main slot for text, fields or any content; long text wraps inside the card.",
+          "inside": "Root",
+          "passthrough": "react#ComponentPropsWithRef<\"div\">",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Footer": {
+          "description": "The bottom slot: a row of actions, aligned to the end, wrapping when it runs out of room.",
+          "inside": "Root",
+          "passthrough": "react#ComponentPropsWithRef<\"div\">",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root"
+      ],
+      "useWhen": [
+        "Content that belongs together and sits in the page flow: a summary, a settings group, a form step.",
+        "A repeated item in a list or grid, with render={<li />} inside a list."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The content floats above the page and takes focus.",
+          "instead": "Dialog"
+        },
+        {
+          "text": "The whole surface is one link or button.",
+          "instead": "a"
+        }
+      ],
+      "a11y": [
+        "A card has no role; for one item or section, render it as article or section and name it with aria-labelledby.",
+        "Use a real heading in Card.Header at the level that fits the page outline.",
+        "Do not make the surface clickable; put a Button or a link inside it."
+      ],
+      "example": {
+        "file": "kit/card/Card.example.tsx",
+        "code": "// Golden example: the profile card of a crew member. An article named by its heading, a short\n// description, two fields to edit, and a row of actions. Spacing is token variables only.\nimport { useId } from \"react\";\nimport { Button, Card, Field, Input } from \"../index\";\n\nexport default function CrewMemberCard() {\n  const titleId = useId();\n\n  return (\n    <Card.Root render={<article />} aria-labelledby={titleId}>\n      <Card.Header>\n        <h3 id={titleId}>Ada Okafor</h3>\n        <span style={{ color: \"var(--text-muted)\" }}>\n          Flight engineer, Orbit 7\n        </span>\n      </Card.Header>\n      <Card.Body>\n        <p>\n          Joined the crew in March. Leads the docking checklist and the weekly\n          systems review.\n        </p>\n        <Field.Root name=\"role\">\n          <Field.Label>Role</Field.Label>\n          <Input defaultValue=\"Flight engineer\" />\n        </Field.Root>\n        <Field.Root name=\"callsign\">\n          <Field.Label>Call sign</Field.Label>\n          <Input defaultValue=\"Kestrel\" />\n          <Field.Description>Shown on the crew roster.</Field.Description>\n        </Field.Root>\n      </Card.Body>\n      <Card.Footer>\n        <Button variant=\"quiet\">Remove from crew</Button>\n        <Button variant=\"primary\">Save changes</Button>\n      </Card.Footer>\n    </Card.Root>\n  );\n}\n"
+      }
+    },
     "Dialog": {
       "description": "A modal dialog on Base UI: focus is trapped while open, Escape and an outside press close it, and focus returns to the trigger.",
       "parts": {
