@@ -1,0 +1,42 @@
+{
+  "$description": "Brand trades: the neutral product system for the trades-agent owner app (Sean, 2026-11-16: 'a neutral system with hints of prime time'). Monochrome like brand orrery, warm scoreboard-black ink, slate night. Prime time survives only as two brand-local signals (amber `move`, crimson `live`) and Libre Franklin. Day and night modes.",
+  "$extensions": {
+    "com.orrery": {
+      "name": "trades",
+      "modes": [
+        "light",
+        "dark"
+      ],
+      "unlocked": [
+        "color.*",
+        "shadow.*",
+        "font.*",
+        "elevation.*"
+      ]
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "$extensions": {
+      "com.orrery": {
+        "fonts": []
+      }
+    },
+    "sans": {
+      "$value": [
+        "Libre Franklin",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "$value": [
+        "ui-monospace",
+        "SF Mono",
+        "Menlo",
+        "monospace"
+      ]
+    }
+  }
+}
