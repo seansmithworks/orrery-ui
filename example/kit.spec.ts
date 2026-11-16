@@ -1,57 +1,28 @@
 import { test, expect, type Page, type Locator } from "@playwright/test";
 import AxeBuilder from "@axe-core/playwright";
+import {
+  PANELS,
+  TAGS,
+  LIVE_POPUP,
+  openSpecimen,
+  panel,
+  violations,
+  focusRing,
+  expectRing,
+} from "./kit/kit-test";
 
 /**
  * kit.spec.ts: the kit exemplars (Button, IconButton, Field with Input, Dialog) on the
  * specimen page, once per brand panel: orrery light, orrery dark, solar.
  * Per component: axe, keyboard, focus ring, hit area, reduced motion.
  * No screenshot baselines here; those land after Sean approves the look.
+ * Shared helpers live in example/kit/kit-test.ts; a new component's suite is
+ * example/kit/<name>.kit.spec.ts.
  */
 
-const PANELS = ["orrery-light", "orrery-dark", "solar"] as const;
-const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
-// Live dialogs portal to one wrapper per panel at the end of <body>; the static
-// open-state specimens portal into their frame inside the panel.
-const LIVE_POPUP = ".spec-portals .orr-dialog";
-const STATIC_POPUP = ".spec-dialog-frame .orr-dialog";
+test.beforeEach(({ page }) => openSpecimen(page));
 
-test.beforeEach(async ({ page }) => {
-  // The specimen links Google Fonts for brand solar; never touch the network in a test.
-  await page.route(/fonts\.(googleapis|gstatic)\.com/, (route) =>
-    route.fulfill({ contentType: "text/css", body: "" }),
-  );
-  await page.goto("/kit.html");
-  // The three static dialogs have faded in.
-  await page.waitForFunction((sel) => {
-    const popups = [...document.querySelectorAll(sel)];
-    return (
-      popups.length === 3 &&
-      popups.every((p) => getComputedStyle(p).opacity === "1")
-    );
-  }, STATIC_POPUP);
-});
-
-const panel = (page: Page, id: string) => page.locator(`[data-panel="${id}"]`);
 const trigger = (p: Locator) => p.getByRole("button", { name: "Rename orbit" });
-
-/** axe over a panel and its live-dialog portal. */
-async function violations(page: Page, id: string) {
-  // Base UI's focus-guard sentinels (aria-hidden, tabbable, they only bounce focus) are
-  // excluded, per the precedent in axe.spec.ts. Every other node is scanned.
-  const scope = (b: AxeBuilder) =>
-    b
-      .include(`[data-panel="${id}"]`)
-      .include(`[data-portal-for="${id}"]`)
-      .exclude("[data-base-ui-focus-guard]");
-  const wcag = await scope(new AxeBuilder({ page })).withTags(TAGS).analyze();
-  const labelInName = await scope(new AxeBuilder({ page }))
-    .withRules(["label-content-name-mismatch"])
-    .analyze();
-  return [...wcag.violations, ...labelInName.violations].map((v) => ({
-    id: v.id,
-    nodes: v.nodes.map((n) => n.target.join(" ")),
-  }));
-}
 
 async function openLive(page: Page, p: Locator) {
   await trigger(p).focus();
@@ -65,67 +36,6 @@ async function openLive(page: Page, p: Locator) {
     LIVE_POPUP,
   );
   return dialog;
-}
-
-/** The focused element's ring: style, width and colour, against the panel's own tokens, and whether any clipping ancestor cuts it. */
-async function focusRing(page: Page, panelId: string) {
-  return page.evaluate((id) => {
-    const el = document.activeElement as HTMLElement;
-    // The panel, or the panel's live-dialog portal: both carry its brand and mode.
-    const root = el.closest("[data-brand]") as HTMLElement;
-    const owner =
-      root.getAttribute("data-panel") ?? root.getAttribute("data-portal-for");
-    const cs = getComputedStyle(el);
-    const probe = document.createElement("span");
-    probe.style.color = "var(--accent)";
-    root.append(probe);
-    const accent = getComputedStyle(probe).color;
-    probe.remove();
-    const ringWidth = getComputedStyle(root)
-      .getPropertyValue("--ring-width")
-      .trim();
-    const reach = parseFloat(cs.outlineOffset) + parseFloat(cs.outlineWidth);
-    const r = el.getBoundingClientRect();
-    const ring = {
-      left: r.left - reach,
-      top: r.top - reach,
-      right: r.right + reach,
-      bottom: r.bottom + reach,
-    };
-    const clippedBy: string[] = [];
-    for (let a = el.parentElement; a; a = a.parentElement) {
-      const o = getComputedStyle(a);
-      if (o.overflowX === "visible" && o.overflowY === "visible") continue;
-      const b = a.getBoundingClientRect();
-      if (
-        ring.left < b.left ||
-        ring.top < b.top ||
-        ring.right > b.right ||
-        ring.bottom > b.bottom
-      )
-        clippedBy.push(a.className || a.tagName);
-    }
-    return {
-      inPanel: owner === id,
-      style: cs.outlineStyle,
-      width: cs.outlineWidth,
-      offset: cs.outlineOffset,
-      color: cs.outlineColor,
-      ringWidth,
-      accent,
-      clippedBy,
-    };
-  }, panelId);
-}
-
-function expectRing(ring: Awaited<ReturnType<typeof focusRing>>) {
-  expect(ring.inPanel).toBe(true);
-  expect(ring.style).toBe("solid");
-  expect(ring.ringWidth).toBe("2px");
-  expect(ring.width).toBe(ring.ringWidth);
-  expect(ring.offset).toBe(ring.ringWidth);
-  expect(ring.color).toBe(ring.accent);
-  expect(ring.clippedBy).toEqual([]);
 }
 
 for (const id of PANELS) {

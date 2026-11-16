@@ -21,6 +21,16 @@ Do these in order. `npm run catalog:check` tells you what is missing at each ste
 11. **Build and commit** `kit/catalog.json` with `npm run catalog:build`.
 12. **Run** `npm run catalog:check`, `node kit/catalog/test.mjs` and `npx playwright test -c example/playwright.config.ts kit.spec.ts --project=chromium -g "golden examples"`. The last mounts every example on `example/fixtures/kit-examples.html` and runs axe.
 
+## Adding a component: specimen, tests, baseline
+
+Each of these is a file you add. No shared test or page file is edited.
+
+1. **Specimen block:** `example/kit/specimens/<name>.specimen.tsx`. It exports `block` (the title and baseline name), an optional `note`, an optional `fixedSize` (`{ width?, height? }`, CSS selector lists for elements whose size the kit's CSS declares), and a default component that takes `{ panel }` and wraps each cell in an element with `data-cell="<state>"`. Cells must not nest and must hold at least one recorded element; the gate throws otherwise. Width and height are not recorded on any element that holds text unless `fixedSize` lists it: a Switch with a visible label holds text, so its height is unlocked until the specimen says `fixedSize = { height: ".orr-switch" }`. It may import its own CSS. The contract is in `example/kit/specimen.ts`. Blocks render after the six exemplar blocks, in filename order, in all three panels.
+2. **Behaviour suite:** `example/kit/<name>.kit.spec.ts`. Start it with `test.beforeEach(({ page }) => openSpecimen(page))` and import the rest (`PANELS`, `panel`, `violations`, `focusRing`, `expectRing`) from `example/kit/kit-test.ts`. CI's `kit.spec.ts` filter already runs it, and the panel-wide axe test in `example/kit.spec.ts` already scans your block.
+3. **Baseline:** `example/kit-baseline/<block>.json`. Record only yours with `UPDATE_KIT_BASELINE=1 KIT_BASELINE_BLOCKS="<block>" npm run test:kit-baseline`, or take the file from the `kit-baseline-actual` artifact of a failed CI run. Update mode without `KIT_BASELINE_BLOCKS` fails and writes nothing; `KIT_BASELINE_BLOCKS="*"` rewrites every block, which only an intended kit-wide look change should do. A block with no file fails the gate.
+
+`kit/kit.css` and `kit/index.ts` merge with `merge=union` (`.gitattributes`), so two branches' added lines both survive a rebase; check the order after one. `kit/catalog.json` and `example/kit-preview.css` are generated: after a rebase, run `npm run catalog:build` and `npm run kit-preview:build` and commit what changed, never hand-merge them.
+
 ## The checks
 
 `check.mjs` builds one TypeScript program rooted at `kit/index.ts` and reads props with the type checker, so `Pick`, `Omit`, intersections and aliases resolve as the compiler sees them. A prop is kit-owned when its declaration lives under `kit/`.

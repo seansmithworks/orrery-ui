@@ -13,8 +13,38 @@ import "../../kit/kit.css";
 import "../kit-preview.css";
 import "./specimen.css";
 import { installBrandTokens } from "./scope";
+import {
+  CORE_BLOCKS,
+  assertDistinctFiles,
+  type SpecimenModule,
+} from "./specimen";
+
+// Vite's import.meta.glob (the example has no vite/client types).
+declare global {
+  interface ImportMeta {
+    glob<T>(pattern: string, options: { eager: true }): Record<string, T>;
+  }
+}
 
 installBrandTokens();
+
+// One block per example/kit/specimens/*.specimen.tsx, after the six exemplar blocks, in filename
+// order. The contract is in ./specimen.ts.
+const SPECIMENS = Object.entries(
+  import.meta.glob<SpecimenModule>("./specimens/*.specimen.tsx", {
+    eager: true,
+  }),
+)
+  .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
+  .map(([file, mod]) => {
+    if (!mod.block || mod.block.includes("/"))
+      throw new Error(
+        `${file}: block name "${mod.block}" is missing or contains "/"`,
+      );
+    return mod;
+  });
+// A taken name, or one differing only by case or punctuation, would share a baseline file.
+assertDistinctFiles([...CORE_BLOCKS, ...SPECIMENS.map((m) => m.block)]);
 
 type Panel = {
   id: string;
@@ -59,14 +89,16 @@ function PlusGlyph() {
 function Block({
   title,
   note,
+  attrs,
   children,
 }: {
   title: string;
   note?: string;
+  attrs?: Record<string, string | undefined>;
   children: ReactNode;
 }) {
   return (
-    <section className="spec-block">
+    <section className="spec-block" {...attrs}>
       <header className="spec-block__head">
         <h3 className="spec-block__title">{title}</h3>
         {note && <span className="spec-chip">{note}</span>}
@@ -309,6 +341,21 @@ function PanelView({
       <Block title="Dialog" note="strawman, Sean's call 8">
         <StaticDialog />
       </Block>
+
+      {SPECIMENS.map(({ block, note, fixedSize, default: Specimen }) => (
+        <Block
+          key={block}
+          title={block}
+          note={note}
+          attrs={{
+            "data-block": block,
+            "data-fixed-width": fixedSize?.width,
+            "data-fixed-height": fixedSize?.height,
+          }}
+        >
+          <Specimen panel={panel} />
+        </Block>
+      ))}
     </section>
   );
 }

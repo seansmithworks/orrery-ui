@@ -1,0 +1,4 @@
+# The kit's two hand-edited append lists. Parallel component branches each add a line;
+# union keeps both sides' lines on a local merge or rebase instead of conflicting.
+kit/kit.css merge=union
+kit/index.ts merge=union
