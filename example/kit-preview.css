@@ -81,3 +81,20 @@
     outline-offset: var(--ring-width);
   }
 }
+
+/* kit/tabs/tabs.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-tabs__tab:not([data-disabled])[data-preview~="hover"] {
+      color: var(--text);
+    }
+  }
+  .orr-tabs__tab[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+  .orr-tabs__panel[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}

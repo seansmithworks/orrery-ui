@@ -1,0 +1,120 @@
+/* Tabs. Every value is a token, a kit-local property from kit.css, or a kit-local property declared below.
+   States: unselected, selected, hover, focus-visible, disabled. The panel: rest, focus-visible.
+
+   One rule per state.
+
+   The root renders cx("orr-tabs", "orr-control", className), its own class first (Tabs.tsx), so the selected colours
+   in control.css reach the bar. The list is a full-width row over a --line divider. Each tab is --hit-target-min
+   high, its label --text-muted, --text when selected or hovered. The selected bar is one element (Base UI's
+   Indicator) spanning the whole list, clipped to the selected tab by the --active-tab-left and --active-tab-right
+   properties Base UI measures. Moving to another tab animates the clip, so the bar slides without animating
+   layout. */
+
+@layer orrery.kit {
+  .orr-tabs {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+    color: var(--text);
+    font-family: var(--font-sans);
+  }
+
+  .orr-tabs__list {
+    /* UN-DIALLED: the selected bar's weight. */
+    --orr-tabs-bar-weight: calc(2 * var(--line-width));
+    position: relative;
+    display: flex;
+    align-items: stretch;
+    border-bottom: var(--line-width) solid var(--line);
+  }
+
+  .orr-tabs__tab {
+    box-sizing: border-box;
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    height: var(--hit-target-min);
+    margin: 0;
+    padding: 0 var(--space-12);
+    border: 0;
+    border-radius: var(--radius-control);
+    background-color: transparent;
+    color: var(--text-muted);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    font-weight: 500;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  /* The selected bar: the whole list wide, sitting on the divider, clipped to the selected tab. Base UI keeps it
+     hidden until it has measured the tab, so it never paints at a wrong place. */
+  .orr-tabs__indicator {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: calc(-1 * var(--line-width));
+    height: var(--orr-tabs-bar-weight);
+    background-color: var(--orr-selected-fill);
+    clip-path: inset(0 var(--active-tab-right) 0 var(--active-tab-left));
+    pointer-events: none;
+  }
+
+  /* selected */
+  .orr-tabs__tab[data-active] {
+    color: var(--text);
+  }
+
+  /* hover (only where the pointer can hover, so touch never sticks): the label firms to the text colour */
+  @media (hover: hover) {
+    .orr-tabs__tab:not([data-disabled]):hover {
+      color: var(--text);
+    }
+  }
+
+  /* focus: the one ring */
+  .orr-tabs__tab:focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  /* disabled: the muted label at a share of its strength, so it reads apart from an unselected tab */
+  .orr-tabs__tab[data-disabled] {
+    /* UN-DIALLED: how much of the muted text colour a disabled label keeps. */
+    --orr-tabs-disabled-share: 50%;
+    color: color-mix(
+      in srgb,
+      var(--text-muted) var(--orr-tabs-disabled-share),
+      transparent
+    );
+    cursor: not-allowed;
+  }
+
+  .orr-tabs__panel {
+    border-radius: var(--radius-control);
+    color: var(--text);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+  }
+
+  /* focus: the panel is in the tab order after its tab, so it takes the ring too */
+  .orr-tabs__panel:focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  /* Motion only where it is wanted: under reduced motion the bar jumps to the selected tab with no slide. */
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-tabs__tab {
+      transition: color var(--orr-dur) var(--orr-ease);
+    }
+    .orr-tabs__indicator {
+      transition: clip-path var(--orr-dur) var(--orr-ease);
+    }
+  }
+}
