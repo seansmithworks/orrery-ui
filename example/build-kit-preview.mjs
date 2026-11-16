@@ -58,15 +58,10 @@ function scanSelector(sel, fail, nested = false) {
     let out = '';
     for (let i = 0; i < text.length; ) {
       const c = text[i];
-      if (c === '\\') {
-        out += text.slice(i, i + 2);
-        i += 2;
-      } else if (c === '[' || c === '"' || c === "'") {
-        const close = c === '[' ? ']' : c;
-        let j = i + 1;
-        while (j < text.length && text[j] !== close) j += text[j] === '\\' ? 2 : 1;
-        out += text.slice(i, j + 1);
-        i = j + 1;
+      const skip = skipOpaque(text, i);
+      if (skip !== i) {
+        out += text.slice(i, skip);
+        i = skip;
       } else if (c === ':') {
         const element = text[i + 1] === ':';
         const m = /^[\w-]+/.exec(text.slice(i + (element ? 2 : 1)));
@@ -77,9 +72,12 @@ function scanSelector(sel, fail, nested = false) {
         if (text[end] === '(') {
           let d = 0;
           let j = end;
-          for (; j < text.length; j++) {
-            if (text[j] === '(') d++;
+          while (j < text.length) {
+            const skip = skipOpaque(text, j);
+            if (skip !== j) j = skip;
+            else if (text[j] === '(') d++, j++;
             else if (text[j] === ')' && --d === 0) break;
+            else j++;
           }
           args = text.slice(end + 1, j);
           end = j + 1;
@@ -112,15 +110,41 @@ function scanSelector(sel, fail, nested = false) {
 function innerPreludes(body) {
   const out = [];
   let start = 0;
-  for (let i = 0; i < body.length; i++) {
+  for (let i = 0; i < body.length; ) {
+    const skip = skipOpaque(body, i);
+    if (skip !== i) {
+      i = skip;
+      continue;
+    }
     if (body[i] === '{') {
       out.push(body.slice(start, i).trim());
       start = i + 1;
     } else if (body[i] === ';' || body[i] === '}') {
       start = i + 1;
     }
+    i++;
   }
   return out;
+}
+
+/**
+ * The index just past the quoted string, [...] attribute block or CSS escape that starts at text[i], or i when none does.
+ * Every scan of selector or rule text goes through this, so a paren, brace, comma or colon inside one is never seen.
+ */
+function skipOpaque(text, i) {
+  const c = text[i];
+  if (c === '\\') return i + 2;
+  if (c === '"' || c === "'") {
+    let j = i + 1;
+    while (j < text.length && text[j] !== c) j += text[j] === '\\' ? 2 : 1;
+    return j + 1;
+  }
+  if (c === '[') {
+    let j = i + 1;
+    while (j < text.length && text[j] !== ']') j = text[j] === '"' || text[j] === "'" || text[j] === '\\' ? skipOpaque(text, j) : j + 1;
+    return j + 1;
+  }
+  return i;
 }
 
 /** CSS text, comments removed, as a tree of { prelude, children } blocks, { prelude, body } rules and ';' statements. */
@@ -147,6 +171,11 @@ function parse(text) {
           const bodyStart = i;
           while (depth) {
             if (i >= src.length) throw new Error(`unclosed block after "${prelude}"`);
+            const skip = skipOpaque(src, i);
+            if (skip !== i) {
+              i = skip;
+              continue;
+            }
             if (src[i] === '{') depth++;
             else if (src[i] === '}') depth--;
             i++;
@@ -158,7 +187,8 @@ function parse(text) {
         i++;
         return out;
       } else {
-        i++;
+        const skip = skipOpaque(src, i);
+        i = skip === i ? i + 1 : skip;
       }
     }
     return out;
@@ -171,13 +201,19 @@ function splitSelectors(list) {
   const parts = [];
   let depth = 0;
   let start = 0;
-  for (let i = 0; i < list.length; i++) {
+  for (let i = 0; i < list.length; ) {
+    const skip = skipOpaque(list, i);
+    if (skip !== i) {
+      i = skip;
+      continue;
+    }
     if (list[i] === '(') depth++;
     else if (list[i] === ')') depth--;
     else if (list[i] === ',' && depth === 0) {
       parts.push(list.slice(start, i));
       start = i + 1;
     }
+    i++;
   }
   parts.push(list.slice(start));
   return parts.map((s) => s.replace(/\s+/g, ' ').trim());

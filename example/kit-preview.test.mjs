@@ -112,6 +112,26 @@ const tests = {
       (e) => e.message.includes('"::slotted(:hover)"') || e.message.includes('.a::slotted(:hover)'),
     );
   },
+  'quotes and brackets hide parens and pseudo-classes: strings are never scanned'() {
+    const twin = (sel) => buildPreview(cssKit('opaque-twin', `${sel} { color: red; }\n`));
+    const none = (sel) => buildPreview(cssKit('opaque-none', `${sel} { color: red; }\n`));
+    const throwsOn = (sel) =>
+      assert.throws(() => buildPreview(cssKit('opaque-throw', `${sel} { color: red; }\n`)), (e) => e.message.includes(sel), sel);
+    // A ")" or "(" inside an attribute string no longer ends or opens the :not() arguments.
+    assert.ok(twin('.a:not([x=")"]):hover').includes('.a:not([x=")"])[data-preview~="hover"] {'));
+    assert.ok(twin(".a:not([x=')']):hover").includes(`.a:not([x=')'])[data-preview~="hover"] {`));
+    assert.ok(twin('.a:not([x="("]):hover').includes('.a:not([x="("])[data-preview~="hover"] {'));
+    assert.ok(twin(".a:not([x='(']):hover").includes(`.a:not([x='('])[data-preview~="hover"] {`));
+    assert.ok(twin('.a:not([x="a\\")"]):hover').includes('.a:not([x="a\\")"])[data-preview~="hover"] {'));
+    // A state after a quoted ")" inside :has() is still seen, and throws.
+    throwsOn('.a:has(.b[x=")"]:hover)');
+    throwsOn(".a:has(.b[x=')']:hover)");
+    throwsOn('.a:has(.b[x="a\\")"]:hover)');
+    // ":hover" and ":focus" inside strings are text, not states: no throw, no twin.
+    for (const sel of ['.a[x=":hover"]:where([y="):focus"])', ".a[x=':hover']:where([y='):focus'])"]) {
+      assert.ok(!none(sel).includes('/* kit/kit.css */'), sel);
+    }
+  },
 };
 
 let failed = 0;
