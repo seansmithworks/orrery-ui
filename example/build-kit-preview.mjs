@@ -10,6 +10,11 @@
 // the same, so specificity is unchanged, and rules keep their source order. Nothing under kit/ references the
 // output; the specimen loads it after kit/kit.css.
 //
+// Every pseudo-class in a kit selector is decided in the STATES and PASS tables below. The generator throws, naming the file
+// and the selector, on anything it cannot translate: a pseudo-class not in the table, a translated state inside
+// :not() or :is() (negated or grouped state), and a state rule nested in another rule or inside an at-rule it
+// does not descend into. A rule is never dropped silently.
+//
 // Options (for the seeded-failure test): --kit <path to kit.css>, --out <path to the preview file>.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,13 +25,166 @@ export const REPO = path.resolve(HERE, '..');
 export const KIT_ENTRY = path.join(REPO, 'kit', 'kit.css');
 export const OUT = path.join(HERE, 'kit-preview.css');
 
+// Pseudo-class table. STATES: the state is forced in the specimen through [data-preview~="..."].
+// PASS: kept as written, no twin, because it is not a user-action or input state.
+// A pseudo-class in neither list (:focus, :focus-within, :disabled, :visited, :checked ...) throws.
 const STATES = { hover: 'hover', active: 'active', 'focus-visible': 'focus' };
-const STATE_RE = /:(hover|active|focus-visible)(?![\w-])/g;
-const HAS_STATE = /:(hover|active|focus-visible)(?![\w-])/;
+const PASS = {
+  root: 'document-level scope for custom properties, not a state',
+  not: 'attribute exclusions only; its arguments are scanned, and a state inside it throws',
+  is: 'grouping only; its arguments are scanned, and a state inside it throws',
+  where: 'grouping only, zero specificity; its arguments are scanned, and a state inside it throws',
+  has: 'relational (descendant or sibling match); its arguments are scanned, and a state inside it throws',
+  'first-child': 'structural position, not a state',
+  'last-child': 'structural position, not a state',
+  'only-child': 'structural position, not a state',
+  'first-of-type': 'structural position, not a state',
+  'last-of-type': 'structural position, not a state',
+  'only-of-type': 'structural position, not a state',
+  'nth-child': 'structural position; the "of <selector>" argument is scanned, and a state inside it throws',
+  'nth-last-child': 'structural position; the "of <selector>" argument is scanned, and a state inside it throws',
+  'nth-of-type': 'structural position, not a state',
+  'nth-last-of-type': 'structural position, not a state',
+  empty: 'structural (no children), not a state',
+};
+
+/**
+ * Scans one selector. Returns { out, hasState }: the selector with each state swapped for its preview attribute.
+ * nested: the selector sits inside another rule or an at-rule the generator does not descend into, so any state throws.
+ */
+function scanSelector(sel, fail, nested = false) {
+  let hasState = false;
+  const walk = (text, depth) => {
+    let out = '';
+    for (let i = 0; i < text.length; ) {
+      const c = text[i];
+      const skip = skipOpaque(text, i);
+      if (skip !== i) {
+        out += text.slice(i, skip);
+        i = skip;
+      } else if (c === ':') {
+        const element = text[i + 1] === ':';
+        const m = /^[\w-]+/.exec(text.slice(i + (element ? 2 : 1)));
+        if (!m) fail(sel, 'a ":" with no pseudo-class name');
+        const name = m[0];
+        let end = i + (element ? 2 : 1) + name.length;
+        let args = null;
+        if (text[end] === '(') {
+          let d = 0;
+          let j = end;
+          while (j < text.length) {
+            const skip = skipOpaque(text, j);
+            if (skip !== j) j = skip;
+            else if (text[j] === '(') d++, j++;
+            else if (text[j] === ')' && --d === 0) break;
+            else j++;
+          }
+          args = text.slice(end + 1, j);
+          end = j + 1;
+        }
+        if (element) {
+          // A pseudo-element's arguments (::slotted(:hover)) are scanned, so a state there throws instead of being dropped.
+          out += args === null ? text.slice(i, end) : `${text.slice(i, end - args.length - 1)}${walk(args, depth + 1)})`;
+        } else if (name in STATES) {
+          if (depth) fail(sel, `:${name} inside a functional pseudo-class (negated or grouped state) cannot be translated`);
+          if (nested) fail(sel, `:${name} in a nested rule or an unknown at-rule cannot be translated`);
+          hasState = true;
+          out += `[data-preview~="${STATES[name]}"]`;
+        } else if (name in PASS) {
+          out += `:${name}${args === null ? '' : `(${walk(args, depth + 1)})`}`;
+        } else {
+          fail(sel, `:${name} is not in the pseudo-class table (translate or pass it on purpose)`);
+        }
+        i = end;
+      } else {
+        out += c;
+        i++;
+      }
+    }
+    return out;
+  };
+  return { out: walk(sel, 0), hasState };
+}
+
+/** The preludes (text before each "{") inside a rule or at-rule body, at any depth. */
+function innerPreludes(body) {
+  const out = [];
+  let start = 0;
+  for (let i = 0; i < body.length; ) {
+    const skip = skipOpaque(body, i);
+    if (skip !== i) {
+      i = skip;
+      continue;
+    }
+    if (body[i] === '{') {
+      out.push(body.slice(start, i).trim());
+      start = i + 1;
+    } else if (body[i] === ';' || body[i] === '}') {
+      start = i + 1;
+    }
+    i++;
+  }
+  return out;
+}
+
+/**
+ * The index just past the quoted string, [...] attribute block or CSS escape that starts at text[i], or i when none does.
+ * Every scan of selector or rule text goes through this, so a paren, brace, comma or colon inside one is never seen.
+ */
+function skipOpaque(text, i) {
+  const c = text[i];
+  if (c === '\\') return i + 2;
+  if (c === '"' || c === "'") {
+    let j = i + 1;
+    while (j < text.length && text[j] !== c) j += text[j] === '\\' ? 2 : 1;
+    return j + 1;
+  }
+  if (c === '[') {
+    let j = i + 1;
+    while (j < text.length && text[j] !== ']') j = text[j] === '"' || text[j] === "'" || text[j] === '\\' ? skipOpaque(text, j) : j + 1;
+    return j + 1;
+  }
+  return i;
+}
+
+/** The text with each comment removed. A "/*" starts a comment only outside a string, attribute block or escape. */
+function stripComments(text) {
+  let out = '';
+  for (let i = 0; i < text.length; ) {
+    if (text.startsWith('/*', i)) {
+      const end = text.indexOf('*/', i + 2);
+      i = end === -1 ? text.length : end + 2;
+      continue;
+    }
+    const skip = skipOpaque(text, i);
+    const next = skip === i ? i + 1 : skip;
+    out += text.slice(i, next);
+    i = next;
+  }
+  return out;
+}
+
+/** The text with each run of whitespace outside a string, attribute block or escape collapsed to one space. */
+function collapseSpace(text) {
+  let out = '';
+  for (let i = 0; i < text.length; ) {
+    const skip = skipOpaque(text, i);
+    if (skip !== i) {
+      out += text.slice(i, skip);
+      i = skip;
+    } else if (/\s/.test(text[i])) {
+      while (i < text.length && /\s/.test(text[i])) i++;
+      out += ' ';
+    } else {
+      out += text[i++];
+    }
+  }
+  return out;
+}
 
 /** CSS text, comments removed, as a tree of { prelude, children } blocks, { prelude, body } rules and ';' statements. */
 function parse(text) {
-  const src = text.replace(/\/\*[\s\S]*?\*\//g, '');
+  const src = stripComments(text);
   let i = 0;
   const block = () => {
     const out = [];
@@ -48,6 +206,11 @@ function parse(text) {
           const bodyStart = i;
           while (depth) {
             if (i >= src.length) throw new Error(`unclosed block after "${prelude}"`);
+            const skip = skipOpaque(src, i);
+            if (skip !== i) {
+              i = skip;
+              continue;
+            }
             if (src[i] === '{') depth++;
             else if (src[i] === '}') depth--;
             i++;
@@ -59,7 +222,8 @@ function parse(text) {
         i++;
         return out;
       } else {
-        i++;
+        const skip = skipOpaque(src, i);
+        i = skip === i ? i + 1 : skip;
       }
     }
     return out;
@@ -72,30 +236,49 @@ function splitSelectors(list) {
   const parts = [];
   let depth = 0;
   let start = 0;
-  for (let i = 0; i < list.length; i++) {
+  for (let i = 0; i < list.length; ) {
+    const skip = skipOpaque(list, i);
+    if (skip !== i) {
+      i = skip;
+      continue;
+    }
     if (list[i] === '(') depth++;
     else if (list[i] === ')') depth--;
     else if (list[i] === ',' && depth === 0) {
       parts.push(list.slice(start, i));
       start = i + 1;
     }
+    i++;
   }
   parts.push(list.slice(start));
-  return parts.map((s) => s.replace(/\s+/g, ' ').trim());
+  return parts.map((s) => collapseSpace(s).trim());
 }
 
-const previewSelector = (sel) => sel.replace(STATE_RE, (_, s) => `[data-preview~="${STATES[s]}"]`);
-
 /** The preview twin of a parsed tree: only state rules, inside their at-rules, in source order. */
-function previewNodes(nodes) {
+function previewNodes(nodes, label) {
   const out = [];
   for (const n of nodes) {
     if (n.children) {
-      const kids = previewNodes(n.children);
+      const kids = previewNodes(n.children, label);
       if (kids.length) out.push({ prelude: n.prelude, children: kids });
-    } else if (n.body !== undefined && !n.prelude.startsWith('@')) {
-      const selectors = splitSelectors(n.prelude).filter((s) => HAS_STATE.test(s));
-      if (selectors.length) out.push({ selectors: selectors.map(previewSelector), body: n.body });
+    } else if (n.body !== undefined) {
+      // Rules nested in this body (CSS nesting, or the contents of an at-rule that is not descended into).
+      for (const inner of innerPreludes(n.body)) {
+        if (inner.startsWith('@')) continue;
+        const fail = (sel, why) => {
+          throw new Error(`kit-preview: ${label}: selector "${sel}" inside "${n.prelude}": ${why}`);
+        };
+        for (const sel of splitSelectors(inner)) scanSelector(sel, fail, true);
+      }
+      if (n.prelude.startsWith('@')) continue;
+      const fail = (sel, why) => {
+        throw new Error(`kit-preview: ${label}: selector "${sel}": ${why}`);
+      };
+      const selectors = splitSelectors(n.prelude)
+        .map((sel) => scanSelector(sel, fail))
+        .filter((r) => r.hasState)
+        .map((r) => r.out);
+      if (selectors.length) out.push({ selectors, body: n.body });
     }
   }
   return out;
@@ -106,7 +289,7 @@ function print(nodes, indent) {
   const lines = [];
   for (const n of nodes) {
     if (n.children) {
-      lines.push(`${pad}${n.prelude.replace(/\s+/g, ' ')} {`, ...print(n.children, indent + 1), `${pad}}`);
+      lines.push(`${pad}${collapseSpace(n.prelude)} {`, ...print(n.children, indent + 1), `${pad}}`);
     } else {
       lines.push(`${pad}${n.selectors.join(`,\n${pad}`)} {`);
       for (const d of n.body.split('\n').map((l) => l.trim()).filter(Boolean)) lines.push(`${pad}  ${d}`);
@@ -140,9 +323,10 @@ export function buildPreview(entry = KIT_ENTRY) {
     '   order. Load it after kit/kit.css. */',
   ];
   for (const { file, tree } of sources(entry)) {
-    const nodes = previewNodes(tree);
+    const label = path.relative(root, file).split(path.sep).join('/');
+    const nodes = previewNodes(tree, label);
     if (!nodes.length) continue;
-    parts.push('', `/* ${path.relative(root, file).split(path.sep).join('/')} */`, ...print(nodes, 0));
+    parts.push('', `/* ${label} */`, ...print(nodes, 0));
   }
   return `${parts.join('\n')}\n`;
 }
