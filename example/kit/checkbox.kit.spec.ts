@@ -138,7 +138,7 @@ for (const id of PANELS) {
       );
     });
 
-    test("Checkbox: the box draws small and answers a press 22px from its centre", async ({
+    test("Checkbox: the box draws small and answers a press 21.5px from its centre on each axis", async ({
       page,
     }) => {
       const result = await panel(page, id)
@@ -152,7 +152,9 @@ for (const id of PANELS) {
               out.push(`drawn ${r.width}x${r.height}, expected under 44`);
             const cx = r.left + r.width / 2;
             const cy = r.top + r.height / 2;
-            const half = 21.5; // a 43px box around the centre: inside a 44px hit area
+            // 21.5, not 22: a point exactly 22px out sits on the 44px hit area's edge, where
+            // elementFromPoint can land on either side; half a pixel in is unambiguously inside.
+            const half = 21.5;
             for (const [x, y] of [
               [cx, cy - half],
               [cx, cy + half],
@@ -175,14 +177,37 @@ for (const id of PANELS) {
       expect(result.out).toEqual([]);
     });
 
-    test("Checkbox: a press in the hit area outside the drawn box toggles it", async ({
+    test("Checkbox: a press above and left of the box, outside the box and its label, toggles it only through the ::after hit area", async ({
       page,
     }) => {
       const b = box(page, id, "unchecked");
-      const r = await b.boundingBox();
-      expect(r).not.toBeNull();
-      // 20px left of the centre: outside the drawn box, inside the 44px hit area.
-      await b.click({ position: { x: r!.width / 2 - 20, y: r!.height / 2 } });
+      await b.scrollIntoViewIfNeeded();
+      // 18px up and 18px left of the box's centre: 10px outside the 16px box on both axes,
+      // inside the 44px hit area (22px each way), and outside the label's own box.
+      const point = await b.evaluate((el) => {
+        const r = el.getBoundingClientRect();
+        const l = el.closest("label")!.getBoundingClientRect();
+        const x = r.left + r.width / 2 - 18;
+        const y = r.top + r.height / 2 - 18;
+        return {
+          x,
+          y,
+          inBox: x >= r.left && x <= r.right && y >= r.top && y <= r.bottom,
+          inLabel: x >= l.left && x <= l.right && y >= l.top && y <= l.bottom,
+        };
+      });
+      expect(point.inBox).toBe(false);
+      expect(point.inLabel).toBe(false);
+
+      // Red proof: with the ::after removed, the same press toggles nothing.
+      const style = await page.addStyleTag({
+        content: ".orr-checkbox::after { content: none !important; }",
+      });
+      await page.mouse.click(point.x, point.y);
+      await expect(b).toHaveAttribute("aria-checked", "false");
+      await style.evaluate((el) => el.remove());
+
+      await page.mouse.click(point.x, point.y);
       await expect(b).toHaveAttribute("aria-checked", "true");
     });
 
@@ -191,3 +216,61 @@ for (const id of PANELS) {
     });
   });
 }
+
+test.describe("golden example (fixtures/kit-examples.html)", () => {
+  test("Checkbox example: a submit without the required tick is blocked and shows valueMissing; with it, the form sends understood=on", async ({
+    page,
+  }) => {
+    await page.goto("/fixtures/kit-examples.html");
+    const example = page.locator(
+      '[data-example="kit/checkbox/Checkbox.example.tsx"]',
+    );
+    const understood = example.getByRole("checkbox", {
+      name: "I understand this cannot be undone",
+    });
+    const submit = example.getByRole("button", { name: "Delete orbit" });
+    const error = example.getByText("Tick this box to confirm.");
+    const status = example.getByRole("status");
+    // Record the form data of every submit, before any handler runs.
+    await page.evaluate(() => {
+      const w = window as unknown as { submits: string[][][] };
+      w.submits = [];
+      document.addEventListener(
+        "submit",
+        (e) => {
+          const data = new FormData(e.target as HTMLFormElement);
+          w.submits.push([...data.entries()].map(([k, v]) => [k, String(v)]));
+        },
+        true,
+      );
+    });
+    const lastSubmit = () =>
+      page.evaluate(() =>
+        (window as unknown as { submits: string[][][] }).submits.at(-1),
+      );
+
+    await expect(understood).toHaveAttribute("aria-required", "true");
+    await expect(error).toBeHidden();
+
+    // Unticked: Base UI's Form blocks the submit, shows the valueMissing error and focuses the box.
+    await submit.click();
+    await expect(error).toBeVisible();
+    await expect(understood).toHaveAttribute("aria-invalid", "true");
+    await expect(understood).toHaveAccessibleDescription(
+      /Tick this box to confirm\./,
+    );
+    await expect(understood).toBeFocused();
+    await expect(status).toHaveText("");
+    expect(await lastSubmit()).toEqual([["deleteCharts", "on"]]);
+
+    // Ticked: the error clears and the submit goes through with the box's name and value.
+    await understood.click();
+    await expect(error).toBeHidden();
+    await submit.click();
+    await expect(status).toHaveText("Orbit 7 deleted.");
+    expect(await lastSubmit()).toEqual([
+      ["deleteCharts", "on"],
+      ["understood", "on"],
+    ]);
+  });
+});

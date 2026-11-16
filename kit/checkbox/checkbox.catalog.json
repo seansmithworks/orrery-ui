@@ -35,7 +35,7 @@
           "required": {
             "type": "boolean",
             "x-from": "base-ui",
-            "description": "The form cannot be sent until it is ticked; sets aria-required."
+            "description": "Inside a Base UI Form, a submit without the tick is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
           },
           "name": {
             "type": "string",
@@ -61,7 +61,7 @@
       ],
       "a11y": [
         "Wrap the Checkbox and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
-        "When a tick is required and missing, set invalid on Field.Root and say what to do in Field.Error with match.",
+        "For a required tick, set required and name, inside a Base UI Form, with Field.Error match=\"valueMissing\".",
         "Use indeterminate only on a box that sums up a group of boxes, and keep it in step with them."
       ]
     }
