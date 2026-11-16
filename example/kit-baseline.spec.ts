@@ -1,15 +1,29 @@
 import { test, expect, type Page } from "@playwright/test";
-import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import {
+  compareBlocks,
+  readBlocks,
+  splitByBlock,
+  writeBlockPanel,
+  type PanelData,
+  type Props,
+} from "./kit-baseline-store";
 
 /**
  * kit-baseline.spec.ts: a computed-style lock on the kit specimen (example/kit.html),
  * the same idea as role-fallbacks.spec.ts. For every specimen cell in each of the three
  * panels (orrery light, orrery dark, solar) it records getComputedStyle for a fixed property
  * list on every element of the cell (and its ::before, ::after, ::placeholder), and compares
- * with the committed example/kit-baseline.json. The live dialog is opened per panel and its
- * scrim, viewport and popup are recorded too.
+ * with the committed baseline: one file per specimen block, example/kit-baseline/<block>.json
+ * (example/kit-baseline-store.ts). The live dialog is opened per panel and its scrim, viewport
+ * and popup are recorded too, in block Live.
+ *
+ * The six exemplar blocks are read by their titles below. A block from
+ * example/kit/specimens/*.specimen.tsx is read generically: each [data-cell] element is one
+ * cell "<block>/<data-cell>", and its fixedSize selectors (data-fixed-width,
+ * data-fixed-height on the block) add width and height (contract: example/kit/specimen.ts).
+ * A block on the page with no baseline file fails.
  *
  * Why computed styles, not pixels: CI is Linux and development is macOS, so a pixel baseline
  * could not be shared. Computed values are platform-stable, with these exclusions:
@@ -35,12 +49,22 @@ import { fileURLToPath } from "node:url";
  * Hover, pressed and focus cells are forced by the specimen's data-preview hooks.
  *
  * Rewriting the baseline is explicit: UPDATE_KIT_BASELINE=1 npm run test:kit-baseline.
- * Only the panels that ran are rewritten. Nothing else writes it; CI never sets it.
+ * Only the panels that ran are rewritten. KIT_BASELINE_BLOCKS=<Name>[,<Name>] limits the
+ * rewrite to the named blocks; every other block is still compared and its file is not touched.
+ * Nothing else writes it; CI never sets it.
+ *
+ * Every run also writes what it recorded, in the committed format, to
+ * <outputDir>/kit-baseline-actual/<block>.json. CI uploads that folder as the
+ * kit-baseline-actual artifact when this gate fails, so a builder can commit a block's file
+ * without running Chromium locally.
  */
 
 const HERE = dirname(fileURLToPath(import.meta.url));
-const BASELINE_PATH = resolve(HERE, "kit-baseline.json");
+const BASELINE_DIR = resolve(HERE, "kit-baseline");
 const UPDATE = process.env.UPDATE_KIT_BASELINE === "1";
+const ONLY = process.env.KIT_BASELINE_BLOCKS
+  ? process.env.KIT_BASELINE_BLOCKS.split(",").map((s) => s.trim())
+  : null;
 
 const PANELS = ["orrery-light", "orrery-dark", "solar"] as const;
 const STATIC_POPUP = ".spec-dialog-frame .orr-dialog";
@@ -122,13 +146,6 @@ const PROPS = [
   "animation-iteration-count",
 ];
 
-type Props = Record<string, string>;
-type Cell = Record<string, Props>; // element key -> prop -> value
-type PanelData = Record<string, Cell>; // cell key -> element
-interface BaselineFile {
-  panels: Record<string, PanelData>;
-}
-
 /** Runs in the page. Collects every cell of one panel, or of its live-dialog portal. */
 function collectInPage(args: {
   panelId: string;
@@ -183,6 +200,9 @@ function collectInPage(args: {
     );
     const out: Record<string, Props> = {};
     const counts = new Map<string, number>();
+    const owner = root.closest("[data-block]");
+    const fixedWidth = owner?.getAttribute("data-fixed-width");
+    const fixedHeight = owner?.getAttribute("data-fixed-height");
     for (const el of all) {
       const orr = [...el.classList].find((c) => c.startsWith("orr-"));
       const base = `${el.tagName.toLowerCase()}${orr ? "." + orr : ""}`;
@@ -201,6 +221,9 @@ function collectInPage(args: {
       if ((!text(el) && !input) || popup) vals.width = norm(cs.width);
       if ((!text(el) && !popup) || button || input)
         vals.height = norm(cs.height);
+      // A specimen file's fixedSize: the elements whose width or height its CSS declares.
+      if (fixedWidth && el.matches(fixedWidth)) vals.width = norm(cs.width);
+      if (fixedHeight && el.matches(fixedHeight)) vals.height = norm(cs.height);
       // The spinner centres with auto margins, which resolve from the label's text width.
       if (el.classList.contains("orr-button__spinner"))
         for (const m of ["margin-left", "margin-right"]) delete vals[m];
@@ -242,6 +265,16 @@ function collectInPage(args: {
 
   const panel = document.querySelector(`[data-panel="${panelId}"]`)!;
   for (const block of panel.querySelectorAll(".spec-block")) {
+    // A block from example/kit/specimens/: one cell per [data-cell] element.
+    const name = block.getAttribute("data-block");
+    if (name !== null) {
+      const cells = block.querySelectorAll("[data-cell]");
+      if (!cells.length)
+        throw new Error(`kit baseline: block "${name}" has no [data-cell]`);
+      for (const cell of cells)
+        add(`${name}/${cell.getAttribute("data-cell")}`, cell, false);
+      continue;
+    }
     const title = text(block.querySelector(".spec-block__title"));
     if (title === "Live") {
       add("Live/search field", block.querySelector(".spec-live__field"), false);
@@ -300,88 +333,28 @@ async function settled(
   throw new Error("computed styles never settled within 6s");
 }
 
-function flatten(data: PanelData): Record<string, string> {
-  const flat: Record<string, string> = {};
-  for (const [cell, els] of Object.entries(data))
-    for (const [el, vals] of Object.entries(els))
-      for (const [prop, v] of Object.entries(vals))
-        flat[`${cell} | ${el} | ${prop}`] = v;
-  return flat;
-}
-
-/** Every difference as one line naming cell, element and property. */
-function diff(expected: PanelData, actual: PanelData): string[] {
-  const a = flatten(expected);
-  const b = flatten(actual);
-  const lines: string[] = [];
-  for (const k of new Set([...Object.keys(a), ...Object.keys(b)])) {
-    if (a[k] !== b[k])
-      lines.push(
-        `${k}: baseline ${a[k] === undefined ? "(absent)" : JSON.stringify(a[k])} != actual ${b[k] === undefined ? "(absent)" : JSON.stringify(b[k])}`,
-      );
-  }
-  return lines.sort();
-}
-
-const sorted = <T>(o: Record<string, T>) =>
-  Object.keys(o)
-    .sort()
-    .map((k) => [k, o[k]] as const);
-
-/** One line per element so a baseline diff reads as one changed element. */
-function serialize(b: BaselineFile): string {
-  const lines: string[] = ["{", '  "panels": {'];
-  const panels = sorted(b.panels);
-  panels.forEach(([panel, cells], pi) => {
-    lines.push(`    ${JSON.stringify(panel)}: {`);
-    const cs = sorted(cells);
-    cs.forEach(([cell, els], ci) => {
-      lines.push(`      ${JSON.stringify(cell)}: {`);
-      const es = sorted(els);
-      es.forEach(([el, vals], ei) => {
-        // One property per line, so a baseline diff names the property that changed.
-        lines.push(`        ${JSON.stringify(el)}: {`);
-        const ps = sorted(vals);
-        ps.forEach(([prop, v], pi2) =>
-          lines.push(
-            `          ${JSON.stringify(prop)}: ${JSON.stringify(v)}${pi2 < ps.length - 1 ? "," : ""}`,
-          ),
-        );
-        lines.push(`        }${ei < es.length - 1 ? "," : ""}`);
-      });
-      lines.push(`      }${ci < cs.length - 1 ? "," : ""}`);
-    });
-    lines.push(`    }${pi < panels.length - 1 ? "," : ""}`);
-  });
-  lines.push("  }", "}", "");
-  return lines.join("\n");
-}
-
-function readBaseline(): BaselineFile {
-  return existsSync(BASELINE_PATH)
-    ? (JSON.parse(readFileSync(BASELINE_PATH, "utf8")) as BaselineFile)
-    : { panels: {} };
-}
-
-function checkBaseline(panel: string, actual: PanelData) {
-  if (UPDATE) {
-    const all = readBaseline();
-    all.panels[panel] = actual;
-    writeFileSync(BASELINE_PATH, serialize(all));
-    return;
-  }
-  const expected = readBaseline().panels[panel];
-  expect(
-    expected,
-    `no baseline for panel ${panel}; run with UPDATE_KIT_BASELINE=1 only if this panel is new`,
-  ).toBeDefined();
-  expect(diff(expected, actual)).toEqual([]);
+function checkBaseline(panel: string, actual: PanelData, outputDir: string) {
+  const blocks = splitByBlock(actual);
+  // What this run recorded, for CI's kit-baseline-actual artifact.
+  const actualDir = resolve(outputDir, "kit-baseline-actual");
+  for (const [block, data] of Object.entries(blocks))
+    writeBlockPanel(actualDir, block, panel, data);
+  const { write, errors } = compareBlocks(
+    panel,
+    blocks,
+    readBlocks(BASELINE_DIR),
+    UPDATE,
+    ONLY,
+  );
+  for (const block of write)
+    writeBlockPanel(BASELINE_DIR, block, panel, blocks[block]);
+  expect(errors).toEqual([]);
 }
 
 test.setTimeout(120_000);
 
 for (const id of PANELS) {
-  test(`kit specimen computed styles: ${id}`, async ({ page }) => {
+  test(`kit specimen computed styles: ${id}`, async ({ page }, testInfo) => {
     // The specimen links Google Fonts for brand solar; never touch the network in a test.
     await page.route(/fonts\.(googleapis|gstatic)\.com/, (route) =>
       route.fulfill({ contentType: "text/css", body: "" }),
@@ -407,6 +380,6 @@ for (const id of PANELS) {
     );
     Object.assign(data, await settled(page, id, true));
 
-    checkBaseline(id, data);
+    checkBaseline(id, data, testInfo.project.outputDir);
   });
 }
