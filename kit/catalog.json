@@ -540,6 +540,194 @@
         "file": "kit/field/Field.example.tsx",
         "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
+    },
+    "Select": {
+      "description": "A select on Base UI: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
+      "parts": {
+        "Root": {
+          "description": "Holds the value and the open state; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@base-ui/react/select#Select.Root.Props<unknown>",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "items": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "Maps each value to its label, so the trigger shows the label and not the raw value."
+              },
+              "value": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "The selected value when controlled; pair it with onValueChange. null shows the placeholder."
+              },
+              "defaultValue": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "The value selected on first render when the value is not controlled."
+              },
+              "onValueChange": {
+                "x-type": "function",
+                "x-from": "base-ui",
+                "description": "Called with the next value whenever an item is picked."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Stops the select from opening or changing; inside Field.Root, Field.Root's disabled does the same."
+              },
+              "name": {
+                "type": "string",
+                "x-from": "base-ui",
+                "description": "The value's name when the form is submitted, if Field.Root does not give one."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The button that opens the list; it shows the selected label or the placeholder, with the Input's look.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/select#Select.Trigger.Props",
+          "props": {
+            "type": "object",
+            "properties": {
+              "placeholder": {
+                "x-type": "node",
+                "description": "Shown, muted, while nothing is selected. It is not a label; Field.Label still names the select."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "Portal, positioner, popup and list in one part; it opens below the trigger, at least as wide, on document.body.",
+          "inside": "Root",
+          "passthrough": "@base-ui/react/select#Select.Popup.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+              },
+              "finalFocus": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "What takes focus on close: a ref, a function returning an element, or false. Default: the trigger."
+              }
+            },
+            "required": []
+          }
+        },
+        "Item": {
+          "description": "One option; its text is the label used for typeahead, and a check in the text colour marks the selected one.",
+          "inside": [
+            "Popup",
+            "Group"
+          ],
+          "passthrough": "@base-ui/react/select#Select.Item.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "x-type": "object",
+                "x-from": "base-ui",
+                "description": "The value this item stands for; one of the keys of Root's items."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "base-ui",
+                "description": "Shows the item muted and stops it from being picked."
+              },
+              "label": {
+                "type": "string",
+                "x-from": "base-ui",
+                "description": "The text typeahead matches, when it should differ from the item's visible text."
+              }
+            },
+            "required": []
+          }
+        },
+        "Group": {
+          "description": "Groups related items under a GroupLabel.",
+          "inside": "Popup",
+          "passthrough": "@base-ui/react/select#Select.Group.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "GroupLabel": {
+          "description": "The muted heading of a group; Base UI points the group's aria-labelledby at it.",
+          "inside": "Group",
+          "passthrough": "@base-ui/react/select#Select.GroupLabel.Props",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Separator": {
+          "description": "A hairline between groups.",
+          "inside": "Popup",
+          "passthrough": "@base-ui/react/select#Select.Separator.Props",
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root",
+        "Trigger",
+        "Popup",
+        "Item"
+      ],
+      "useWhen": [
+        "One choice from a fixed list of about five to twenty-five options, inside a form.",
+        "The options are known up front and need no search."
+      ],
+      "avoidWhen": [
+        {
+          "text": "Two to four options that fit on screen at once.",
+          "instead": "fieldset"
+        },
+        {
+          "text": "The person may type a value that is not in the list.",
+          "instead": "Input"
+        },
+        {
+          "text": "The list starts an action instead of choosing a value.",
+          "instead": "Button"
+        }
+      ],
+      "a11y": [
+        "Put it inside Field.Root with a Field.Label; the placeholder is not a label.",
+        "Pass items on Root so the trigger reads the label, not the raw value.",
+        "When nothing valid is chosen, set invalid on Field.Root and say what to fix in Field.Error."
+      ],
+      "example": {
+        "file": "kit/select/Select.example.tsx",
+        "code": "// Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a\n// placeholder; submitting empty says what to fix in words. Root gets `items` so the trigger shows the\n// label, not the raw value. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Select } from \"../index\";\n\nconst INNER = { mercury: \"Mercury\", venus: \"Venus\", mars: \"Mars\" };\nconst OUTER = { jupiter: \"Jupiter\", saturn: \"Saturn\", neptune: \"Neptune\" };\nconst ITEMS = { ...INNER, ...OUTER };\n\nexport default function NewChart() {\n  const [body, setBody] = useState<string | null>(null);\n  const [error, setError] = useState<string | null>(null);\n  const [made, setMade] = useState<string | null>(null);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = body ? null : \"Choose a body for the chart to follow.\";\n    setError(problem);\n    setMade(problem ? null : ITEMS[body as keyof typeof ITEMS]);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"body\" invalid={error !== null}>\n        <Field.Label>Body</Field.Label>\n        <Select.Root\n          items={ITEMS}\n          value={body}\n          onValueChange={(next) => {\n            setBody(next);\n            setError(null);\n            setMade(null);\n          }}\n        >\n          <Select.Trigger placeholder=\"Choose a body\" />\n          <Select.Popup>\n            <Select.Group>\n              <Select.GroupLabel>Inner planets</Select.GroupLabel>\n              {Object.entries(INNER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n            <Select.Separator />\n            <Select.Group>\n              <Select.GroupLabel>Outer planets</Select.GroupLabel>\n              {Object.entries(OUTER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n          </Select.Popup>\n        </Select.Root>\n        <Field.Description>\n          The chart centres on this body and follows its orbit.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Make chart\n        </Button>\n        <span role=\"status\">{made ? `Chart made for ${made}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+      }
     }
   }
 }

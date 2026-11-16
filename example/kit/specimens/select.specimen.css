@@ -1,0 +1,39 @@
+/* Select block layout only. Tokens, never literals. */
+
+.spec-select-wide {
+  grid-column: 1 / -1;
+}
+
+/* The open state's portal mounts here. contain: layout makes the frame the containing block for the
+   kit's positioner and its own stacking context, so the held-open popup sits under its trigger inside
+   the frame and never rises above a live popup or dialog. inert: it is a picture of the open state,
+   so it never takes focus (a held-open list focuses its selected item on mount) or a press. */
+.spec-select-frame {
+  position: relative;
+  contain: layout paint;
+  min-height: calc(var(--space-72) * 5 + var(--space-32));
+  padding: var(--space-16);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+/* Floating UI places a popup against the window. Held open, the frame is usually below the window
+   (always, in the tests), so it would flip the popup above the trigger, out of the frame, and shrink
+   --available-height. The picture pins the popup where it opens on screen: under the trigger (the
+   frame's padding, the label line, the field gap, the trigger), the kit's offset below it. Only the
+   placement is pinned; the popup's drawing, items and max height are the kit's. */
+.spec-select-frame .orr-select__positioner {
+  top: calc(
+    var(--space-16) + var(--type-line-height-13) + var(--space-8) +
+      var(--hit-target-min)
+  ) !important;
+  left: var(--space-16) !important;
+  transform: none !important;
+  --available-height: calc(
+    var(--orr-select-max-height) + var(--orr-select-offset)
+  ) !important;
+}
+.spec-select-frame .orr-select__popup {
+  margin: var(--orr-select-offset) 0 0 !important;
+}

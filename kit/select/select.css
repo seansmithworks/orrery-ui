@@ -1,0 +1,217 @@
+/* Select. Every value is a token, a kit-local property from kit.css, or one of the UN-DIALLED
+   properties below. The trigger has the Input's look; the popup has the floating level's drawing
+   (the --orr-floating-* properties, declared once in dialog.css).
+   States: rest, hover, focus, open, placeholder, invalid, disabled; item highlighted, selected, disabled.
+
+   One rule per state. No accent except the focus ring: the selected item is a check in the text colour. */
+
+@layer orrery.kit {
+  /* Kit-local, on the popup only (never the shared :root). */
+  .orr-select__positioner {
+    /* UN-DIALLED: the gap between the trigger and the popup. */
+    --orr-select-offset: var(--space-4);
+    /* UN-DIALLED: the popup's tallest size before its list scrolls, about six and a half items. */
+    --orr-select-max-height: calc(var(--hit-target-min) * 6.5);
+  }
+
+  /* trigger: the Input's look, laid out as a button */
+  .orr-select {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-8);
+    width: 100%;
+    min-width: 0;
+    height: var(--hit-target-min);
+    margin: 0;
+    padding: 0 var(--space-8) 0 var(--space-12);
+    border: var(--line-width) solid var(--text-muted);
+    border-radius: var(--radius-control);
+    background-color: var(--page);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    text-align: start;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* 16px on touch screens, the same as Input. */
+  @media (any-pointer: coarse) {
+    .orr-select {
+      font-size: var(--type-size-16);
+    }
+  }
+  .orr-select__value {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .orr-select__icon {
+    display: flex;
+    flex: none;
+    color: var(--text-muted);
+  }
+  .orr-select__icon svg {
+    width: var(--space-20);
+    height: var(--space-20);
+  }
+
+  /* placeholder: nothing chosen yet, muted like an input's placeholder */
+  .orr-select[data-placeholder] .orr-select__value {
+    color: var(--text-muted);
+  }
+
+  /* hover (only where the pointer can hover) */
+  @media (hover: hover) {
+    .orr-select:not([data-disabled]):hover {
+      border-color: var(--text);
+    }
+  }
+
+  /* open: the hover line stays while the list is showing */
+  .orr-select[data-popup-open] {
+    border-color: var(--text);
+  }
+
+  /* focus: the one ring */
+  .orr-select:not([data-disabled]):focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  /* invalid: Input's heavy line, drawn twice as thick with an inset stroke so the box does not move */
+  .orr-select[data-invalid] {
+    border-color: var(--line-strong);
+    box-shadow: inset 0 0 0 var(--line-width) var(--line-strong);
+  }
+
+  /* disabled */
+  .orr-select[data-disabled] {
+    background-color: var(--layer-1);
+    border-color: var(--line);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* popup: on the overlay layer, below the trigger, never narrower than it */
+  .orr-select__positioner {
+    z-index: var(--orr-z-overlay);
+    outline: 0;
+  }
+  .orr-select__popup {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: var(--anchor-width);
+    max-height: min(
+      var(--orr-select-max-height),
+      calc(var(--available-height) - var(--orr-select-offset))
+    );
+    border: var(--orr-floating-border);
+    border-radius: var(--orr-floating-radius);
+    background-color: var(--orr-floating-fill);
+    box-shadow: var(--orr-floating-shadow);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    transform-origin: var(--transform-origin);
+    outline: 0;
+  }
+  .orr-select__popup[data-side="bottom"] {
+    margin-top: var(--orr-select-offset);
+  }
+  .orr-select__popup[data-side="top"] {
+    margin-bottom: var(--orr-select-offset);
+  }
+  .orr-select__list {
+    box-sizing: border-box;
+    min-height: 0;
+    padding: var(--space-4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    outline: 0;
+  }
+
+  /* item: the check sits at the end; the text lines up with the trigger's value */
+  .orr-select__item {
+    box-sizing: border-box;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) var(--space-20);
+    align-items: center;
+    gap: var(--space-8);
+    min-height: var(--hit-target-min);
+    padding: 0 var(--space-4) 0 var(--space-8);
+    border-radius: var(--radius-control);
+    cursor: default;
+    outline: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .orr-select__item-text {
+    grid-column: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  .orr-select__check {
+    display: flex;
+    grid-column: 2;
+    color: var(--text);
+  }
+  .orr-select__check svg {
+    width: var(--space-20);
+    height: var(--space-20);
+  }
+
+  /* item highlighted: keyboard or pointer is on it; a layer fill, never the accent */
+  .orr-select__item[data-highlighted] {
+    background-color: var(--layer-2);
+  }
+
+  /* item selected: the check alone marks it. Select.ItemIndicator renders only on the selected item,
+     so no [data-selected] rule is needed. */
+
+  /* item disabled */
+  .orr-select__item[data-disabled] {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .orr-select__group-label {
+    padding: var(--space-8) var(--space-8) var(--space-4);
+    color: var(--text-muted);
+    font-size: var(--type-size-13);
+    line-height: var(--type-line-height-13);
+    font-weight: 500;
+  }
+  .orr-select__separator {
+    height: var(--line-width);
+    margin: var(--space-4) calc(-1 * var(--space-4));
+    background-color: var(--line);
+  }
+
+  /* Motion, the Dialog's pattern. Enter and exit fade; with motion allowed the popup also grows from
+     --orr-enter-scale toward the trigger. Reduced motion is opacity only. */
+  .orr-select__popup {
+    transition: opacity var(--orr-dur) var(--orr-ease);
+  }
+  .orr-select__popup:is([data-starting-style], [data-ending-style]) {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-select {
+      transition: border-color var(--orr-dur) var(--orr-ease);
+    }
+    .orr-select__popup {
+      transition:
+        opacity var(--orr-dur) var(--orr-ease),
+        transform var(--orr-dur) var(--orr-ease);
+    }
+    .orr-select__popup:is([data-starting-style], [data-ending-style]) {
+      transform: scale(var(--orr-enter-scale));
+    }
+  }
+}

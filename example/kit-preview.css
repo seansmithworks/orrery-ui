@@ -40,3 +40,16 @@
     outline-offset: var(--ring-width);
   }
 }
+
+/* kit/select/select.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-select:not([data-disabled])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+  }
+  .orr-select:not([data-disabled])[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}

@@ -3,6 +3,17 @@
    page fill plus the heavy --line-strong hairline, no shadow. */
 
 @layer orrery.kit {
+  /* The floating level's drawing, shared by every floating surface: the Dialog and the Select popup.
+     The strawman above, held in one place, so Sean's decision changes these four lines only.
+     Declared on the surfaces, not :root, so each one resolves the roles of the theme it sits in. */
+  .orr-dialog,
+  .orr-select__popup {
+    --orr-floating-fill: var(--page);
+    --orr-floating-border: var(--line-width) solid var(--line-strong);
+    --orr-floating-radius: var(--radius-panel);
+    --orr-floating-shadow: none;
+  }
+
   /* Backdrop and viewport sit on the overlay layer, so positioned page content
      that comes later in the document (or carries its own z-index) never paints over an open dialog.
      A nested dialog's viewport comes later in the document, so it sits above its parent. */
@@ -41,9 +52,10 @@
     max-height: 100%;
     overflow: auto;
     padding: var(--space-24);
-    border: var(--line-width) solid var(--line-strong);
-    border-radius: var(--radius-panel);
-    background-color: var(--page);
+    border: var(--orr-floating-border);
+    border-radius: var(--orr-floating-radius);
+    background-color: var(--orr-floating-fill);
+    box-shadow: var(--orr-floating-shadow);
     color: var(--text);
     font-family: var(--font-sans);
   }
