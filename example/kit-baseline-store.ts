@@ -6,6 +6,9 @@ import {
   writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
+import { assertDistinctFiles, fileOf } from "./kit/specimen.ts";
+
+export { fileOf };
 
 /**
  * The files behind example/kit-baseline.spec.ts: one per specimen block,
@@ -29,31 +32,31 @@ export const blockOf = (cellKey: string) => {
   return cellKey.slice(0, i);
 };
 
-/** "Dense row" -> "dense-row.json". */
-export const fileOf = (block: string) =>
-  `${block
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-|-$/g, "")}.json`;
-
-/** One panel's cells, grouped by block. */
+/** One panel's cells, grouped by block. Block names that would share a file throw. */
 export function splitByBlock(data: PanelData): Record<string, PanelData> {
   const out: Record<string, PanelData> = {};
   for (const [cell, els] of Object.entries(data))
     (out[blockOf(cell)] ??= {})[cell] = els;
+  assertDistinctFiles(Object.keys(out));
   return out;
 }
 
+// Every cell and every element gets a presence key, so a vanished cell or element fails even
+// when it had no properties to compare.
 function flatten(data: PanelData): Record<string, string> {
   const flat: Record<string, string> = {};
-  for (const [cell, els] of Object.entries(data))
-    for (const [el, vals] of Object.entries(els))
+  for (const [cell, els] of Object.entries(data)) {
+    flat[`${cell} | (cell)`] = "present";
+    for (const [el, vals] of Object.entries(els)) {
+      flat[`${cell} | ${el} | (element)`] = "present";
       for (const [prop, v] of Object.entries(vals))
         flat[`${cell} | ${el} | ${prop}`] = v;
+    }
+  }
   return flat;
 }
 
-/** Every difference as one line naming cell, element and property. */
+/** Every difference as one line naming cell, element and property (or the missing cell or element). */
 export function diff(expected: PanelData, actual: PanelData): string[] {
   const a = flatten(expected);
   const b = flatten(actual);
@@ -139,9 +142,10 @@ export function writeBlockPanel(
 
 /**
  * Compares one panel's recorded cells with the stored block files.
- * update: UPDATE_KIT_BASELINE=1. only: the KIT_BASELINE_BLOCKS names, or null for every block.
- * Returns the blocks to write (update mode, named) and one error line per failure; every
- * line names its block and panel. Blocks not written are always compared.
+ * update: UPDATE_KIT_BASELINE=1. only: the KIT_BASELINE_BLOCKS names ("*" for every block), or
+ * null when unset. Update mode writes nothing unless KIT_BASELINE_BLOCKS is set, so the locked
+ * blocks are never re-recorded by habit. Returns the blocks to write and one error line per
+ * failure; every line names its block and panel. Blocks not written are always compared.
  */
 export function compareBlocks(
   panel: string,
@@ -154,13 +158,18 @@ export function compareBlocks(
   const errors: string[] = [];
   if (only && !update)
     errors.push("KIT_BASELINE_BLOCKS is set without UPDATE_KIT_BASELINE=1");
+  if (update && !only)
+    errors.push(
+      'UPDATE_KIT_BASELINE=1 needs KIT_BASELINE_BLOCKS: KIT_BASELINE_BLOCKS="<Name>[,<Name>]" rewrites the named blocks, KIT_BASELINE_BLOCKS="*" rewrites every block. Nothing was written.',
+    );
+  const every = only?.includes("*") ?? false;
   for (const name of only ?? [])
-    if (!(name in actual))
+    if (name !== "*" && !(name in actual))
       errors.push(
         `KIT_BASELINE_BLOCKS names block "${name}", which is not on the page (blocks: ${Object.keys(actual).sort().join(", ")})`,
       );
   for (const [block, data] of sorted(actual)) {
-    if (update && (!only || only.includes(block))) {
+    if (update && only && (every || only.includes(block))) {
       write.push(block);
       continue;
     }

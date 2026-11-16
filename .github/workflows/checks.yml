@@ -80,9 +80,9 @@ jobs:
       # height (recorded only for text-free elements), transform/translate/scale, and the painted font face
       # (font-family records the declared stack). A kit CSS change that alters any recorded value fails with
       # block, cell, element, property, baseline and actual; a block with no baseline file fails. After an
-      # intended look change, rewrite with UPDATE_KIT_BASELINE=1 [KIT_BASELINE_BLOCKS=<Name>] npm run
-      # test:kit-baseline and commit it, or take the block's file from the kit-baseline-actual artifact this
-      # job uploads on failure. CI never sets those variables.
+      # intended look change, rewrite with UPDATE_KIT_BASELINE=1 KIT_BASELINE_BLOCKS=<Name>[,<Name>] (or =* for
+      # every block; update mode without it fails) npm run test:kit-baseline and commit it, or take the block's
+      # file from the kit-baseline-actual artifact this job uploads on failure. CI never sets those variables.
       - id: kit-baseline
         run: npm run test:kit-baseline
       - if: failure() && steps.kit-baseline.outcome == 'failure'

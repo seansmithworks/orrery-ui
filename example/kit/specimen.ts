@@ -23,11 +23,14 @@ import type { ComponentType } from "react";
  * Cells. Every element carrying data-cell="<name>" is one cell of the computed-style baseline
  * (example/kit-baseline.spec.ts), keyed "<block>/<name>". The cell element is a wrapper: what is
  * inside it is recorded, not the wrapper itself. Inside a cell, .spec-label subtrees and elements
- * with a spec- class are skipped. Cell names are unique within the block; cells do not nest.
+ * with a spec- class are skipped. Cell names are unique within the block. A cell must record at
+ * least one element, and cells must not nest: the baseline gate throws on either.
  *
- * Width and height are recorded only on elements with no text (the label text of a component
- * would make them platform-dependent). fixedSize names, as CSS selector lists, the elements whose
- * width or height the kit's CSS declares, so they are recorded even when they hold text.
+ * Width and height are NOT recorded on any element that holds text, unless fixedSize lists it:
+ * text metrics differ between macOS and Linux. They are recorded automatically only on text-free
+ * elements. A Switch rendered with a visible label holds text, so its height is not locked unless
+ * the specimen says `fixedSize = { height: ".orr-switch" }`. fixedSize names, as CSS selector
+ * lists, the elements whose width or height the kit's CSS declares.
  *
  * Open states render inside the cell (portal into a frame in the cell, as the Dialog block's
  * static dialog does), never into the panel's live-dialog portal, which the Live block owns.
@@ -59,3 +62,24 @@ export const CORE_BLOCKS = [
   "Field",
   "Dialog",
 ] as const;
+
+/** A block's baseline file name: "Dense row" -> "dense-row.json". */
+export const fileOf = (block: string) =>
+  `${block
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "")}.json`;
+
+/** Throws when two block names would share one baseline file ("Dense Row" and "Dense row"). */
+export function assertDistinctFiles(blocks: readonly string[]) {
+  const seen = new Map<string, string>();
+  for (const b of blocks) {
+    const f = fileOf(b);
+    const other = seen.get(f);
+    if (other !== undefined)
+      throw new Error(
+        `kit baseline: blocks "${other}" and "${b}" would share example/kit-baseline/${f}; rename one`,
+      );
+    seen.set(f, b);
+  }
+}

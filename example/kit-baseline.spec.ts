@@ -48,10 +48,11 @@ import {
  * cannot see it; the cascade-override test in kit.spec.ts owns it.
  * Hover, pressed and focus cells are forced by the specimen's data-preview hooks.
  *
- * Rewriting the baseline is explicit: UPDATE_KIT_BASELINE=1 npm run test:kit-baseline.
- * Only the panels that ran are rewritten. KIT_BASELINE_BLOCKS=<Name>[,<Name>] limits the
- * rewrite to the named blocks; every other block is still compared and its file is not touched.
- * Nothing else writes it; CI never sets it.
+ * Rewriting the baseline is explicit and names its blocks:
+ * UPDATE_KIT_BASELINE=1 KIT_BASELINE_BLOCKS=<Name>[,<Name>] npm run test:kit-baseline rewrites
+ * the named blocks; every other block is still compared and its file is not touched.
+ * KIT_BASELINE_BLOCKS=* rewrites every block. UPDATE_KIT_BASELINE=1 alone fails and writes
+ * nothing. Only the panels that ran are rewritten. Nothing else writes it; CI never sets it.
  *
  * Every run also writes what it recorded, in the committed format, to
  * <outputDir>/kit-baseline-actual/<block>.json. CI uploads that folder as the
@@ -251,7 +252,11 @@ function collectInPage(args: {
   const add = (key: string, root: Element | null, self: boolean) => {
     if (!root) throw new Error(`kit baseline: no element for cell ${key}`);
     if (key in data) throw new Error(`kit baseline: duplicate cell key ${key}`);
-    data[key] = record(root, self);
+    const cell = record(root, self);
+    // An empty cell would lock nothing and pass whatever happens to it.
+    if (!Object.keys(cell).length)
+      throw new Error(`kit baseline: cell ${key} records no element`);
+    data[key] = cell;
   };
 
   if (portal) {
@@ -271,8 +276,14 @@ function collectInPage(args: {
       const cells = block.querySelectorAll("[data-cell]");
       if (!cells.length)
         throw new Error(`kit baseline: block "${name}" has no [data-cell]`);
-      for (const cell of cells)
+      for (const cell of cells) {
+        // A nested cell would be recorded twice: once inside its parent, once on its own.
+        if (cell.parentElement?.closest("[data-cell]"))
+          throw new Error(
+            `kit baseline: block "${name}" nests [data-cell="${cell.getAttribute("data-cell")}"] inside another cell`,
+          );
         add(`${name}/${cell.getAttribute("data-cell")}`, cell, false);
+      }
       continue;
     }
     const title = text(block.querySelector(".spec-block__title"));

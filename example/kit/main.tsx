@@ -13,7 +13,11 @@ import "../../kit/kit.css";
 import "../kit-preview.css";
 import "./specimen.css";
 import { installBrandTokens } from "./scope";
-import { CORE_BLOCKS, type SpecimenModule } from "./specimen";
+import {
+  CORE_BLOCKS,
+  assertDistinctFiles,
+  type SpecimenModule,
+} from "./specimen";
 
 // Vite's import.meta.glob (the example has no vite/client types).
 declare global {
@@ -33,18 +37,14 @@ const SPECIMENS = Object.entries(
 )
   .sort(([a], [b]) => (a < b ? -1 : a > b ? 1 : 0))
   .map(([file, mod]) => {
-    const taken = new Set<string>(CORE_BLOCKS);
-    if (!mod.block || mod.block.includes("/") || taken.has(mod.block))
+    if (!mod.block || mod.block.includes("/"))
       throw new Error(
-        `${file}: block name "${mod.block}" is missing, contains "/" or is taken`,
+        `${file}: block name "${mod.block}" is missing or contains "/"`,
       );
     return mod;
   });
-{
-  const names = SPECIMENS.map((m) => m.block);
-  const dup = names.find((n, i) => names.indexOf(n) !== i);
-  if (dup) throw new Error(`two specimen files export block "${dup}"`);
-}
+// A taken name, or one differing only by case or punctuation, would share a baseline file.
+assertDistinctFiles([...CORE_BLOCKS, ...SPECIMENS.map((m) => m.block)]);
 
 type Panel = {
   id: string;
