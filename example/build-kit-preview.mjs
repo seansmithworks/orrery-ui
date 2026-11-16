@@ -147,9 +147,44 @@ function skipOpaque(text, i) {
   return i;
 }
 
+/** The text with each comment removed. A "/*" starts a comment only outside a string, attribute block or escape. */
+function stripComments(text) {
+  let out = '';
+  for (let i = 0; i < text.length; ) {
+    if (text.startsWith('/*', i)) {
+      const end = text.indexOf('*/', i + 2);
+      i = end === -1 ? text.length : end + 2;
+      continue;
+    }
+    const skip = skipOpaque(text, i);
+    const next = skip === i ? i + 1 : skip;
+    out += text.slice(i, next);
+    i = next;
+  }
+  return out;
+}
+
+/** The text with each run of whitespace outside a string, attribute block or escape collapsed to one space. */
+function collapseSpace(text) {
+  let out = '';
+  for (let i = 0; i < text.length; ) {
+    const skip = skipOpaque(text, i);
+    if (skip !== i) {
+      out += text.slice(i, skip);
+      i = skip;
+    } else if (/\s/.test(text[i])) {
+      while (i < text.length && /\s/.test(text[i])) i++;
+      out += ' ';
+    } else {
+      out += text[i++];
+    }
+  }
+  return out;
+}
+
 /** CSS text, comments removed, as a tree of { prelude, children } blocks, { prelude, body } rules and ';' statements. */
 function parse(text) {
-  const src = text.replace(/\/\*[\s\S]*?\*\//g, '');
+  const src = stripComments(text);
   let i = 0;
   const block = () => {
     const out = [];
@@ -216,7 +251,7 @@ function splitSelectors(list) {
     i++;
   }
   parts.push(list.slice(start));
-  return parts.map((s) => s.replace(/\s+/g, ' ').trim());
+  return parts.map((s) => collapseSpace(s).trim());
 }
 
 /** The preview twin of a parsed tree: only state rules, inside their at-rules, in source order. */
@@ -254,7 +289,7 @@ function print(nodes, indent) {
   const lines = [];
   for (const n of nodes) {
     if (n.children) {
-      lines.push(`${pad}${n.prelude.replace(/\s+/g, ' ')} {`, ...print(n.children, indent + 1), `${pad}}`);
+      lines.push(`${pad}${collapseSpace(n.prelude)} {`, ...print(n.children, indent + 1), `${pad}}`);
     } else {
       lines.push(`${pad}${n.selectors.join(`,\n${pad}`)} {`);
       for (const d of n.body.split('\n').map((l) => l.trim()).filter(Boolean)) lines.push(`${pad}  ${d}`);

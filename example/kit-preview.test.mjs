@@ -132,6 +132,18 @@ const tests = {
       assert.ok(!none(sel).includes('/* kit/kit.css */'), sel);
     }
   },
+  'a "/*" inside a string is not a comment; real comments between rules and in selector lists still are'() {
+    const build = (css) => buildPreview(cssKit('comments', `${css}\n`));
+    const a = build('.a[x="/*"]:hover{x:1} /* c */ .b:hover{y:1}');
+    assert.ok(a.includes('.a[x="/*"][data-preview~="hover"] {') && a.includes('.b[data-preview~="hover"] {'), a);
+    const b = build('.a:hover{content:"/*"} /* end */ .b:hover{y:1}');
+    assert.ok(b.includes('content:"/*"') && b.includes('.b[data-preview~="hover"] {'), b);
+    const c = build('.a:hover, /* c */ .b:hover { y: 1 } /* between */ .c:hover { z: 1 }');
+    assert.ok(/\.a\[data-preview~="hover"\],\n\.b\[data-preview~="hover"\] \{/.test(c) && c.includes('.c[data-preview~="hover"] {'), c);
+    // Whitespace inside a string survives; a quote inside a comment does not open a string.
+    const d = build(`/* it's */ .a[x="p  q"]:hover { y: 1 }`);
+    assert.ok(d.includes('.a[x="p  q"][data-preview~="hover"] {'), d);
+  },
 };
 
 let failed = 0;
