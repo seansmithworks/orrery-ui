@@ -124,7 +124,7 @@ const tests = {
     const r = run('build.mjs', '--out', out);
     assert.equal(r.status, 0, r.stderr);
     const files = fs.readdirSync(out, { recursive: true }).filter((f) => fs.statSync(path.join(out, f)).isFile()).sort();
-    assert.deepEqual(files, ['.orrery-tokens-build', 'checks.md', 'css/northwind-kiln.css', 'css/orrery.css', 'css/orrery.iris.css', 'css/orrery.system.css', 'css/solar.css', 'css/solar.system.css', 'js/orrery.motion.mjs', 'swift/OrreryTokens.swift', 'tokens.json']);
+    assert.deepEqual(files, ['.orrery-tokens-build', 'checks.md', 'css/northwind-kiln.css', 'css/orrery.css', 'css/orrery.iris.css', 'css/orrery.system.css', 'css/primetime.css', 'css/primetime.system.css', 'css/solar.css', 'css/solar.system.css', 'js/orrery.motion.mjs', 'swift/OrreryTokens.swift', 'tokens.json']);
     assert.equal(fs.existsSync(path.join(out, 'css/old')), false);
     const foreign = path.join(tmp, 'foreign');
     fs.mkdirSync(path.join(foreign, 'sub'), { recursive: true });
