@@ -6,7 +6,7 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { REPO, OUT, checkPreview } from './build-kit-preview.mjs';
+import { REPO, OUT, buildPreview, checkPreview } from './build-kit-preview.mjs';
 
 const tmp = fs.realpathSync(fs.mkdtempSync(path.join(os.tmpdir(), 'orrery-kit-preview-test-')));
 const SCRIPT = path.join(REPO, 'example', 'build-kit-preview.mjs');
@@ -41,6 +41,43 @@ const tests = {
     const r = runCheck('--kit', entry, '--out', OUT);
     assert.equal(r.status, 1, `expected exit 1, got ${r.status}\n${r.stdout}`);
     assert.match(r.stderr, /^kit-preview: example\/kit-preview\.css differs from a fresh build/m);
+  },
+
+  'a state pseudo-class with no decision (:focus): the build throws, naming the file and the selector'() {
+    const entry = seededKit('unknown-state', 'button/button.css', ':not([data-disabled]):hover {', ':not([data-disabled]):focus {');
+    assert.throws(
+      () => buildPreview(entry),
+      (e) => /kit\/button\/button\.css/.test(e.message) && e.message.includes('.orr-button:not([data-disabled]):focus') && /:focus\b/.test(e.message),
+    );
+  },
+
+  'a negated state (:not(:hover)): the build throws, naming the selector'() {
+    const entry = seededKit('negated-state', 'button/button.css', ':not([data-disabled]):hover {', ':not(:hover) {');
+    assert.throws(
+      () => buildPreview(entry),
+      (e) => e.message.includes('.orr-button:not(:hover)') && /:hover inside a functional pseudo-class/.test(e.message),
+    );
+  },
+
+  'a state rule in an at-rule the generator does not descend into (@scope): the build throws, naming the selector'() {
+    const entry = seededKit('unknown-at-rule', 'button/button.css', '@media (hover: hover) {', '@scope (.orr-button) {');
+    assert.throws(
+      () => buildPreview(entry),
+      (e) => e.message.includes('.orr-button:not([data-disabled]):hover') && e.message.includes('@scope (.orr-button)'),
+    );
+  },
+
+  'a nested state rule (&:hover inside a rule): the build throws, naming the selector'() {
+    const entry = seededKit(
+      'nested-state',
+      'button/button.css',
+      '.orr-button:not([data-disabled]):hover {\n      --orr-mix: var(--orr-hover-mix);\n    }',
+      '.orr-button {\n      &:hover {\n        --orr-mix: var(--orr-hover-mix);\n      }\n    }',
+    );
+    assert.throws(
+      () => buildPreview(entry),
+      (e) => e.message.includes('&:hover') && e.message.includes('kit/button/button.css'),
+    );
   },
 };
 

@@ -10,6 +10,11 @@
 // the same, so specificity is unchanged, and rules keep their source order. Nothing under kit/ references the
 // output; the specimen loads it after kit/kit.css.
 //
+// Every pseudo-class in a kit selector is decided in the STATES and PASS tables below. The generator throws, naming the file
+// and the selector, on anything it cannot translate: a pseudo-class not in the table, a translated state inside
+// :not() or :is() (negated or grouped state), and a state rule nested in another rule or inside an at-rule it
+// does not descend into. A rule is never dropped silently.
+//
 // Options (for the seeded-failure test): --kit <path to kit.css>, --out <path to the preview file>.
 import fs from 'node:fs';
 import path from 'node:path';
@@ -20,9 +25,89 @@ export const REPO = path.resolve(HERE, '..');
 export const KIT_ENTRY = path.join(REPO, 'kit', 'kit.css');
 export const OUT = path.join(HERE, 'kit-preview.css');
 
+// Pseudo-class table. STATES: the state is forced in the specimen through [data-preview~="..."].
+// PASS: kept as written, no twin, because it is not a user-action or input state.
+// A pseudo-class in neither list (:focus, :focus-within, :disabled, :visited, :checked ...) throws.
 const STATES = { hover: 'hover', active: 'active', 'focus-visible': 'focus' };
-const STATE_RE = /:(hover|active|focus-visible)(?![\w-])/g;
-const HAS_STATE = /:(hover|active|focus-visible)(?![\w-])/;
+const PASS = {
+  root: 'document-level scope for custom properties, not a state',
+  not: 'attribute exclusions only; its arguments are scanned, and a state inside it throws',
+  is: 'grouping only; its arguments are scanned, and a state inside it throws',
+};
+
+/**
+ * Scans one selector. Returns { out, hasState }: the selector with each state swapped for its preview attribute.
+ * nested: the selector sits inside another rule or an at-rule the generator does not descend into, so any state throws.
+ */
+function scanSelector(sel, fail, nested = false) {
+  let hasState = false;
+  const walk = (text, depth) => {
+    let out = '';
+    for (let i = 0; i < text.length; ) {
+      const c = text[i];
+      if (c === '\\') {
+        out += text.slice(i, i + 2);
+        i += 2;
+      } else if (c === '[' || c === '"' || c === "'") {
+        const close = c === '[' ? ']' : c;
+        let j = i + 1;
+        while (j < text.length && text[j] !== close) j += text[j] === '\\' ? 2 : 1;
+        out += text.slice(i, j + 1);
+        i = j + 1;
+      } else if (c === ':') {
+        const element = text[i + 1] === ':';
+        const m = /^[\w-]+/.exec(text.slice(i + (element ? 2 : 1)));
+        if (!m) fail(sel, 'a ":" with no pseudo-class name');
+        const name = m[0];
+        let end = i + (element ? 2 : 1) + name.length;
+        let args = null;
+        if (text[end] === '(') {
+          let d = 0;
+          let j = end;
+          for (; j < text.length; j++) {
+            if (text[j] === '(') d++;
+            else if (text[j] === ')' && --d === 0) break;
+          }
+          args = text.slice(end + 1, j);
+          end = j + 1;
+        }
+        if (element) {
+          out += text.slice(i, end);
+        } else if (name in STATES) {
+          if (depth) fail(sel, `:${name} inside a functional pseudo-class (negated or grouped state) cannot be translated`);
+          if (nested) fail(sel, `:${name} in a nested rule or an unknown at-rule cannot be translated`);
+          hasState = true;
+          out += `[data-preview~="${STATES[name]}"]`;
+        } else if (name in PASS) {
+          out += `:${name}${args === null ? '' : `(${walk(args, depth + 1)})`}`;
+        } else {
+          fail(sel, `:${name} is not in the pseudo-class table (translate or pass it on purpose)`);
+        }
+        i = end;
+      } else {
+        out += c;
+        i++;
+      }
+    }
+    return out;
+  };
+  return { out: walk(sel, 0), hasState };
+}
+
+/** The preludes (text before each "{") inside a rule or at-rule body, at any depth. */
+function innerPreludes(body) {
+  const out = [];
+  let start = 0;
+  for (let i = 0; i < body.length; i++) {
+    if (body[i] === '{') {
+      out.push(body.slice(start, i).trim());
+      start = i + 1;
+    } else if (body[i] === ';' || body[i] === '}') {
+      start = i + 1;
+    }
+  }
+  return out;
+}
 
 /** CSS text, comments removed, as a tree of { prelude, children } blocks, { prelude, body } rules and ';' statements. */
 function parse(text) {
@@ -84,18 +169,31 @@ function splitSelectors(list) {
   return parts.map((s) => s.replace(/\s+/g, ' ').trim());
 }
 
-const previewSelector = (sel) => sel.replace(STATE_RE, (_, s) => `[data-preview~="${STATES[s]}"]`);
-
 /** The preview twin of a parsed tree: only state rules, inside their at-rules, in source order. */
-function previewNodes(nodes) {
+function previewNodes(nodes, label) {
   const out = [];
   for (const n of nodes) {
     if (n.children) {
-      const kids = previewNodes(n.children);
+      const kids = previewNodes(n.children, label);
       if (kids.length) out.push({ prelude: n.prelude, children: kids });
-    } else if (n.body !== undefined && !n.prelude.startsWith('@')) {
-      const selectors = splitSelectors(n.prelude).filter((s) => HAS_STATE.test(s));
-      if (selectors.length) out.push({ selectors: selectors.map(previewSelector), body: n.body });
+    } else if (n.body !== undefined) {
+      // Rules nested in this body (CSS nesting, or the contents of an at-rule that is not descended into).
+      for (const inner of innerPreludes(n.body)) {
+        if (inner.startsWith('@')) continue;
+        const fail = (sel, why) => {
+          throw new Error(`kit-preview: ${label}: selector "${sel}" inside "${n.prelude}": ${why}`);
+        };
+        for (const sel of splitSelectors(inner)) scanSelector(sel, fail, true);
+      }
+      if (n.prelude.startsWith('@')) continue;
+      const fail = (sel, why) => {
+        throw new Error(`kit-preview: ${label}: selector "${sel}": ${why}`);
+      };
+      const selectors = splitSelectors(n.prelude)
+        .map((sel) => scanSelector(sel, fail))
+        .filter((r) => r.hasState)
+        .map((r) => r.out);
+      if (selectors.length) out.push({ selectors, body: n.body });
     }
   }
   return out;
@@ -140,9 +238,10 @@ export function buildPreview(entry = KIT_ENTRY) {
     '   order. Load it after kit/kit.css. */',
   ];
   for (const { file, tree } of sources(entry)) {
-    const nodes = previewNodes(tree);
+    const label = path.relative(root, file).split(path.sep).join('/');
+    const nodes = previewNodes(tree, label);
     if (!nodes.length) continue;
-    parts.push('', `/* ${path.relative(root, file).split(path.sep).join('/')} */`, ...print(nodes, 0));
+    parts.push('', `/* ${label} */`, ...print(nodes, 0));
   }
   return `${parts.join('\n')}\n`;
 }
