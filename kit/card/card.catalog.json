@@ -45,7 +45,8 @@
       "requiredParts": ["Root"],
       "useWhen": [
         "Content that belongs together and sits in the page flow: a summary, a settings group, a form step.",
-        "A repeated item in a list or grid, with render={<li />} inside a list."
+        "A repeated item in a list or grid, with render={<li />} inside a list.",
+        "Put actions in Card.Footer: a Button placed directly in the card stretches to the full card width."
       ],
       "avoidWhen": [
         {
