@@ -21,6 +21,13 @@ function seededKit(name, file, from, to) {
   fs.writeFileSync(target, text.replace(from, to));
   return path.join(kit, 'kit.css');
 }
+// A temp kit whose kit.css is the given text. Returns its path.
+function cssKit(name, css) {
+  const kit = path.join(tmp, name, 'kit');
+  fs.mkdirSync(kit, { recursive: true });
+  fs.writeFileSync(path.join(kit, 'kit.css'), css);
+  return path.join(kit, 'kit.css');
+}
 const runCheck = (...args) => spawnSync(process.execPath, [SCRIPT, '--check', ...args], { encoding: 'utf8' });
 
 const tests = {
@@ -77,6 +84,32 @@ const tests = {
     assert.throws(
       () => buildPreview(entry),
       (e) => e.message.includes('&:hover') && e.message.includes('kit/button/button.css'),
+    );
+  },
+  'structural pseudo-classes alone: the build passes and makes no twin'() {
+    const entry = cssKit('structural', '.a:first-child, .b:nth-child(2 of .x), .c:empty, .d:where(.e):has(.f) { color: red; }\n');
+    assert.ok(!buildPreview(entry).includes('/* kit/kit.css */'));
+  },
+
+  'a structural pseudo-class beside a state: the twin keeps the structure'() {
+    const entry = cssKit('structural-state', '.a:nth-child(2):hover { color: red; }\n');
+    assert.ok(buildPreview(entry).includes('.a:nth-child(2)[data-preview~="hover"] {'));
+  },
+
+  'a state inside :where() or :has(): the build throws, naming the selector'() {
+    for (const sel of ['.a:where(:hover)', '.a:has(:focus-visible)', '.a:nth-child(2 of :hover)']) {
+      assert.throws(
+        () => buildPreview(cssKit('functional-state', `${sel} { color: red; }\n`)),
+        (e) => e.message.includes(`"${sel}"`) && /functional pseudo-class/.test(e.message),
+        sel,
+      );
+    }
+  },
+
+  'a state inside a pseudo-element argument (::slotted(:hover)): the build throws, naming the selector'() {
+    assert.throws(
+      () => buildPreview(cssKit('slotted-state', '.a::slotted(:hover) { color: red; }\n')),
+      (e) => e.message.includes('"::slotted(:hover)"') || e.message.includes('.a::slotted(:hover)'),
     );
   },
 };

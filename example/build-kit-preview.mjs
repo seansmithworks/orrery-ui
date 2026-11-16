@@ -33,6 +33,19 @@ const PASS = {
   root: 'document-level scope for custom properties, not a state',
   not: 'attribute exclusions only; its arguments are scanned, and a state inside it throws',
   is: 'grouping only; its arguments are scanned, and a state inside it throws',
+  where: 'grouping only, zero specificity; its arguments are scanned, and a state inside it throws',
+  has: 'relational (descendant or sibling match); its arguments are scanned, and a state inside it throws',
+  'first-child': 'structural position, not a state',
+  'last-child': 'structural position, not a state',
+  'only-child': 'structural position, not a state',
+  'first-of-type': 'structural position, not a state',
+  'last-of-type': 'structural position, not a state',
+  'only-of-type': 'structural position, not a state',
+  'nth-child': 'structural position; the "of <selector>" argument is scanned, and a state inside it throws',
+  'nth-last-child': 'structural position; the "of <selector>" argument is scanned, and a state inside it throws',
+  'nth-of-type': 'structural position, not a state',
+  'nth-last-of-type': 'structural position, not a state',
+  empty: 'structural (no children), not a state',
 };
 
 /**
@@ -72,7 +85,8 @@ function scanSelector(sel, fail, nested = false) {
           end = j + 1;
         }
         if (element) {
-          out += text.slice(i, end);
+          // A pseudo-element's arguments (::slotted(:hover)) are scanned, so a state there throws instead of being dropped.
+          out += args === null ? text.slice(i, end) : `${text.slice(i, end - args.length - 1)}${walk(args, depth + 1)})`;
         } else if (name in STATES) {
           if (depth) fail(sel, `:${name} inside a functional pseudo-class (negated or grouped state) cannot be translated`);
           if (nested) fail(sel, `:${name} in a nested rule or an unknown at-rule cannot be translated`);
