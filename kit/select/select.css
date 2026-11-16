@@ -184,6 +184,16 @@
     cursor: not-allowed;
   }
 
+  /* item disabled and highlighted: Base UI lets arrows and hover land on a disabled item. It does not
+     invert (muted text on the inverted fill is unreadable); it keeps the popup fill and muted text and
+     shows the position with an inset ring in the muted colour. STRAWMAN awaiting sign-off. One explicit
+     rule, so the order of the two single-attribute rules above never decides it. */
+  .orr-select__item[data-disabled][data-highlighted] {
+    background-color: var(--orr-floating-fill);
+    color: var(--text-muted);
+    box-shadow: inset 0 0 0 var(--line-width) var(--text-muted);
+  }
+
   .orr-select__group-label {
     padding: var(--space-8) var(--space-8) var(--space-4); /* UN-DIALLED */
     color: var(--text-muted);

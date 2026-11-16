@@ -19,11 +19,11 @@ const FRAME_POPUP = ".spec-select-frame .orr-select__popup";
 
 test.beforeEach(async ({ page }) => {
   await openSpecimen(page);
-  // This block's own wait: the six held-open popups (two per panel) have faded in.
+  // This block's own wait: the nine held-open popups (three per panel) have faded in.
   await page.waitForFunction((sel) => {
     const popups = [...document.querySelectorAll(sel)];
     return (
-      popups.length === 6 &&
+      popups.length === 9 &&
       popups.every((p) => getComputedStyle(p).opacity === "1")
     );
   }, FRAME_POPUP);
@@ -76,16 +76,30 @@ function longList(page: Page, id: string) {
 const toTop = (trigger: Locator) =>
   trigger.evaluate((el) => el.scrollIntoView({ block: "start" }));
 
-/** WCAG contrast ratio between two computed colours (both opaque rgb()). */
-function contrastInPage([a, b]: [string, string]) {
-  const lum = (c: string) => {
-    const [r, g, bl] = (c.match(/[\d.]+/g) ?? []).slice(0, 3).map((v) => {
-      const s = Number(v) / 255;
-      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
-    });
-    return 0.2126 * r + 0.7152 * g + 0.0722 * bl;
+/**
+ * WCAG contrast ratio of a computed rgb()/rgba() foreground over an opaque background. A translucent
+ * foreground (solar's --text-muted is rgba) is composited over the background first.
+ */
+function contrastInPage([fg, bg]: [string, string]) {
+  const parse = (c: string) => {
+    const [r, g, b, a = 1] = (c.match(/[\d.]+/g) ?? []).map(Number);
+    return { r, g, b, a };
   };
-  const [hi, lo] = [lum(a), lum(b)].sort((x, y) => y - x);
+  const back = parse(bg);
+  const front = parse(fg);
+  const mix = (k: "r" | "g" | "b") =>
+    front[k] * front.a + back[k] * (1 - front.a);
+  const lum = (r: number, g: number, b: number) => {
+    const lin = (v: number) => {
+      const s = v / 255;
+      return s <= 0.03928 ? s / 12.92 : ((s + 0.055) / 1.055) ** 2.4;
+    };
+    return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+  };
+  const [hi, lo] = [
+    lum(mix("r"), mix("g"), mix("b")),
+    lum(back.r, back.g, back.b),
+  ].sort((x, y) => y - x);
   return (hi + 0.05) / (lo + 0.05);
 }
 
@@ -303,6 +317,49 @@ for (const id of PANELS) {
       expect(label).toBeGreaterThanOrEqual(4.5);
       // Selected but not highlighted: a --text check on the popup fill.
       expect(colours.check).toBe(colours.text);
+    });
+
+    test("disabled item highlighted: popup fill, readable muted text, a visible inset ring; Enter neither selects nor closes", async ({
+      page,
+    }) => {
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await page.keyboard.press("ArrowDown");
+      await settledOpen(list);
+      for (const name of ["Vesta", "Ceres", "Pallas"]) {
+        await page.keyboard.press("ArrowDown");
+        await expect(highlighted(list)).toHaveText(name);
+      }
+      const c = await list.evaluate((l) => {
+        const popup = l.closest(".orr-select__popup")!;
+        const item = l.querySelector("[data-highlighted]")!;
+        const cs = getComputedStyle(item);
+        return {
+          disabled: item.hasAttribute("data-disabled"),
+          popupFill: getComputedStyle(popup).backgroundColor,
+          fill: cs.backgroundColor,
+          text: cs.color,
+          ring: cs.boxShadow.match(/rgba?\([^)]*\)/)?.[0] ?? "none",
+          inset: cs.boxShadow.includes("inset"),
+        };
+      });
+      expect(c.disabled).toBe(true);
+      expect(c.fill).toBe(c.popupFill);
+      expect(c.inset).toBe(true);
+      const text = contrastInPage([c.text, c.fill]);
+      const ring = contrastInPage([c.ring, c.fill]);
+      console.log(
+        `contrast ${id}: disabled highlighted text vs fill ${text.toFixed(2)}:1, ring vs fill ${ring.toFixed(2)}:1`,
+      );
+      expect(text).toBeGreaterThanOrEqual(4.5);
+      expect(ring).toBeGreaterThanOrEqual(3);
+      await page.keyboard.press("Enter");
+      await expect(list).toBeVisible();
+      await expect(highlighted(list)).toHaveText("Pallas");
+      await expect(
+        list.getByRole("option", { name: "Pallas" }),
+      ).toHaveAttribute("aria-selected", "false");
+      await expect(trigger).toHaveText("Kepler");
     });
 
     test("placement: opens below the trigger at the kit's offset; a long list is clamped to the kit's max height and scrolls", async ({

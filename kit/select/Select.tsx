@@ -107,6 +107,7 @@ function Popup({
       >
         <BaseSelect.Popup
           {...props}
+          // Component class first, orr-floating second: the kit baseline keys an element by its first orr- class.
           className={cx("orr-select__popup", "orr-floating", className)}
         >
           <BaseSelect.List className="orr-select__list">

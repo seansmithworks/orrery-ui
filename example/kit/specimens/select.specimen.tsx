@@ -219,6 +219,14 @@ export default function SelectSpecimen(_: SpecimenProps) {
       <OpenCell name="open" label="Orbit" items={ORBITS} value="vesta">
         <OrbitItems highlight="ceres" />
       </OpenCell>
+      <OpenCell
+        name="disabled highlighted"
+        label="Orbit"
+        items={ORBITS}
+        value="kepler"
+      >
+        <OrbitItems highlight="pallas" />
+      </OpenCell>
       <OpenCell name="groups" label="Body" items={BODIES} value="mars">
         <BodyItems />
       </OpenCell>

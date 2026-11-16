@@ -1,6 +1,7 @@
 /* The floating level ("level 3"): the drawing every floating surface shares. Dialog's popup and
    Select's popup carry the class .orr-floating; a later Menu or Popover adds the same class and edits
-   nothing here. Imported by kit.css before the components, so a component's own one-class rule can
+   nothing here. Component class first, orr-floating second: the kit baseline keys each element by its
+   first orr- class, so this order keeps every existing baseline key. Imported by kit.css before the components, so a component's own one-class rule can
    still refine it.
 
    STRAWMAN (Sean's call 8), no drawing decided yet: page fill plus the heavy --line-strong hairline,

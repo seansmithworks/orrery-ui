@@ -654,7 +654,7 @@
                 "description": "The popup's alignment along that side; unset, Base UI's center."
               },
               "sideOffset": {
-                "description": "Extra gap from the trigger in px, added to the kit's own offset.",
+                "description": "Extra px on top of the kit's CSS offset. Neither applies when alignItemWithTrigger lays the popup over the trigger.",
                 "type": "number"
               },
               "collisionPadding": {
