@@ -547,7 +547,7 @@ test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
     ).toBeFocused();
   });
 
-  test("trigger unmounts while open: no error, the dialog closes, focus lands on <body>", async ({
+  test("trigger unmounts while open: no error, the dialog closes, focus is on <body> or a live focusable outside the dialog", async ({
     page,
   }) => {
     const errors: string[] = [];
@@ -563,12 +563,24 @@ test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
     await expect(dialog).toBeVisible();
     await page.keyboard.press("Escape");
     await expect(dialog).toBeHidden();
-    // Base UI returns focus to the trigger; with the trigger gone it falls back to <body>.
-    // Recorded as Base UI's behaviour, not changed here: a consumer that removes the trigger
-    // should pass Dialog.Popup finalFocus.
-    expect(await page.evaluate(() => document.activeElement?.tagName)).toBe(
-      "BODY",
-    );
+    // Library-agnostic: with the trigger gone, focus may fall back to <body> or move to a nearby
+    // focusable. It must not stay inside the closed dialog or on a disconnected node.
+    const focus = await page.evaluate(() => {
+      const el = document.activeElement;
+      if (!el || el === document.body) return { ok: true, why: "body" };
+      const focusable =
+        el.matches(
+          'a[href], button, input, select, textarea, summary, [tabindex], [contenteditable="true"]',
+        ) || (el as HTMLElement).tabIndex >= 0;
+      return {
+        ok:
+          el.isConnected &&
+          !el.closest(".orr-dialog, [role=dialog]") &&
+          focusable,
+        why: `${el.tagName} connected=${el.isConnected} inDialog=${!!el.closest(".orr-dialog, [role=dialog]")} focusable=${focusable}`,
+      };
+    });
+    expect(focus.ok, focus.why).toBe(true);
     expect(errors).toEqual([]);
   });
 });
