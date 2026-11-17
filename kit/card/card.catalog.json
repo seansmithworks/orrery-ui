@@ -1,0 +1,68 @@
+{
+  "example": "Card.example.tsx",
+  "components": {
+    "Card": {
+      "description": "A plain in-flow surface that groups related content on a raised layer; it has no role, no tab stop and no state of its own.",
+      "parts": {
+        "Root": {
+          "description": "The surface; it renders a div unless render swaps in another element such as section, article or li.",
+          "passthrough": "@base-ui/react/use-render#useRender.ComponentProps<\"div\">",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "render": {
+                "x-type": "element",
+                "x-from": "base-ui",
+                "description": "Replaces the div with another element, for example render={<article />} or render={<li />}."
+              }
+            },
+            "required": []
+          }
+        },
+        "Header": {
+          "description": "The top slot for a heading and an optional line under it; a heading placed here is sized as the card title.",
+          "inside": "Root",
+          "passthrough": "react#ComponentPropsWithRef<\"div\">",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Body": {
+          "description": "The main slot for text, fields or any content; long text wraps inside the card.",
+          "inside": "Root",
+          "passthrough": "react#ComponentPropsWithRef<\"div\">",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Footer": {
+          "description": "The bottom slot: a row of actions, aligned to the end, wrapping when it runs out of room.",
+          "inside": "Root",
+          "passthrough": "react#ComponentPropsWithRef<\"div\">",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        }
+      },
+      "requiredParts": ["Root"],
+      "useWhen": [
+        "Content that belongs together and sits in the page flow: a summary, a settings group, a form step.",
+        "A repeated item in a list or grid, with render={<li />} inside a list.",
+        "Put actions in Card.Footer: a Button placed directly in the card stretches to the full card width."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The content floats above the page and takes focus.",
+          "instead": "Dialog"
+        },
+        {
+          "text": "The whole surface is one link or button.",
+          "instead": "a"
+        }
+      ],
+      "a11y": [
+        "A card has no role; for one item or section, render it as article or section and name it with aria-labelledby.",
+        "Use a real heading in Card.Header at the level that fits the page outline.",
+        "Do not make the surface clickable; put a Button or a link inside it."
+      ]
+    }
+  }
+}

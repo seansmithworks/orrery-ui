@@ -32,7 +32,11 @@ function Popup({ container, className, ...props }: DialogPopupProps) {
     <BaseDialog.Portal container={container}>
       <BaseDialog.Backdrop className="orr-dialog__backdrop" />
       <BaseDialog.Viewport className="orr-dialog__viewport">
-        <BaseDialog.Popup {...props} className={cx("orr-dialog", className)} />
+        <BaseDialog.Popup
+          {...props}
+          // Component class first, orr-floating second: the kit baseline keys an element by its first orr- class.
+          className={cx("orr-dialog", "orr-floating", className)}
+        />
       </BaseDialog.Viewport>
     </BaseDialog.Portal>
   );

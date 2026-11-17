@@ -1,0 +1,48 @@
+/* Card. Every value is a role or token. Elevation level 1 (in flow), not the floating level.
+   No states: the card is not interactive. Overflow stays visible so a focus ring on a child is never clipped;
+   long content wraps instead of escaping the radius. */
+
+@layer orrery.kit {
+  .orr-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-16);
+    min-width: 0;
+    padding: var(--space-24);
+    border: var(--elevation-1-border);
+    border-radius: var(--radius-panel);
+    background-color: var(--elevation-1-fill);
+    box-shadow: var(--elevation-1-shadow);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    overflow-wrap: anywhere;
+  }
+
+  .orr-card__header,
+  .orr-card__body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    min-width: 0;
+  }
+  .orr-card__header > :is(h1, h2, h3, h4, h5, h6) {
+    margin: 0;
+    font-size: var(--type-size-17);
+    line-height: var(--type-line-height-17);
+    font-weight: 600;
+  }
+  .orr-card__body > p {
+    margin: 0;
+  }
+
+  .orr-card__footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-8);
+    min-width: 0;
+  }
+}
