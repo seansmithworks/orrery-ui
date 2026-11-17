@@ -1,10 +1,10 @@
 # Moving a kit component from Base UI to UI SDK
 
-The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `0.1.0-beta.7`, exact. Button is the worked example (M0); Field and Dialog have two blockers, below, that decide the order of what follows.
+The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `0.1.0-beta.7`, exact. Button is the worked example (M0). M0 found two blockers, below. The Field one is resolved: Field, Input, Textarea, Checkbox, Switch and Select moved together in one lane.
 
 ## Two blockers found in M0
 
-- **Field moves with every control inside it, in one lane.** Base UI controls read Base UI's field context; a UI SDK `Field` does not provide it. Measured with Field on UI SDK and the controls on Base UI (`wip/ui-sdk-m0-field-dialog`): label and description still reach the control, but `Field.Root disabled` leaves Checkbox and Switch enabled (all three panels), a `valueMissing` error never shows for Select or Checkbox on submit, and Textarea loses `data-filled`. A UI SDK control inside a Base UI Field is the same mix the other way round (inferred, not run).
+- **Field moves with every control inside it, in one lane (resolved).** Base UI controls read Base UI's field context; a UI SDK `Field` does not provide it. Measured with Field on UI SDK and the controls on Base UI (`wip/ui-sdk-m0-field-dialog`): label and description still reach the control, but `Field.Root disabled` leaves Checkbox and Switch enabled (all three panels), a `valueMissing` error never shows for Select or Checkbox on submit, and Textarea loses `data-filled`. A UI SDK control inside a Base UI Field is the same mix the other way round (inferred, not run).
 - **UI SDK dialogs always open in the browser's top layer.** No `container` or CSS `contain` holds them (`bindLayer` and `popup.attach` call `showPopover()`; only the sheet presentation renders inline). Measured on the specimen: the three static open-state dialogs (`example/kit/main.tsx`, `StaticDialog`) leave their frames for the viewport centre, each backdrop covers the whole window, and a press on the Live trigger lands on a backdrop. The specimen needs another way to show an open dialog before Dialog can move (done in #41: each held-open popup renders in its own iframe, `example/kit/held-open-frame.tsx`). The Dialog and Live baseline cells also change shape: no viewport or portal wrapper, and the popup is `position: fixed`.
 
 ## Recipe, per component
@@ -45,7 +45,7 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 - **`useRender`** is `renderElement(tag, props, render)` from `@ui-sdk/react/primitive`, typed with its `PartProps<"div">`; the same `render` element or function works. Card's passthrough is `@ui-sdk/react/primitive#PartProps<"div">`.
 - **Checkbox `indeterminate`** is `checked="indeterminate"`. The kit keeps the boolean prop and maps it.
 - **Switch `uncheckedValue`** has no UI SDK equivalent. The kit renders its own hidden input while off.
-- **Select `items` as a map** is UI SDK list data (`[{ value, label }]`). The kit's Root converts a map.
+- **Select `items` as a map** (labels only) is UI SDK's `itemToLabel`, not its `items`. The kit's Root converts a map that way; see the disabled-options gotcha for why not to list data.
 - **Select `Popup` `finalFocus`** has no equivalent on `SelectContent`; focus returns to the trigger. Dropped from the catalog.
 - **Base UI `Form`** has no UI SDK part. Use a plain `<form noValidate>` whose submit handler calls `reportValidity()` first: the `invalid` events it fires are what UI SDK's Field listens for, and the submit event still fires, as with Base UI's Form.
 
@@ -66,7 +66,7 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 - **The kit outranks UI SDK's `[hidden]`.** UI SDK keeps some closed popups in the page with `hidden`; a kit `display` on the popup beats both the browser's rule and `@layer ui-sdk`. Add `.<popup>[hidden] { display: none }`.
 - **A popup's offset is `sideOffset`, never a margin.** UI SDK writes `margin: 0` inline and places the popup's border box. Select reads `--orr-select-offset` from its positioner and passes it; a popup open from the first render waits for that read, as UI SDK places it once.
 - **UI SDK mounts a closed popup on hover**, hidden, to open fast, even when the control is disabled. Select renders no content while disabled.
-- **Disabled options are skipped.** UI SDK's keyboard and pointer pass over a disabled Select item, as a native select does; Base UI's highlight landed on it. The Select spec's "disabled item highlighted" test pins Base UI's behaviour and fails.
+- **Disabled options: data wins, and disabled is skipped.** Measured. Given `items` data on the root, UI SDK builds its options from the data and ignores a rendered `SelectItem`'s `disabled` (`dataEntries` in `listbox-engine.js`): a disabled item then stays reachable and Enter or a press selects it, while it still draws as disabled. A truly disabled item is skipped by the arrows and the pointer (`skipDisabled: true`, fixed in `select-api.js`, no option), where Base UI's highlight landed on it and refused the pick. The kit keeps Base UI's behaviour: Root passes a map as `itemToLabel`, Item marks itself `aria-disabled` and `data-disabled` without telling UI SDK, and Root cancels the value change and the close that follow a press on it. Upstream asks: a rendered item's `disabled` should count with `items` data, and a reachable-but-disabled mode (the engine's `blocked`) should be a Select option.
 - **Select is a listbox to `checkPattern`.** The trigger is a combobox, but focus moves into the list (`aria-activedescendant` is only for a search field), so `"combobox"` fails and the open list passes `"listbox"`.
 - **Switch Enter submits the form in UI SDK.** Base UI's toggled; the kit keeps that, stopping UI SDK's Enter in the capture phase.
 - **A portal into a shared container mounts after its siblings.** React places a child portal's content before its parent's in the same container; the kit defers Select's portal one layout effect, as Base UI's did.

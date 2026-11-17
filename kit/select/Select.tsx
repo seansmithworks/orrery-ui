@@ -76,19 +76,68 @@ export type SelectRootProps = OmitEach<SdkRootProps, "items" | "container"> & {
 // Whether the select is disabled, by its own prop or its Field: a disabled select never opens.
 const DisabledContext = createContext(false);
 
+// The values of the disabled items, which each Item registers. The kit owns an item's disabled
+// state, not UI SDK: UI SDK's select skips a disabled item with the arrow keys and the pointer
+// (skipDisabled is fixed on), and the kit keeps Base UI's behaviour, where the highlight reaches
+// it and a press or Enter on it neither selects it nor closes the list.
+const DisabledItemsContext = createContext<Set<string> | null>(null);
+
+type Change = { reason: string; cancel: () => void };
+
 /** Holds the value and the open state. It renders no element of its own. */
-function Root({ items, ...props }: SelectRootProps) {
+function Root({
+  items,
+  itemToLabel,
+  onValueChange,
+  onOpenChange,
+  ...props
+}: SelectRootProps) {
   const field = useFieldControl();
+  const [disabledItems] = useState(() => new Set<string>());
+  // Set when a press on a disabled item was refused, so the close UI SDK runs right after it
+  // (choose sets the value, then hides) is refused too.
+  const [refused] = useState(() => ({ current: false }));
+  // A map gives labels only, as in Base UI: it becomes itemToLabel, never UI SDK's items. Given
+  // items data, UI SDK takes each option's state from the data, not from the rendered Select.Item.
+  const map = items && !Array.isArray(items) ? items : undefined;
+  const root = {
+    ...props,
+    items: map ? undefined : (items as ListData<string> | undefined),
+    itemToLabel:
+      itemToLabel ?? (map ? (value: string) => map[value] ?? value : undefined),
+    onValueChange: (value: string | null, details: Change) => {
+      if (
+        details.reason === "item-press" &&
+        value !== null &&
+        disabledItems.has(value)
+      ) {
+        refused.current = true;
+        details.cancel();
+        return;
+      }
+      (onValueChange as ((v: string | null, d: Change) => void) | undefined)?.(
+        value,
+        details,
+      );
+    },
+    onOpenChange: (open: boolean, details: Change) => {
+      const wasRefused = refused.current;
+      refused.current = false;
+      if (!open && details.reason === "item-press" && wasRefused) {
+        details.cancel();
+        return;
+      }
+      (onOpenChange as ((o: boolean, d: Change) => void) | undefined)?.(
+        open,
+        details,
+      );
+    },
+  } as SdkRootProps;
   return (
     <DisabledContext.Provider value={!!(props.disabled || field?.disabled)}>
-      <SdkSelect
-        {...props}
-        items={
-          items && !Array.isArray(items)
-            ? Object.entries(items).map(([value, label]) => ({ value, label }))
-            : items
-        }
-      />
+      <DisabledItemsContext.Provider value={disabledItems}>
+        <SdkSelect {...root} />
+      </DisabledItemsContext.Provider>
     </DisabledContext.Provider>
   );
 }
@@ -211,13 +260,30 @@ function Popup({
 function Item({
   className,
   children,
+  disabled,
   ...props
 }: WithClass<
   Omit<ComponentProps<typeof SdkSelectItem<string>>, "children" | "render">
 > &
   Pick<ComponentProps<"div">, "children">) {
+  // Disabled for the kit, enabled for UI SDK (see DisabledItemsContext): announced and drawn as
+  // disabled, reachable by the highlight, refused by Root when pressed.
+  const disabledItems = useContext(DisabledItemsContext);
+  const value = props.value;
+  useLayoutEffect(() => {
+    if (!disabled || !disabledItems) return;
+    disabledItems.add(value);
+    return () => {
+      disabledItems.delete(value);
+    };
+  }, [disabled, disabledItems, value]);
   return (
-    <SdkSelectItem {...props} className={cx("orr-select__item", className)}>
+    <SdkSelectItem
+      {...props}
+      aria-disabled={disabled || undefined}
+      data-disabled={disabled ? "" : undefined}
+      className={cx("orr-select__item", className)}
+    >
       <SdkSelectItemText className="orr-select__item-text" render={<div />}>
         {children}
       </SdkSelectItemText>
