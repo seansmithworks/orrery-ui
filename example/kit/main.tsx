@@ -13,6 +13,7 @@ import "../../kit/kit.css";
 import "../kit-preview.css";
 import "./specimen.css";
 import { installBrandTokens } from "./scope";
+import { HeldOpenFrame } from "./held-open-frame";
 import {
   CORE_BLOCKS,
   assertDistinctFiles,
@@ -224,24 +225,27 @@ function RenameDialogBody({ live }: { live: boolean }) {
 }
 
 function StaticDialog() {
-  // The portal mounts into this frame. The frame is a containing block for fixed elements
-  // (specimen.css: contain), so the kit's fixed backdrop and viewport fill the frame, not the window.
-  // Held in state, not a ref: the portal needs its container before it mounts.
-  const [frame, setFrame] = useState<HTMLDivElement | null>(null);
+  // Held open in its own document (./held-open-frame.tsx), so the kit's fixed backdrop and viewport
+  // fill the frame, not the window, and never rise above the live dialog.
   return (
-    <div className="spec-dialog-frame" ref={setFrame}>
-      <div className="spec-dialog-behind" aria-hidden="true">
-        <p className="spec-dialog-behind__title">Orbit 7</p>
-        <p>Last edited today</p>
-      </div>
-      {frame && (
-        <Dialog.Root open modal={false} disablePointerDismissal>
-          <Dialog.Popup container={frame} initialFocus={false}>
-            <RenameDialogBody live={false} />
-          </Dialog.Popup>
-        </Dialog.Root>
+    <HeldOpenFrame
+      className="spec-dialog-frame"
+      title="Rename orbit dialog, held open"
+    >
+      {(body) => (
+        <>
+          <div className="spec-dialog-behind" aria-hidden="true">
+            <p className="spec-dialog-behind__title">Orbit 7</p>
+            <p>Last edited today</p>
+          </div>
+          <Dialog.Root open modal={false} disablePointerDismissal>
+            <Dialog.Popup container={body} initialFocus={false}>
+              <RenameDialogBody live={false} />
+            </Dialog.Popup>
+          </Dialog.Root>
+        </>
       )}
-    </div>
+    </HeldOpenFrame>
   );
 }
 

@@ -1,6 +1,7 @@
 import { Fragment, useState, type ReactNode } from "react";
 import { Field, Select } from "../../../kit";
 import type { SpecimenProps } from "../specimen";
+import { HeldOpenFrame } from "../held-open-frame";
 import "./select.specimen.css";
 
 export const block = "Select";
@@ -171,9 +172,10 @@ function LongListCell() {
 }
 
 /**
- * The open state, held open inside its own frame (specimen CSS: contain), never the panel's live
- * portal. Not modal, so the rest of the page stays usable. The frame is held in state: the
- * portal needs its container before it mounts.
+ * The open state, held open inside its own frame (../held-open-frame.tsx), never the panel's live
+ * portal: the frame's document is the popup's viewport, whatever the library does with a popup.
+ * Not modal, so the rest of the page stays usable; inert, because it is a picture of the open
+ * state (a held-open list focuses its selected item on mount).
  */
 function OpenCell({
   name,
@@ -188,23 +190,27 @@ function OpenCell({
   value: string;
   children: ReactNode;
 }) {
-  const [frame, setFrame] = useState<HTMLDivElement | null>(null);
   return (
     <div className="spec-cell spec-select-wide" data-cell={name}>
       <span className="spec-label" aria-hidden="true">
         {name}
       </span>
-      <div className="spec-select-frame" ref={setFrame} inert>
-        <Field.Root>
-          <Field.Label>{label}</Field.Label>
-          {frame && (
+      <HeldOpenFrame
+        className="spec-select-frame"
+        bodyClassName="spec-select-frame__body"
+        title={`${label} select, ${name}, held open`}
+        inert
+      >
+        {(body) => (
+          <Field.Root>
+            <Field.Label>{label}</Field.Label>
             <Select.Root items={items} defaultValue={value} open modal={false}>
               <Select.Trigger />
-              <Select.Popup container={frame}>{children}</Select.Popup>
+              <Select.Popup container={body}>{children}</Select.Popup>
             </Select.Root>
-          )}
-        </Field.Root>
-      </div>
+          </Field.Root>
+        )}
+      </HeldOpenFrame>
     </div>
   );
 }
