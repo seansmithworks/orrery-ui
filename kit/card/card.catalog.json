@@ -6,14 +6,14 @@
       "parts": {
         "Root": {
           "description": "The surface; it renders a div unless render swaps in another element such as section, article or li.",
-          "passthrough": "@base-ui/react/use-render#useRender.ComponentProps<\"div\">",
+          "passthrough": "@ui-sdk/react/primitive#PartProps<\"div\">",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "render": {
                 "x-type": "element",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Replaces the div with another element, for example render={<article />} or render={<li />}."
               }
             },
