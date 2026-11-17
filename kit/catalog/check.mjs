@@ -25,6 +25,8 @@ export const LIMITS = { description: 140, propDescription: 140, item: 120, items
 const JSON_TYPES = ['string', 'boolean', 'number'];
 // Values JSON cannot carry. object: a DOM node, a ref, or another object that is not a React element.
 const X_TYPES = ['node', 'element', 'function', 'object'];
+// The behaviour libraries a passthrough prop can come from (x-from).
+const X_FROM = ['ui-sdk', 'base-ui'];
 const ENTRY_KEYS = ['description', 'props', 'extends', 'passthrough', 'slots', 'parts', 'requiredParts', 'useWhen', 'avoidWhen', 'a11y', 'className'];
 const PART_KEYS = [...ENTRY_KEYS.filter((k) => !['parts', 'requiredParts'].includes(k)), 'inside'];
 // A native element an `instead` may point to.
@@ -86,7 +88,9 @@ export function readKit(catalog, root = REPO) {
   const cfg = ts.getParsedCommandLineOfConfigFile(path.join(root, 'tsconfig.json'), {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic() {} });
   const refs = passthroughRefs(catalog);
   const virtualPath = path.join(root, PASSTHROUGH_FILE);
-  const virtualText = refs.map((r, i) => { const [mod, type] = r.split('#'); return `import type * as M${i} from ${JSON.stringify(mod)};\nexport type T${i} = M${i}.${type};\n`; }).join('');
+  // The name after # is a props type (Base UI's Button.Props) or a component (UI SDK's Button, whose props type is not
+  // exported by name): T reads the first, C the props of the second. Whichever resolves is the passthrough.
+  const virtualText = refs.map((r, i) => { const [mod, type] = r.split('#'); return `import type * as M${i} from ${JSON.stringify(mod)};\nexport type T${i} = M${i}.${type};\nexport type C${i} = Parameters<typeof M${i}.${type}>[0];\n`; }).join('');
   const host = ts.createCompilerHost(cfg.options);
   const { getSourceFile, fileExists, readFile } = host;
   host.getSourceFile = (f, ...a) => (path.resolve(f) === virtualPath ? ts.createSourceFile(f, virtualText, ts.ScriptTarget.Latest, true) : getSourceFile.call(host, f, ...a));
@@ -103,10 +107,15 @@ export function readKit(catalog, root = REPO) {
   const diags = program.getSemanticDiagnostics(vsf);
   const passthrough = new Map();
   refs.forEach((r, i) => {
-    const decl = vsf.statements.find((s) => ts.isTypeAliasDeclaration(s) && s.name.text === `T${i}`);
-    const start = decl.getStart(vsf), bad = diags.find((d) => d.start >= start && d.start < decl.end);
-    if (bad) passthrough.set(r, { error: ts.flattenDiagnosticMessageText(bad.messageText, ' ') });
-    else { const t = checker.getTypeAtLocation(decl.name); passthrough.set(r, { props: new Set(propsByConstituent(checker, t).flatMap((c) => [...c.keys()])) }); }
+    const read = (name) => {
+      const decl = vsf.statements.find((s) => ts.isTypeAliasDeclaration(s) && s.name.text === name);
+      const start = decl.getStart(vsf), bad = diags.find((d) => d.start >= start && d.start < decl.end);
+      return { decl, bad };
+    };
+    const asType = read(`T${i}`), asComponent = read(`C${i}`);
+    const ok = !asType.bad ? asType : !asComponent.bad ? asComponent : null;
+    if (!ok) passthrough.set(r, { error: ts.flattenDiagnosticMessageText(asType.bad.messageText, ' ') });
+    else { const t = checker.getTypeAtLocation(ok.decl.name); passthrough.set(r, { props: new Set(propsByConstituent(checker, t).flatMap((c) => [...c.keys()])) }); }
   });
 
   /** A component's props, from its call signature: { constituents: [Map name -> { optional, type }], owned: Set, names: Set, defaults, file }. */
@@ -220,7 +229,7 @@ function entryShape(entry, at, part) {
   if (entry.parts === undefined && !part && entry.props === undefined) bad.push(`${at} has neither props nor parts`);
   if (part && entry.props === undefined) bad.push(`${at} has no props`);
   for (const k of ['extends', 'passthrough']) if (entry[k] !== undefined && typeof entry[k] !== 'string') bad.push(`${at}.${k} must be a string`);
-  if (typeof entry.passthrough === 'string' && !/^[@\w./-]+#\S.*$/.test(entry.passthrough)) bad.push(`${at}.passthrough must be <module>#<type>, e.g. @base-ui/react/button#Button.Props`);
+  if (typeof entry.passthrough === 'string' && !/^[@\w./-]+#\S.*$/.test(entry.passthrough)) bad.push(`${at}.passthrough must be <module>#<type or component>, e.g. @ui-sdk/react/button#Button`);
   if (entry.className !== undefined && entry.className !== false) bad.push(`${at}.className may only be false (the component takes no className)`);
   for (const k of ['slots', 'requiredParts']) if (entry[k] !== undefined && !(Array.isArray(entry[k]) && entry[k].every((x) => typeof x === 'string'))) bad.push(`${at}.${k} must be a list of strings`);
   if (entry.inside !== undefined && !(typeof entry.inside === 'string' || (Array.isArray(entry.inside) && entry.inside.every((x) => typeof x === 'string')))) bad.push(`${at}.inside must be a part name or a list of them`);
@@ -253,7 +262,7 @@ function propsShape(props, at) {
     if (p.default !== undefined && typeof p.default !== p.type) bad.push(`${pa}.default must be a ${p.type}`);
     if (p.default !== undefined && Array.isArray(p.enum) && !p.enum.includes(p.default)) bad.push(`${pa}.default ${JSON.stringify(p.default)} is not in its enum`);
     if (typeof p.description !== 'string' || !p.description.trim()) bad.push(`${pa} has no description`);
-    if (p['x-from'] !== undefined && p['x-from'] !== 'base-ui') bad.push(`${pa}.x-from may only be "base-ui"`);
+    if (p['x-from'] !== undefined && !X_FROM.includes(p['x-from'])) bad.push(`${pa}.x-from may only be ${X_FROM.map((x) => `"${x}"`).join(' or ')}`);
   }
   for (const r of [...props.required, ...(props.anyOf ?? []).flatMap((b) => b.required ?? [])]) if (!(r in props.properties)) bad.push(`${at}: required ${r} is not in properties`);
   return bad;
@@ -326,7 +335,7 @@ function propsOne(kit, entries, at, name, entry, model) {
     if (!model.names.has(n)) { bad.push(`${p} is listed, but the component's props type has no ${n}`); continue; }
     const owned = model.owned.has(n);
     if (owned && decl['x-from']) bad.push(`${p} is declared under kit/, so it is kit-owned and takes no x-from`);
-    if (!owned && decl['x-from'] !== 'base-ui') bad.push(`${p} is not declared under kit/; mark it "x-from": "base-ui" (a listed passthrough prop)`);
+    if (!owned && !X_FROM.includes(decl['x-from'])) bad.push(`${p} is not declared under kit/; mark it "x-from" with its library, ${X_FROM.map((x) => `"${x}"`).join(' or ')} (a listed passthrough prop)`);
     if (!owned && pt?.props && !pt.props.has(n)) bad.push(`${p} has x-from, but the passthrough ${entry.passthrough} has no ${n}`);
     const why = typeMismatch(kit.checker, decl, model.constituents.filter((c) => c.has(n)).map((c) => c.get(n).type));
     if (why) bad.push(`${p} ${why}`);
@@ -478,7 +487,7 @@ export function proseProblems(catalog) {
 export const CONVENTIONS = {
   import: 'Import components from kit/index.ts and the styles once from kit/kit.css, after the brand token CSS.',
   className: 'Every component and part accepts className unless its entry says "className": false; className is never listed in props.',
-  passthrough: 'Props not listed forward to the passthrough type; a listed one marked "x-from": "base-ui" is a passthrough prop worth knowing.',
+  passthrough: 'Props not listed forward to the passthrough type, or to the props of the passthrough component; a listed one marked "x-from" (its library, ui-sdk or base-ui) is a passthrough prop worth knowing.',
   'x-type': 'A prop JSON cannot carry: node (any React child), element (one React element), function, or object (a DOM node or a ref).',
   brands: 'Brands differ through token values only. There is no brand, theme or style variant prop.',
 };

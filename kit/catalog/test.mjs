@@ -91,7 +91,7 @@ const tests = {
 
   '[catalog-matches-kit] props: a Base UI prop not marked x-from fails, and finalFocus is a real Dialog.Popup prop'() {
     const bad = propsProblems(kit, seeded((f) => { delete f.dialog.components.Dialog.parts.Popup.props.properties.finalFocus['x-from']; }));
-    has(bad, /Dialog\.parts\.Popup\.props\.finalFocus is not declared under kit\/; mark it "x-from": "base-ui"/);
+    has(bad, /Dialog\.parts\.Popup\.props\.finalFocus is not declared under kit\/; mark it "x-from" with its library, "ui-sdk" or "base-ui"/);
     assert.ok(kit.exports.get('Dialog').parts.get('Popup').names.has('finalFocus'), 'Dialog.Popup has no finalFocus prop');
     const gone = propsProblems(kit, seeded((f) => { f.dialog.components.Dialog.parts.Popup.props.properties.returnFocus = { 'x-type': 'object', 'x-from': 'base-ui', description: 'No such prop.' }; }));
     has(gone, /Dialog\.parts\.Popup\.props\.returnFocus is listed, but the component's props type has no returnFocus$/);
@@ -107,6 +107,13 @@ const tests = {
     const c = seeded((f) => { f.button.components.Button.passthrough = '@base-ui/react/button#Button.Propz'; });
     const bad = propsProblems(readKit(c), c);
     has(bad, /^catalog: kit\/button\/button\.catalog\.json Button\.passthrough @base-ui\/react\/button#Button\.Propz does not resolve: /);
+  },
+
+  '[catalog-matches-kit] props: a UI SDK component passthrough resolves to its props; a misspelt one fails, and an unknown x-from fails'() {
+    assert.ok(kit.passthrough.get('@ui-sdk/react/button#Button')?.props?.has('focusableWhenDisabled'), 'the UI SDK Button passthrough has no focusableWhenDisabled');
+    const c = seeded((f) => { f.button.components.Button.passthrough = '@ui-sdk/react/button#Buton'; });
+    has(propsProblems(readKit(c), c), /^catalog: kit\/button\/button\.catalog\.json Button\.passthrough @ui-sdk\/react\/button#Buton does not resolve: /);
+    has(schemaProblems(seeded((f) => { f.button.components.Button.props.properties.disabled['x-from'] = 'radix'; })), /Button\.props\.properties\.disabled\.x-from may only be "ui-sdk" or "base-ui"$/);
   },
 
   '[catalog-matches-kit] props: className false on a part that takes className fails, and a missing false where it takes none fails'() {
