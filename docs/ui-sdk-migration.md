@@ -25,6 +25,8 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 | `data-filled` | `data-filled` | Input |
 | `[readonly]` | `[readonly]`, plus `data-readonly` | kit CSS keeps the native attribute |
 | `data-open`, `data-closed` | `data-open`, `data-closed` | popups |
+| `data-popup-open` (Select trigger) | `data-open` | the trigger of an open popup |
+| `data-checked`, `data-unchecked`, `data-indeterminate` | same | Checkbox, Switch and their indicator, thumb |
 | `data-starting-style`, `data-ending-style` | same | popup transitions |
 | `data-nested` | `data-nested` | dialog |
 | `data-active` | `data-selected` | the selected tab; tabs.css selects on it |
@@ -41,6 +43,11 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 - **Tabs `activateOnFocus`** (Base UI, on the List, off by default) is UI SDK's `activation` on the root, `"automatic"` by default. The kit keeps `activateOnFocus` on `Tabs.List`, reports it to `Tabs.Root` through a context, and passes `"manual"` unless it is set.
 - **Tabs `value`** is a string in UI SDK (any value in Base UI); the catalog lists it as `"type": "string"`.
 - **`useRender`** is `renderElement(tag, props, render)` from `@ui-sdk/react/primitive`, typed with its `PartProps<"div">`; the same `render` element or function works. Card's passthrough is `@ui-sdk/react/primitive#PartProps<"div">`.
+- **Checkbox `indeterminate`** is `checked="indeterminate"`. The kit keeps the boolean prop and maps it.
+- **Switch `uncheckedValue`** has no UI SDK equivalent. The kit renders its own hidden input while off.
+- **Select `items` as a map** is UI SDK list data (`[{ value, label }]`). The kit's Root converts a map.
+- **Select `Popup` `finalFocus`** has no equivalent on `SelectContent`; focus returns to the trigger. Dropped from the catalog.
+- **Base UI `Form`** has no UI SDK part. Use a plain `<form noValidate>` whose submit handler calls `reportValidity()` first: the `invalid` events it fires are what UI SDK's Field listens for, and the submit event still fires, as with Base UI's Form.
 
 ## Gotchas
 
@@ -53,3 +60,14 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 - **Trigger gone at close.** UI SDK's default `finalFocus` falls back to the nearest tabbable where the trigger was (`neighbour()` in `@ui-sdk/core` `popups/popup.js`); Base UI dropped focus on `<body>`. The `kit.spec.ts` edge case that asserts `BODY` records Base UI's behaviour and needs a gate change.
 - **npm tags.** `latest` lags `beta`; always install the exact version.
 - **Tabs indicator.** `TabsIndicator` writes the same `--active-tab-left`, `-right`, `-width` (and top, bottom, height) as Base UI, measured against the list's scroll area, and re-measures on selection and on a resize of the list or any tab; the kit measures nothing. Unlike Base UI it is not hidden before the first measure: the properties are unset, so tabs.css's `width: calc(...)` is invalid and the bar is zero wide until then.
+- **Hidden form inputs move in the baseline.** Checkbox, Switch and Select render a hidden native input with UI SDK's inline style (`position: absolute`, `margin: -1px`, `opacity: 0`, `pointer-events: none`); Base UI's sat at `position: fixed`, top left. Every cell holding one moves its `input#0` keys.
+- **Checkbox and Switch render a `<span>`.** UI SDK's root is a `<button>`, whose browser styles change the recorded font and colours. `render={<span />}` keeps Base UI's element.
+- **The popover reset does not reach other documents.** UI SDK adds its `@layer ui-sdk` sheet to the main document only, so a popup in a held-open iframe keeps the browser's `[popover]` padding (0.25em) and `overflow: auto`. A popup's own CSS sets `padding` and `overflow`.
+- **The kit outranks UI SDK's `[hidden]`.** UI SDK keeps some closed popups in the page with `hidden`; a kit `display` on the popup beats both the browser's rule and `@layer ui-sdk`. Add `.<popup>[hidden] { display: none }`.
+- **A popup's offset is `sideOffset`, never a margin.** UI SDK writes `margin: 0` inline and places the popup's border box. Select reads `--orr-select-offset` from its positioner and passes it; a popup open from the first render waits for that read, as UI SDK places it once.
+- **UI SDK mounts a closed popup on hover**, hidden, to open fast, even when the control is disabled. Select renders no content while disabled.
+- **Disabled options are skipped.** UI SDK's keyboard and pointer pass over a disabled Select item, as a native select does; Base UI's highlight landed on it. The Select spec's "disabled item highlighted" test pins Base UI's behaviour and fails.
+- **Select is a listbox to `checkPattern`.** The trigger is a combobox, but focus moves into the list (`aria-activedescendant` is only for a search field), so `"combobox"` fails and the open list passes `"listbox"`.
+- **Switch Enter submits the form in UI SDK.** Base UI's toggled; the kit keeps that, stopping UI SDK's Enter in the capture phase.
+- **A portal into a shared container mounts after its siblings.** React places a child portal's content before its parent's in the same container; the kit defers Select's portal one layout effect, as Base UI's did.
+- **`Field.Error` `match` and `invalid`.** `match={true}` shows the error even on a disabled field, as before. Unlike Base UI, `invalid` alone shows an error part that has no `match`.
