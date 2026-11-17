@@ -1,0 +1,46 @@
+/* Select block layout only. Tokens, never literals. */
+
+.spec-select-wide {
+  grid-column: 1 / -1;
+}
+
+/* The open state's portal mounts here. contain: layout makes the frame the containing block for the
+   kit's positioner and its own stacking context, so the held-open popup sits under its trigger inside
+   the frame and never rises above a live popup or dialog. inert: it is a picture of the open state,
+   so it never takes focus (a held-open list focuses its selected item on mount) or a press. */
+.spec-select-frame {
+  position: relative;
+  contain: layout paint;
+  min-height: calc(var(--space-72) * 5 + var(--space-32));
+  padding: var(--space-16);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+
+/* Floating UI places a popup against the window. Held open, the frame is usually below the window
+   (always, in the tests), so it would flip the popup above the trigger, out of the frame, and shrink
+   --available-height. The picture pins only the positioner: its box starts under the trigger (the
+   frame's padding, the label line, the field gap, the trigger), and --available-height is the kit's
+   max height plus offset, so the kit's own clamp resolves to its max height. The popup's margin
+   (the offset), drawing, items and max height all come from the kit's rules. When Floating UI has
+   flipped the popup (data-side="top"), the kit puts the offset below the popup instead of above, so
+   the pin moves the box down by the offset to keep the same picture. The live "long list" cell and
+   select.kit.spec.ts check the real placement, offset and clamp. */
+.spec-select-frame .orr-select__positioner {
+  top: calc(
+    var(--space-16) + var(--type-line-height-13) + var(--space-8) +
+      var(--hit-target-min)
+  ) !important;
+  left: var(--space-16) !important;
+  transform: none !important;
+  --available-height: calc(
+    var(--orr-select-max-height) + var(--orr-select-offset)
+  ) !important;
+}
+.spec-select-frame .orr-select__positioner[data-side="top"] {
+  top: calc(
+    var(--space-16) + var(--type-line-height-13) + var(--space-8) +
+      var(--hit-target-min) + var(--orr-select-offset)
+  ) !important;
+}
