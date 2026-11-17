@@ -1,62 +1,143 @@
 "use client";
-import type { ComponentProps, ReactElement } from "react";
-import { Dialog as BaseDialog } from "@base-ui/react/dialog";
+import {
+  createContext,
+  useContext,
+  type ComponentProps,
+  type ReactElement,
+  type RefObject,
+} from "react";
+import { createPortal } from "react-dom";
+import {
+  Dialog as SdkDialog,
+  DialogBackdrop,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from "@ui-sdk/react/dialog";
 import { Button, IconButton, type ButtonProps } from "../button/Button";
 import { cx } from "../cx";
 
 type WithClass<P> = Omit<P, "className"> & { className?: string };
 type ButtonLook = Pick<ButtonProps, "variant" | "size">;
+type ContentProps = ComponentProps<typeof DialogContent>;
+type Mount = HTMLElement | ShadowRoot | null;
+/** Where focus goes: true for the default, false to leave it, an element or a ref to one, or a function returning one. */
+type FocusTarget =
+  | boolean
+  | HTMLElement
+  | RefObject<HTMLElement | null>
+  | (() => HTMLElement | null | undefined);
+
+/** Holds the open state; it renders no element of its own. */
+function Root({
+  disablePointerDismissal,
+  ...props
+}: Omit<
+  ComponentProps<typeof SdkDialog>,
+  "closeOnOutsidePress" | "container"
+> & {
+  /** When true, a press outside the dialog does not close it. */
+  disablePointerDismissal?: boolean;
+}) {
+  return (
+    <SdkDialog
+      {...props}
+      closeOnOutsidePress={disablePointerDismissal ? false : undefined}
+    />
+  );
+}
 
 /** Opens the dialog. Renders a kit Button. */
 function Trigger({
   variant,
   size,
   ...props
-}: WithClass<BaseDialog.Trigger.Props> & ButtonLook) {
+}: WithClass<Omit<ComponentProps<typeof DialogTrigger>, "render">> &
+  ButtonLook) {
   return (
-    <BaseDialog.Trigger
+    <DialogTrigger
       {...props}
       render={<Button variant={variant} size={size} />}
     />
   );
 }
 
-export type DialogPopupProps = WithClass<BaseDialog.Popup.Props> & {
-  /** Where the portal mounts. Defaults to document.body. */
-  container?: BaseDialog.Portal.Props["container"];
+// The mount of the open dialog around this one, so a nested dialog mounts beside its parent.
+const MountContext = createContext<Mount | undefined>(undefined);
+
+const focusTarget = (t: FocusTarget | undefined) =>
+  t === false
+    ? "none"
+    : t === true || t === undefined
+      ? undefined
+      : typeof t === "function"
+        ? () => t() ?? undefined
+        : "current" in t
+          ? () => t.current ?? undefined
+          : t;
+
+export type DialogPopupProps = WithClass<
+  Omit<ContentProps, "container" | "initialFocus" | "finalFocus">
+> & {
+  /** Where the dialog mounts, an element or a ref to one. Defaults to its parent dialog's, else document.body. */
+  container?: Mount | RefObject<Mount>;
+  /** What takes focus on open. Default: the first tabbable element. */
+  initialFocus?: FocusTarget;
+  /** What takes focus on close. Default: the trigger. */
+  finalFocus?: FocusTarget;
 };
 
-/** Backdrop, viewport and popup in one part. Focus is trapped while open and returns to the trigger on close. */
-function Popup({ container, className, ...props }: DialogPopupProps) {
-  return (
-    <BaseDialog.Portal container={container}>
-      <BaseDialog.Backdrop className="orr-dialog__backdrop" />
-      <BaseDialog.Viewport className="orr-dialog__viewport">
-        <BaseDialog.Popup
-          {...props}
-          // Component class first, orr-floating second: the kit baseline keys an element by its first orr- class.
-          className={cx("orr-dialog", "orr-floating", className)}
-        />
-      </BaseDialog.Viewport>
-    </BaseDialog.Portal>
+/**
+ * Backdrop and popup in one part, mounted in `container` (default: the parent dialog's, else
+ * document.body). While open both sit in the browser's top layer, above every z-index. Focus is
+ * trapped while open and returns to the trigger on close.
+ */
+function Popup({
+  container,
+  className,
+  initialFocus,
+  finalFocus,
+  ...props
+}: DialogPopupProps) {
+  const inherited = useContext(MountContext);
+  const own =
+    container && "current" in container ? container.current : container;
+  const target =
+    own ??
+    inherited ??
+    (typeof document === "undefined" ? null : document.body);
+  const parts = (
+    <MountContext.Provider value={target}>
+      <DialogBackdrop className="orr-dialog__backdrop" />
+      <DialogContent
+        {...props}
+        initialFocus={focusTarget(initialFocus)}
+        finalFocus={focusTarget(finalFocus)}
+        // Component class first, orr-floating second: the kit baseline keys an element by its first orr- class.
+        className={cx("orr-dialog", "orr-floating", className)}
+      />
+    </MountContext.Provider>
   );
+  return target ? createPortal(parts, target) : parts;
 }
 
-function Title({ className, ...props }: WithClass<BaseDialog.Title.Props>) {
+function Title({
+  className,
+  ...props
+}: WithClass<ComponentProps<typeof DialogTitle>>) {
   return (
-    <BaseDialog.Title
-      {...props}
-      className={cx("orr-dialog__title", className)}
-    />
+    <DialogTitle {...props} className={cx("orr-dialog__title", className)} />
   );
 }
 
 function Description({
   className,
   ...props
-}: WithClass<BaseDialog.Description.Props>) {
+}: WithClass<ComponentProps<typeof DialogDescription>>) {
   return (
-    <BaseDialog.Description
+    <DialogDescription
       {...props}
       className={cx("orr-dialog__description", className)}
     />
@@ -69,9 +150,9 @@ function Close({
   size,
   render,
   ...props
-}: WithClass<BaseDialog.Close.Props> & ButtonLook) {
+}: WithClass<ComponentProps<typeof DialogClose>> & ButtonLook) {
   return (
-    <BaseDialog.Close
+    <DialogClose
       {...props}
       render={render ?? <Button variant={variant} size={size} />}
     />
@@ -95,7 +176,7 @@ function CloseGlyph() {
 
 /** The corner close control: a quiet IconButton named "Close" unless `label` says otherwise. */
 function CloseIcon({ label = "Close" }: { label?: string }) {
-  const button: ReactElement = (
+  const button: ReactElement<Record<string, unknown>> = (
     <IconButton
       variant="quiet"
       size="s"
@@ -105,7 +186,7 @@ function CloseIcon({ label = "Close" }: { label?: string }) {
       <CloseGlyph />
     </IconButton>
   );
-  return <BaseDialog.Close render={button} />;
+  return <DialogClose render={button} />;
 }
 
 /** Header row (title and the corner close) and the actions row. Layout only. */
@@ -117,8 +198,8 @@ function Actions({ className, ...props }: ComponentProps<"div">) {
 }
 
 /**
- * Dialog on Base UI: modal, focus trapped, Escape and an outside press close it,
- * focus returns to the trigger.
+ * Dialog on UI SDK: modal (`aria-modal`, the page behind inert, scroll locked), focus trapped,
+ * Escape and an outside press close it, focus returns to the trigger.
  *
  * ```tsx
  * <Dialog.Root>
@@ -132,7 +213,7 @@ function Actions({ className, ...props }: ComponentProps<"div">) {
  * ```
  */
 export const Dialog = {
-  Root: BaseDialog.Root,
+  Root,
   Trigger,
   Popup,
   Header,
