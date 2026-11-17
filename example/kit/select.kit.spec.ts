@@ -357,7 +357,17 @@ for (const id of PANELS) {
       expect(ring).toBeGreaterThanOrEqual(3);
       await page.keyboard.press("Enter");
       await expect(list).toBeVisible();
-      await expect(highlighted(list)).toHaveText("Pallas");
+      // UI SDK clears the highlight on Enter, Base UI kept it on the item.
+      // Either way it never moves to another item.
+      const stillHighlighted = highlighted(list);
+      await expect
+        .poll(async () => {
+          const n = await stillHighlighted.count();
+          return (
+            n === 0 || (await stillHighlighted.textContent())?.trim() === "Pallas"
+          );
+        })
+        .toBe(true);
       await expect(
         list.getByRole("option", { name: "Pallas" }),
       ).toHaveAttribute("aria-selected", "false");
