@@ -608,6 +608,53 @@
         "file": "kit/field/Field.example.tsx",
         "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
+    },
+    "Textarea": {
+      "description": "Multi-line text; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
+      "passthrough": "@base-ui/react/field#Field.Control.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "number",
+            "default": 3,
+            "description": "Visible lines before the text scrolls. The person can still drag the box taller."
+          },
+          "readOnly": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
+          },
+          "placeholder": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "A hint shown while empty. It does not replace the label."
+          },
+          "onValueChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new text on each edit. Use it to control the value."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "Free text that runs to several lines: a note, a message, a description, feedback."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The text is one line: a name, an email, a URL.",
+          "instead": "Input"
+        }
+      ],
+      "a11y": [
+        "Place it inside Field.Root with a Field.Label; on its own it has no name unless you give it aria-label.",
+        "Say any length or format limit in Field.Description before the person types, not only in the error."
+      ],
+      "example": {
+        "file": "kit/textarea/Textarea.example.tsx",
+        "code": "// Golden example: a note on a support request. The note explains what helps up front and says what to fix\n// in words when it is empty. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Textarea } from \"../index\";\n\nexport default function SupportNote() {\n  const [note, setNote] = useState(\"\");\n  const [error, setError] = useState<string | null>(null);\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = note.trim()\n      ? null\n      : \"Write a few words about what went wrong.\";\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"note\" invalid={error !== null}>\n        <Field.Label>What happened</Field.Label>\n        <Textarea\n          rows={4}\n          value={note}\n          onValueChange={(value) => {\n            setNote(value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          Say what you clicked and what you expected. We read every note.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send note\n        </Button>\n        <span role=\"status\">{sent ? \"Note sent.\" : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+      }
     }
   }
 }
