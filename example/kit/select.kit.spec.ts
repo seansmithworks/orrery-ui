@@ -374,6 +374,44 @@ for (const id of PANELS) {
       await expect(trigger).toHaveText("Kepler");
     });
 
+    test("closed trigger typeahead: typing a letter selects the matching enabled option", async ({
+      page,
+    }) => {
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await expect(trigger).toHaveText("Kepler");
+      await page.keyboard.type("v");
+      await expect(trigger).toHaveText("Vesta");
+      await trigger.press("ArrowDown");
+      await settledOpen(list);
+      await expect(
+        list.getByRole("option", { name: "Vesta" }),
+      ).toHaveAttribute("aria-selected", "true");
+    });
+
+    test("closed trigger typeahead never chooses a disabled option", async ({
+      page,
+    }) => {
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await expect(trigger).toHaveText("Kepler");
+      // "p" is the first letter of the disabled Pallas, and of no enabled option.
+      await page.keyboard.type("p");
+      // Typeahead is applied synchronously; give any wrongly committed value a frame to render.
+      await page.evaluate(
+        () => new Promise((r) => requestAnimationFrame(() => r(null))),
+      );
+      await expect(trigger).toHaveText("Kepler");
+      await trigger.press("ArrowDown");
+      await settledOpen(list);
+      await expect(
+        list.getByRole("option", { name: "Pallas" }),
+      ).toHaveAttribute("aria-selected", "false");
+      await expect(
+        list.getByRole("option", { name: "Kepler" }),
+      ).toHaveAttribute("aria-selected", "true");
+    });
+
     test("placement: opens below the trigger at the kit's offset; a long list is clamped to the kit's max height and scrolls", async ({
       page,
     }) => {
