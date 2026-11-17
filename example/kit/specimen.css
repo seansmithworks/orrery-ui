@@ -169,12 +169,26 @@ body {
   gap: var(--space-8);
 }
 
-/* The static dialog's portal mounts here. contain: layout makes the frame the containing block
-   for the kit's fixed backdrop and viewport, and its own stacking context, so the open-state
-   specimen fills the frame and never rises above the live dialog. No kit prop is involved. */
-.spec-dialog-frame {
+/* A held-open frame (held-open-frame.tsx): the iframe fills the frame's drawing, and its document
+   is the popup's viewport. Its body paints the panel's surface, as the frame did before. */
+.spec-held {
   position: relative;
-  contain: layout paint;
+}
+.spec-held__doc {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+.spec-held__body {
+  background: var(--page);
+}
+
+/* The static dialog's frame. Its document holds the "behind" content and the held-open dialog;
+   the kit's fixed backdrop and viewport fill the frame. No kit prop is involved. */
+.spec-dialog-frame {
   min-height: calc(var(--space-72) * 3 + var(--space-48));
   border: var(--line-width) solid var(--line);
   border-radius: var(--radius-panel);

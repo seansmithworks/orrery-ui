@@ -13,10 +13,44 @@ import AxeBuilder from "@axe-core/playwright";
 
 export const PANELS = ["orrery-light", "orrery-dark", "solar"] as const;
 export const TAGS = ["wcag2a", "wcag2aa", "wcag21a", "wcag21aa", "wcag22aa"];
-// Live dialogs portal to one wrapper per panel at the end of <body>; the static
-// open-state specimens portal into their frame inside the panel.
-export const LIVE_POPUP = ".spec-portals .orr-dialog";
-export const STATIC_POPUP = ".spec-dialog-frame .orr-dialog";
+// The open live dialog. Held-open popups live in their frames' own documents
+// (example/kit/held-open-frame.tsx), so the page's document holds only live ones, wherever
+// the library renders them (a portal, or in place in the top layer). data-open is the open
+// state both Base UI and UI SDK set.
+export const LIVE_POPUP = ".orr-dialog[data-open]";
+/** The iframe of every held-open frame (example/kit/held-open-frame.tsx). */
+export const HELD_FRAME = "iframe.spec-held__doc";
+/**
+ * A focus sentinel: an empty, aria-hidden element in the tab order whose only job is to bounce
+ * focus back into a trap (Base UI's focus guards are these; UI SDK traps without them). axe
+ * would flag it as aria-hidden-focus, and a focus-trap check sees it take focus for a moment.
+ */
+export const FOCUS_SENTINEL = '[aria-hidden="true"][tabindex="0"]:empty';
+
+/**
+ * In-page (Playwright serialises it, so it is self-contained): true when exactly `count`
+ * elements match `popup` inside the held-open frames whose frame element matches `frame`, and
+ * every one has faded in.
+ */
+export function heldPopupsShown(args: {
+  frame: string;
+  popup: string;
+  count: number;
+}) {
+  const popups = [
+    ...document.querySelectorAll(`${args.frame} iframe.spec-held__doc`),
+  ].flatMap((f) => [
+    ...((f as HTMLIFrameElement).contentDocument?.querySelectorAll(
+      args.popup,
+    ) ?? []),
+  ]);
+  return (
+    popups.length === args.count &&
+    popups.every(
+      (p) => p.ownerDocument.defaultView!.getComputedStyle(p).opacity === "1",
+    )
+  );
+}
 
 /** Loads the specimen page, network-free, and waits until the three static dialogs have faded in. */
 export async function openSpecimen(page: Page) {
@@ -25,28 +59,34 @@ export async function openSpecimen(page: Page) {
     route.fulfill({ contentType: "text/css", body: "" }),
   );
   await page.goto("/kit.html");
-  // The three static dialogs have faded in.
-  await page.waitForFunction((sel) => {
-    const popups = [...document.querySelectorAll(sel)];
-    return (
-      popups.length === 3 &&
-      popups.every((p) => getComputedStyle(p).opacity === "1")
-    );
-  }, STATIC_POPUP);
+  await page.waitForFunction(heldPopupsShown, {
+    frame: ".spec-dialog-frame",
+    popup: ".orr-dialog",
+    count: 3,
+  });
 }
 
 export const panel = (page: Page, id: string) =>
   page.locator(`[data-panel="${id}"]`);
 
+/** The panel, then the <body> of every held-open frame in it: one locator per document. */
+export async function panelScopes(page: Page, id: string) {
+  const frames = panel(page, id).locator(HELD_FRAME);
+  const scopes = [panel(page, id)];
+  for (let i = 0; i < (await frames.count()); i++)
+    scopes.push(frames.nth(i).contentFrame().locator("body"));
+  return scopes;
+}
+
 /** axe over a panel and its live-dialog portal. */
 export async function violations(page: Page, id: string) {
-  // Base UI's focus-guard sentinels (aria-hidden, tabbable, they only bounce focus) are
-  // excluded, per the precedent in axe.spec.ts. Every other node is scanned.
+  // Focus sentinels (FOCUS_SENTINEL) are excluded, per the precedent in axe.spec.ts. Every
+  // other node is scanned, the held-open frames' documents included.
   const scope = (b: AxeBuilder) =>
     b
       .include(`[data-panel="${id}"]`)
       .include(`[data-portal-for="${id}"]`)
-      .exclude("[data-base-ui-focus-guard]");
+      .exclude(FOCUS_SENTINEL);
   const wcag = await scope(new AxeBuilder({ page })).withTags(TAGS).analyze();
   const labelInName = await scope(new AxeBuilder({ page }))
     .withRules(["label-content-name-mismatch"])
