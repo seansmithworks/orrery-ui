@@ -936,6 +936,72 @@
         "code": "// Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a\n// placeholder. Validation is Base UI's own: Form runs each field's check on submit, blocks the submit,\n// focuses the first invalid control, and Field.Error match=\"valueMissing\" says what to fix. Root gets\n// `items` so the trigger shows the label, not the raw value. Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Field, Select } from \"../index\";\n\nconst INNER = { mercury: \"Mercury\", venus: \"Venus\", mars: \"Mars\" };\nconst OUTER = { jupiter: \"Jupiter\", saturn: \"Saturn\", neptune: \"Neptune\" };\nconst ITEMS: Record<string, string> = { ...INNER, ...OUTER };\n\nexport default function NewChart() {\n  const [made, setMade] = useState<string | null>(null);\n\n  return (\n    <Form\n      onFormSubmit={(values) => setMade(ITEMS[String(values.body)] ?? null)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"body\">\n        <Field.Label>Body</Field.Label>\n        <Select.Root items={ITEMS} required onValueChange={() => setMade(null)}>\n          <Select.Trigger placeholder=\"Choose a body\" />\n          <Select.Popup>\n            <Select.Group>\n              <Select.GroupLabel>Inner planets</Select.GroupLabel>\n              {Object.entries(INNER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n            <Select.Separator />\n            <Select.Group>\n              <Select.GroupLabel>Outer planets</Select.GroupLabel>\n              {Object.entries(OUTER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n          </Select.Popup>\n        </Select.Root>\n        <Field.Description>\n          The chart centres on this body and follows its orbit.\n        </Field.Description>\n        <Field.Error match=\"valueMissing\">\n          Choose a body for the chart to follow.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Make chart\n        </Button>\n        <span role=\"status\">{made ? `Chart made for ${made}.` : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
       }
     },
+    "Switch": {
+      "description": "A switch on Base UI whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
+      "passthrough": "@base-ui/react/switch#Switch.Root.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "checked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it is on, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
+          },
+          "defaultChecked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it starts on, when it manages its own state."
+          },
+          "onCheckedChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new value when the person turns it on or off."
+          },
+          "disabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
+          },
+          "name": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The name submitted with the form, with the value \"on\" when on and nothing when off. Inside Field.Root, the field's name wins."
+          },
+          "uncheckedValue": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The value submitted when it is off. Without it, an off switch submits nothing, as a native checkbox does."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "A setting that is on or off and stays that way, such as notifications or grid lines.",
+        "A row in a settings list, where the label says what turns on."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The person must tick before an action, such as agreeing to terms.",
+          "instead": "Checkbox"
+        },
+        {
+          "text": "Exactly one option of a set may be picked.",
+          "instead": "fieldset"
+        },
+        {
+          "text": "The press runs an action once, not a setting that stays.",
+          "instead": "Button"
+        }
+      ],
+      "a11y": [
+        "Wrap the Switch and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
+        "Name what turns on (Show grid lines), never the state: the switch already says on or off."
+      ],
+      "example": {
+        "file": "kit/switch/Switch.example.tsx",
+        "code": "// Golden example: chart settings. Two settings that stay on or off, each named for what turns on, saved with the\n// form. An on switch submits its name with the value \"on\"; an off switch submits nothing, as a native checkbox.\n// Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Field, Switch } from \"../index\";\n\nexport default function ChartSettings() {\n  const [saved, setSaved] = useState(false);\n\n  return (\n    <Form\n      onFormSubmit={() => setSaved(true)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"gridLines\" defaultChecked />\n          Show grid lines\n        </Field.Label>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"orbitEmails\" />\n          Email me when an orbit changes\n        </Field.Label>\n        <Field.Description>At most one email a day.</Field.Description>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Save settings\n        </Button>\n        <span role=\"status\">{saved ? \"Settings saved.\" : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+      }
+    },
     "Textarea": {
       "description": "Multi-line text; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
       "passthrough": "@base-ui/react/field#Field.Control.Props",

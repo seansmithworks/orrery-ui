@@ -1,0 +1,48 @@
+/* Control: what Checkbox and Switch share, on the class .orr-control. Every value is a token or a property declared
+   by the component that renders the control.
+
+   Each control renders cx("orr-<component>", "orr-control", className): its own class FIRST. The kit baseline
+   (example/kit-baseline.spec.ts) keys every element by its first orr- class, so the order keeps the baseline keys
+   per component (span.orr-checkbox, span.orr-switch), not one shared span.orr-control.
+
+   Two things live here:
+   - The selected colours, the fill of a selected control and the mark drawn on it.
+   - The row a Field.Label makes when it wraps a control and its text: the label is a flex row, so a press on the
+     text toggles the control, and the description and error line up with the text, past the control.
+
+   The row reads the control's drawn size from two properties each component declares on its field:
+   --orr-control-width and --orr-control-height. They sit on the field, not the control, because the description
+   and error are the label's siblings and only inherit from the field. */
+
+@layer orrery.kit {
+  .orr-control {
+    /* The selected colours. Pending Sean's decision on the selected colour; the accent stays reserved for focus
+       rings (DESIGN.md, Visual Theme). Declared on the control, not :root, so var(--text) and var(--page) resolve
+       in the brand scope the control sits in. */
+    --orr-selected-fill: var(--text);
+    --orr-selected-mark: var(--page);
+  }
+
+  /* The row: a Field.Label holding a control reads as an option, not a field heading. The control sits centred
+     on the first line of the text, however many lines the text wraps to. */
+  .orr-field__label:has(> .orr-control) {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-8);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    font-weight: 400;
+    cursor: pointer;
+  }
+  .orr-field__label > .orr-control {
+    margin-top: calc((1lh - var(--orr-control-height)) / 2);
+  }
+  .orr-field[data-disabled] > .orr-field__label:has(> .orr-control) {
+    cursor: not-allowed;
+  }
+  /* Description and error line up with the label text, past the control. */
+  .orr-field:has(> .orr-field__label > .orr-control)
+    > :is(.orr-field__description, .orr-field__error) {
+    margin-inline-start: calc(var(--orr-control-width) + var(--space-8));
+  }
+}
