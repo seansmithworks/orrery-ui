@@ -130,7 +130,7 @@ const tests = {
     const bad = propsProblems(kit, seeded((f) => {
       f.field.components.Field.parts.Error.props.properties.match.anyOf[1].enum = ['valid', 'valueMissing'];
     }));
-    has(bad, /Field\.parts\.Error\.props\.match anyOf string branch enum is valid, valueMissing, but the type allows badInput, /);
+    has(bad, /Field\.parts\.Error\.props\.match anyOf string branch enum is valid, valueMissing, but the type allows valueMissing, /);
     const single = propsProblems(kit, seeded((f) => {
       const m = f.field.components.Field.parts.Error.props.properties.match;
       delete m.anyOf;

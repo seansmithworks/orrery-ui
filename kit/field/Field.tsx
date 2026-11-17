@@ -1,41 +1,56 @@
 "use client";
-import { Field as BaseField } from "@base-ui/react/field";
-import { Input as BaseInput } from "@base-ui/react/input";
+import type { ComponentProps } from "react";
+import {
+  Field as SdkField,
+  FieldDescription as SdkFieldDescription,
+  FieldError as SdkFieldError,
+  FieldLabel as SdkFieldLabel,
+} from "@ui-sdk/react/field";
+import { Input as SdkInput } from "@ui-sdk/react/input";
 import { cx } from "../cx";
 
 type WithClass<P> = Omit<P, "className"> & { className?: string };
 
-function Root({ className, ...props }: WithClass<BaseField.Root.Props>) {
-  return <BaseField.Root {...props} className={cx("orr-field", className)} />;
+function Root({
+  className,
+  ...props
+}: WithClass<ComponentProps<typeof SdkField>>) {
+  return <SdkField {...props} className={cx("orr-field", className)} />;
 }
 
-function Label({ className, ...props }: WithClass<BaseField.Label.Props>) {
+function Label({
+  className,
+  ...props
+}: WithClass<ComponentProps<typeof SdkFieldLabel>>) {
   return (
-    <BaseField.Label {...props} className={cx("orr-field__label", className)} />
+    <SdkFieldLabel {...props} className={cx("orr-field__label", className)} />
   );
 }
 
 function Description({
   className,
   ...props
-}: WithClass<BaseField.Description.Props>) {
+}: WithClass<ComponentProps<typeof SdkFieldDescription>>) {
   return (
-    <BaseField.Description
+    <SdkFieldDescription
       {...props}
       className={cx("orr-field__description", className)}
     />
   );
 }
 
-function ErrorMessage({ className, ...props }: WithClass<BaseField.Error.Props>) {
+function ErrorMessage({
+  className,
+  ...props
+}: WithClass<ComponentProps<typeof SdkFieldError>>) {
   return (
-    <BaseField.Error {...props} className={cx("orr-field__error", className)} />
+    <SdkFieldError {...props} className={cx("orr-field__error", className)} />
   );
 }
 
 /**
- * Field on Base UI: the label, description and error are wired to the control
- * (label `for`, `aria-describedby`, `aria-invalid`) by Base UI.
+ * Field on UI SDK: the label, description and error are wired to the control
+ * (label `for`, `aria-describedby`, `aria-invalid`) by UI SDK.
  *
  * ```tsx
  * <Field.Root invalid={!!error}>
@@ -48,9 +63,9 @@ function ErrorMessage({ className, ...props }: WithClass<BaseField.Error.Props>)
  */
 export const Field = { Root, Label, Description, Error: ErrorMessage };
 
-export type InputProps = WithClass<BaseInput.Props>;
+export type InputProps = WithClass<ComponentProps<typeof SdkInput>>;
 
 /** Text input. Inside Field.Root it takes the field's label, description, error and state. */
 export function Input({ className, ...props }: InputProps) {
-  return <BaseInput {...props} className={cx("orr-input", className)} />;
+  return <SdkInput {...props} className={cx("orr-input", className)} />;
 }
