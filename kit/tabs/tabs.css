@@ -4,11 +4,11 @@
    One rule per state.
 
    The root renders cx("orr-tabs", "orr-control", className), its own class first (Tabs.tsx), so the selected colours
-   in control.css reach the bar. The list is a full-width row over a --line divider. Each tab is --hit-target-min
-   high, its label --text-muted, --text when selected or hovered. The selected bar is one element (Base UI's
-   Indicator) spanning the whole list, clipped to the selected tab by the --active-tab-left and --active-tab-right
-   properties Base UI measures. Moving to another tab animates the clip, so the bar slides without animating
-   layout. */
+   in control.css reach the bar. The list is a full-width row over a --line divider; tabs that do not fit scroll
+   sideways. Each tab is --hit-target-min high, its label --text-muted, --text when selected or hovered. The selected
+   bar is one element (Base UI's Indicator) spanning everything the list scrolls, clipped to the selected tab by the
+   --active-tab-left and --active-tab-right properties Base UI measures. Moving to another tab animates the clip, so
+   the bar slides without animating layout. */
 
 @layer orrery.kit {
   .orr-tabs {
@@ -22,10 +22,25 @@
   .orr-tabs__list {
     /* UN-DIALLED: the selected bar's weight. */
     --orr-tabs-bar-weight: calc(2 * var(--line-width));
+    /* Room for the focus ring inside the scroll area, which clips: the ring's offset and width. */
+    --orr-tabs-ring-room: calc(2 * var(--ring-width));
     position: relative;
     display: flex;
     align-items: stretch;
-    border-bottom: var(--line-width) solid var(--line);
+    /* Tabs that do not fit scroll sideways; a focused tab scrolls itself into view. */
+    overflow-x: auto;
+    /* The padding gives the ring its room on every side; the top and side margins keep the tabs where they would
+       sit without it. Below, the room stays, so the bar sits that far under the tab. */
+    margin: calc(-1 * var(--orr-tabs-ring-room))
+      calc(-1 * var(--orr-tabs-ring-room)) 0;
+    padding: var(--orr-tabs-ring-room);
+    /* The divider: the column's width at the bottom edge, drawn as a background so it stays put while the
+       tabs scroll and the bar can sit on it inside the scroll area. */
+    background-image: linear-gradient(var(--line), var(--line));
+    background-position: center bottom;
+    background-size: calc(100% - 2 * var(--orr-tabs-ring-room))
+      var(--line-width);
+    background-repeat: no-repeat;
   }
 
   .orr-tabs__tab {
@@ -52,13 +67,16 @@
     -webkit-tap-highlight-color: transparent;
   }
 
-  /* The selected bar: the whole list wide, sitting on the divider, clipped to the selected tab. Base UI keeps it
-     hidden until it has measured the tab, so it never paints at a wrong place. */
+  /* The selected bar: as wide as everything the list scrolls (the selected tab's offset, width and the rest, as
+     Base UI measures them), sitting on the divider, clipped to the selected tab. It scrolls with the tabs. Base UI
+     keeps it hidden until it has measured the tab, so it never paints at a wrong place. */
   .orr-tabs__indicator {
     position: absolute;
     left: 0;
-    right: 0;
-    bottom: calc(-1 * var(--line-width));
+    bottom: 0;
+    width: calc(
+      var(--active-tab-left) + var(--active-tab-width) + var(--active-tab-right)
+    );
     height: var(--orr-tabs-bar-weight);
     background-color: var(--orr-selected-fill);
     clip-path: inset(0 var(--active-tab-right) 0 var(--active-tab-left));

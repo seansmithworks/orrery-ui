@@ -319,6 +319,91 @@ for (const id of PANELS) {
   });
 }
 
+test.describe("overflow: more tabs than the list is wide", () => {
+  // At 400px the specimen cell is about 120px wide, so the three tabs overflow and the list scrolls.
+  test.use({ viewport: { width: 400, height: 900 } });
+  const id = "orrery-light";
+
+  /** The bar's painted edges against the selected tab's box, and the list's scroll state. */
+  const state = (page: Page, cellName: string) =>
+    cell(page, id, cellName)
+      .locator(".orr-tabs__list")
+      .evaluate((list) => {
+        const bar = list.querySelector(".orr-tabs__indicator") as HTMLElement;
+        const sel = list.querySelector('[aria-selected="true"]')!;
+        const px = /^inset\(([^)]*)\)$/
+          .exec(getComputedStyle(bar).clipPath)?.[1]
+          .split(" ")
+          .map((v) => parseFloat(v));
+        if (!px) return null;
+        const [right, left] = [px[1] ?? px[0], px[3] ?? px[1] ?? px[0]];
+        const b = bar.getBoundingClientRect();
+        const t = sel.getBoundingClientRect();
+        const l = list.getBoundingClientRect();
+        return {
+          overflows: list.scrollWidth > list.clientWidth,
+          scrollLeft: list.scrollLeft,
+          left: b.left + left - t.left,
+          right: b.right - right - t.right,
+          // The selected tab inside the list's visible box.
+          tabVisible: t.left >= l.left - 1 && t.right <= l.right + 1,
+        };
+      });
+
+  const aligned = async (page: Page, cellName: string) => {
+    const s = await state(page, cellName);
+    return (
+      s !== null &&
+      s.overflows &&
+      Math.abs(s.left) <= 1 &&
+      Math.abs(s.right) <= 1 &&
+      s.tabVisible
+    );
+  };
+
+  test("Tabs: the bar matches the selected tab within 1px before and after the keyboard selects the last tab, which scrolls into view", async ({
+    page,
+  }) => {
+    const c = "first selected";
+    const s0 = await state(page, c);
+    expect(s0?.overflows).toBe(true);
+    expect(s0?.scrollLeft).toBe(0);
+    await expect.poll(() => aligned(page, c)).toBe(true);
+
+    await tab(page, id, c, "Overview").focus();
+    await page.keyboard.press("End");
+    await expect(tab(page, id, c, "History")).toBeFocused();
+    await page.keyboard.press("Enter");
+    await expect(tab(page, id, c, "History")).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect
+      .poll(async () => (await state(page, c))?.scrollLeft ?? 0)
+      .toBeGreaterThan(0);
+    await expect.poll(() => aligned(page, c)).toBe(true);
+  });
+
+  test("Tabs: right to left, the bar matches the selected tab within 1px, scrolled or not", async ({
+    page,
+  }) => {
+    const c = "second selected";
+    await cell(page, id, c)
+      .locator(".orr-tabs")
+      .evaluate((el) => el.setAttribute("dir", "rtl"));
+    // A new selection makes Base UI measure again under the new direction.
+    await tab(page, id, c, "Overview").click();
+    await expect.poll(() => aligned(page, c)).toBe(true);
+    await tab(page, id, c, "History").focus();
+    await page.keyboard.press("Enter");
+    await expect(tab(page, id, c, "History")).toHaveAttribute(
+      "aria-selected",
+      "true",
+    );
+    await expect.poll(() => aligned(page, c)).toBe(true);
+  });
+});
+
 test.describe("golden example (fixtures/kit-examples.html)", () => {
   test("Tabs example: the list is named by the heading and each tab shows its own panel", async ({
     page,
