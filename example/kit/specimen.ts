@@ -32,8 +32,12 @@ import type { ComponentType } from "react";
  * the specimen says `fixedSize = { height: ".orr-switch" }`. fixedSize names, as CSS selector
  * lists, the elements whose width or height the kit's CSS declares.
  *
- * Open states render inside the cell (portal into a frame in the cell, as the Dialog block's
- * static dialog does), never into the panel's live-dialog portal, which the Live block owns.
+ * Held-open states (an open popup, held open for the picture) render inside the cell in a
+ * <HeldOpenFrame> (./held-open-frame.tsx), as the Dialog block's static dialog and Select's open
+ * cells do: a same-origin iframe with the panel's brand, theme and style sheets, so a popup stays
+ * in its frame whether the library portals it or puts it in the browser's top layer. Never into
+ * the panel's live-dialog portal, which the Live block owns. The baseline gate records a frame's
+ * document in place of its iframe; kit-test.ts has heldPopupsShown and panelScopes for suites.
  * `panel` is for ids that must be unique on the page. The file may import its own CSS.
  */
 export type SpecimenPanel = {

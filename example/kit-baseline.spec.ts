@@ -9,6 +9,7 @@ import {
   type PanelData,
   type Props,
 } from "./kit-baseline-store";
+import { FOCUS_SENTINEL, LIVE_POPUP, openSpecimen } from "./kit/kit-test";
 
 /**
  * kit-baseline.spec.ts: a computed-style lock on the kit specimen (example/kit.html),
@@ -23,7 +24,9 @@ import {
  * example/kit/specimens/*.specimen.tsx is read generically: each [data-cell] element is one
  * cell "<block>/<data-cell>", and its fixedSize selectors (data-fixed-width,
  * data-fixed-height on the block) add width and height (contract: example/kit/specimen.ts).
- * A block on the page with no baseline file fails.
+ * A block on the page with no baseline file fails. A held-open frame (example/kit/held-open-frame.tsx)
+ * is recorded through: its iframe is skipped and its document's elements are recorded in its place,
+ * read in the frame's own window. Focus sentinels (FOCUS_SENTINEL in kit-test.ts) are skipped.
  *
  * Why computed styles, not pixels: CI is Linux and development is macOS, so a pixel baseline
  * could not be shared. Computed values are platform-stable, with these exclusions:
@@ -68,7 +71,6 @@ const ONLY = process.env.KIT_BASELINE_BLOCKS
   : null;
 
 const PANELS = ["orrery-light", "orrery-dark", "solar"] as const;
-const STATIC_POPUP = ".spec-dialog-frame .orr-dialog";
 
 const PROPS = [
   "color",
@@ -152,8 +154,9 @@ function collectInPage(args: {
   panelId: string;
   portal: boolean;
   props: string[];
+  sentinel: string;
 }): PanelData {
-  const { panelId, portal, props } = args;
+  const { panelId, portal, props, sentinel } = args;
   const hash = (s: string) => {
     let h = 5381;
     for (let i = 0; i < s.length; i++) h = (h * 33) ^ s.charCodeAt(i);
@@ -181,19 +184,31 @@ function collectInPage(args: {
   const isSpecimen = (el: Element) =>
     [...el.classList].some((c) => c.startsWith("spec-"));
   const text = (el: Element | null) => (el?.textContent ?? "").trim();
+  // A held-open frame's elements live in the frame's document: read them in its window.
+  const styleOf = (el: Element, pseudo?: string) =>
+    el.ownerDocument.defaultView!.getComputedStyle(el, pseudo);
+  // Every element under root in document order, a held-open frame's document
+  // (example/kit/held-open-frame.tsx) read in place of its iframe.
+  const deep = (root: Element): Element[] =>
+    [...root.querySelectorAll("*")].flatMap((el) => {
+      const doc = el.matches("iframe.spec-held__doc")
+        ? (el as HTMLIFrameElement).contentDocument
+        : null;
+      return doc ? [el, ...deep(doc.body)] : [el];
+    });
 
   const read = (el: Element, pseudo?: string) => {
-    const cs = getComputedStyle(el, pseudo);
+    const cs = styleOf(el, pseudo);
     const out: Record<string, string> = {};
     for (const p of props) out[p] = norm(cs.getPropertyValue(p));
     return out;
   };
 
   const record = (root: Element, self: boolean): Record<string, Props> => {
-    const all = [...(self ? [root] : []), ...root.querySelectorAll("*")].filter(
+    const all = [...(self ? [root] : []), ...deep(root)].filter(
       (el) =>
         !el.closest(".spec-label, .spec-dialog-behind") &&
-        !el.closest("[data-base-ui-focus-guard]") &&
+        !el.matches(sentinel) &&
         !(el !== root && isSpecimen(el)) &&
         !(
           el.namespaceURI?.endsWith("svg") && el.tagName.toLowerCase() !== "svg"
@@ -212,7 +227,7 @@ function collectInPage(args: {
       const key = `${base}#${n}`;
       const vals = read(el);
       // Geometry only where text cannot move it: see the header of kit-baseline.spec.ts.
-      const cs = getComputedStyle(el);
+      const cs = styleOf(el);
       const popup = el.classList.contains("orr-dialog");
       const button = el.classList.contains("orr-button");
       const input = el.classList.contains("orr-input");
@@ -230,13 +245,13 @@ function collectInPage(args: {
         for (const m of ["margin-left", "margin-right"]) delete vals[m];
       out[key] = vals;
       for (const ps of ["::before", "::after"]) {
-        const content = getComputedStyle(el, ps).getPropertyValue("content");
+        const content = styleOf(el, ps).getPropertyValue("content");
         if (content === "none" || content === "normal") continue;
         const pv: Record<string, string> = { content, ...read(el, ps) };
         // The button's hit area (inset: min(0px, (100% - hit-target) / 2)): its height is fixed
         // by the button's declared height; its width is fixed only on an icon button.
         if (button && ps === "::after") {
-          const pcs = getComputedStyle(el, ps);
+          const pcs = styleOf(el, ps);
           pv.height = norm(pcs.height);
           if (el.hasAttribute("data-icon")) pv.width = norm(pcs.width);
         }
@@ -260,11 +275,29 @@ function collectInPage(args: {
   };
 
   if (portal) {
-    add(
-      "Live/dialog open",
-      document.querySelector(`[data-portal-for="${panelId}"]`),
-      false,
+    // The open live dialog's layer, wherever the library renders it: the smallest element holding
+    // the popup and the backdrop and viewport the kit draws with it, under this panel's brand (the
+    // panel, or its portal wrapper). Held-open popups are in their frames' documents, not here.
+    const popup = [...document.querySelectorAll(".orr-dialog[data-open]")].find(
+      (d) => {
+        const owner = d.closest("[data-brand]");
+        return (
+          owner?.getAttribute("data-panel") === panelId ||
+          owner?.getAttribute("data-portal-for") === panelId
+        );
+      },
     );
+    if (!popup)
+      throw new Error(`kit baseline: no open live dialog in ${panelId}`);
+    const parts = [
+      popup,
+      ...popup
+        .closest("[data-brand]")!
+        .querySelectorAll(".orr-dialog__backdrop, .orr-dialog__viewport"),
+    ];
+    let layer: Element = popup;
+    while (!parts.every((p) => layer.contains(p))) layer = layer.parentElement!;
+    add("Live/dialog open", layer, true);
     return data;
   }
 
@@ -324,7 +357,12 @@ async function collect(
   panelId: string,
   portal: boolean,
 ): Promise<PanelData> {
-  return page.evaluate(collectInPage, { panelId, portal, props: PROPS });
+  return page.evaluate(collectInPage, {
+    panelId,
+    portal,
+    props: PROPS,
+    sentinel: FOCUS_SENTINEL,
+  });
 }
 
 /** Re-snapshot until two reads 150ms apart are identical, so no transition is sampled mid-flight. */
@@ -366,28 +404,17 @@ test.setTimeout(120_000);
 
 for (const id of PANELS) {
   test(`kit specimen computed styles: ${id}`, async ({ page }, testInfo) => {
-    // The specimen links Google Fonts for brand solar; never touch the network in a test.
-    await page.route(/fonts\.(googleapis|gstatic)\.com/, (route) =>
-      route.fulfill({ contentType: "text/css", body: "" }),
-    );
-    await page.goto("/kit.html");
-    await page.waitForFunction((sel) => {
-      const popups = [...document.querySelectorAll(sel)];
-      return (
-        popups.length === 3 &&
-        popups.every((p) => getComputedStyle(p).opacity === "1")
-      );
-    }, STATIC_POPUP);
+    // Network-free, and the three static dialogs have faded in.
+    await openSpecimen(page);
 
     const data = await settled(page, id, false);
 
-    // The live dialog, open: scrim, viewport and popup, in the panel's portal.
+    // The live dialog, open: scrim, viewport and popup, wherever the library renders them.
     const panel = page.locator(`[data-panel="${id}"]`);
     await panel.getByRole("button", { name: "Rename orbit" }).click();
-    const live = ".spec-portals .orr-dialog";
     await page.waitForFunction(
       (sel) => getComputedStyle(document.querySelector(sel)!).opacity === "1",
-      live,
+      LIVE_POPUP,
     );
     Object.assign(data, await settled(page, id, true));
 

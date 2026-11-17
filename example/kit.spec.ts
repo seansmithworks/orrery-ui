@@ -4,8 +4,10 @@ import {
   PANELS,
   TAGS,
   LIVE_POPUP,
+  FOCUS_SENTINEL,
   openSpecimen,
   panel,
+  panelScopes,
   violations,
   focusRing,
   expectRing,
@@ -125,15 +127,20 @@ for (const id of PANELS) {
     });
 
     test("IconButton: every one has an accessible name", async ({ page }) => {
-      const names = await panel(page, id)
-        .locator(".orr-button[data-icon]")
-        .evaluateAll((els) =>
-          els.map(
-            (el) =>
-              el.getAttribute("aria-label") ??
-              el.getAttribute("aria-labelledby") ??
-              "",
-          ),
+      // The panel and its held-open frames (the static dialog's close button).
+      const names: string[] = [];
+      for (const scope of await panelScopes(page, id))
+        names.push(
+          ...(await scope
+            .locator(".orr-button[data-icon]")
+            .evaluateAll((els) =>
+              els.map(
+                (el) =>
+                  el.getAttribute("aria-label") ??
+                  el.getAttribute("aria-labelledby") ??
+                  "",
+              ),
+            )),
         );
       expect(names.length).toBeGreaterThan(0);
       expect(names.filter((n) => !n.trim())).toEqual([]);
@@ -178,23 +185,22 @@ for (const id of PANELS) {
       const inside = () =>
         dialog.evaluate((d) => d.contains(document.activeElement));
       expect(await inside()).toBe(true);
-      // Record every element that takes focus. Base UI wraps focus through an aria-hidden
-      // focus-guard span (one async hop), so the guard and <body> may hold focus for a moment;
-      // nothing else outside the popup may ever take it.
-      await dialog.evaluate((d) => {
+      // Record every element that takes focus. A trap may wrap focus through a focus sentinel
+      // (FOCUS_SENTINEL; Base UI's guard spans, one async hop), so a sentinel and <body> may hold
+      // focus for a moment; nothing else outside the popup may ever take it.
+      await dialog.evaluate((d, sentinel) => {
         const w = window as unknown as { escaped: string[] };
         w.escaped = [];
         document.addEventListener(
           "focusin",
           (e) => {
             const t = e.target as HTMLElement;
-            if (d.contains(t) || t.hasAttribute("data-base-ui-focus-guard"))
-              return;
+            if (d.contains(t) || t.matches(sentinel)) return;
             w.escaped.push(t.outerHTML.slice(0, 80));
           },
           true,
         );
-      });
+      }, FOCUS_SENTINEL);
       // Four tabbables inside (close, name, Cancel, Save): six presses each way wrap past both ends.
       for (const key of [
         ...Array(6).fill("Tab"),
@@ -271,35 +277,44 @@ for (const id of PANELS) {
     test("hit area: every Button and IconButton answers a press 22px from its centre; inputs are 44px tall", async ({
       page,
     }) => {
-      const misses = await panel(page, id)
-        // The dense row is measured by its own test below: there the 44px areas abut by design.
-        .locator(".orr-button:not([data-preview~='active']):not(.spec-dense *)")
-        .evaluateAll((els) => {
-          const out: string[] = [];
-          for (const el of els) {
-            el.scrollIntoView({ block: "center", inline: "center" });
-            const r = el.getBoundingClientRect();
-            const cx = r.left + r.width / 2;
-            const cy = r.top + r.height / 2;
-            const half = 21.5; // a 43px box around the centre: inside a 44px hit area
-            for (const [x, y] of [
-              [cx, cy - half],
-              [cx, cy + half],
-              [cx - half, cy],
-              [cx + half, cy],
-            ]) {
-              if (
-                document.elementFromPoint(x, y)?.closest(".orr-button") !== el
-              ) {
-                out.push(
-                  `${el.getAttribute("aria-label") ?? el.textContent} ${Math.round(r.width)}x${Math.round(r.height)} misses at ${Math.round(x - cx)},${Math.round(y - cy)}`,
-                );
-                break;
+      // The panel and its held-open frames, each hit-tested in its own document.
+      const misses: string[] = [];
+      for (const scope of await panelScopes(page, id))
+        misses.push(
+          ...(await scope
+            // The dense row is measured by its own test below: there the 44px areas abut by design.
+            .locator(
+              ".orr-button:not([data-preview~='active']):not(.spec-dense *)",
+            )
+            .evaluateAll((els) => {
+              const out: string[] = [];
+              for (const el of els) {
+                el.scrollIntoView({ block: "center", inline: "center" });
+                const r = el.getBoundingClientRect();
+                const cx = r.left + r.width / 2;
+                const cy = r.top + r.height / 2;
+                const half = 21.5; // a 43px box around the centre: inside a 44px hit area
+                for (const [x, y] of [
+                  [cx, cy - half],
+                  [cx, cy + half],
+                  [cx - half, cy],
+                  [cx + half, cy],
+                ]) {
+                  if (
+                    el.ownerDocument
+                      .elementFromPoint(x, y)
+                      ?.closest(".orr-button") !== el
+                  ) {
+                    out.push(
+                      `${el.getAttribute("aria-label") ?? el.textContent} ${Math.round(r.width)}x${Math.round(r.height)} misses at ${Math.round(x - cx)},${Math.round(y - cy)}`,
+                    );
+                    break;
+                  }
+                }
               }
-            }
-          }
-          return out;
-        });
+              return out;
+            })),
+        );
       expect(misses).toEqual([]);
       const heights = await panel(page, id)
         .locator(".orr-input")
@@ -472,20 +487,29 @@ test.describe("Dialog edge cases (fixtures/kit-dialog.html)", () => {
     await page.goto("/fixtures/kit-dialog.html");
   });
 
-  test("portal: with no container, an open dialog's portal node is a direct child of <body>", async ({
+  test("escape: with no container, an open dialog leaves the app's stacking (outside the app root, or in the top layer) and is on top at its centre", async ({
     page,
   }) => {
-    // The specimen's live dialogs pass a container (a per-panel wrapper that carries the brand), so
-    // this is checked here, on Dialog.Popup's default, which is what an app gets.
+    // Checked here, on Dialog.Popup's default, which is what an app gets. Either way of leaving the
+    // app passes: a portal to the end of <body> (Base UI) or the browser's top layer (UI SDK).
     await page.getByRole("button", { name: "Open settings" }).click();
     const dialog = page.getByRole("dialog", { name: "Orbit settings" });
     await expect(dialog).toBeVisible();
     expect(
       await dialog.evaluate((d) => {
-        const portal = d.closest("[data-base-ui-portal]");
-        return portal?.parentElement?.tagName ?? "no portal";
+        const r = d.getBoundingClientRect();
+        return {
+          leavesApp:
+            !d.closest("#root") || !!d.closest(":popover-open, :modal"),
+          onTop: d.contains(
+            document.elementFromPoint(
+              r.left + r.width / 2,
+              r.top + r.height / 2,
+            ),
+          ),
+        };
       }),
-    ).toBe("BODY");
+    ).toEqual({ leavesApp: true, onTop: true });
   });
 
   test("nested dialog: opens above its parent, Escape closes only the inner one, focus returns to the inner trigger", async ({
@@ -578,10 +602,10 @@ test.describe("golden examples (fixtures/kit-examples.html)", () => {
       })),
     );
     expect(mounted.map((m) => m.file).sort()).toEqual(files);
-    for (const m of mounted) expect(m.children, m.file ?? "").toBeGreaterThan(0);
+    for (const m of mounted)
+      expect(m.children, m.file ?? "").toBeGreaterThan(0);
 
-    const scope = (b: AxeBuilder) =>
-      b.include("main").exclude("[data-base-ui-focus-guard]");
+    const scope = (b: AxeBuilder) => b.include("main").exclude(FOCUS_SENTINEL);
     const wcag = await scope(new AxeBuilder({ page })).withTags(TAGS).analyze();
     const labelInName = await scope(new AxeBuilder({ page }))
       .withRules(["label-content-name-mismatch"])
@@ -606,8 +630,8 @@ test.describe("golden examples (fixtures/kit-examples.html)", () => {
     await expect(error).toBeVisible();
     const errorId = await error.getAttribute("id");
     expect(errorId).toBeTruthy();
-    expect((await email.getAttribute("aria-describedby"))?.split(" ")).toContain(
-      errorId,
-    );
+    expect(
+      (await email.getAttribute("aria-describedby"))?.split(" "),
+    ).toContain(errorId);
   });
 });

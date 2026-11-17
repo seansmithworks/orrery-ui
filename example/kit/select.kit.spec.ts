@@ -2,6 +2,7 @@ import { test, expect, type Locator, type Page } from "@playwright/test";
 import {
   PANELS,
   openSpecimen,
+  heldPopupsShown,
   panel,
   violations,
   focusRing,
@@ -15,18 +16,14 @@ import {
  * which are inert, so nothing here interacts with them. Every wait is on state, never on time.
  */
 
-const FRAME_POPUP = ".spec-select-frame .orr-select__popup";
-
 test.beforeEach(async ({ page }) => {
   await openSpecimen(page);
   // This block's own wait: the nine held-open popups (three per panel) have faded in.
-  await page.waitForFunction((sel) => {
-    const popups = [...document.querySelectorAll(sel)];
-    return (
-      popups.length === 9 &&
-      popups.every((p) => getComputedStyle(p).opacity === "1")
-    );
-  }, FRAME_POPUP);
+  await page.waitForFunction(heldPopupsShown, {
+    frame: ".spec-select-frame",
+    popup: ".orr-select__popup",
+    count: 9,
+  });
 });
 
 const block = (page: Page, id: string) =>
@@ -242,24 +239,28 @@ for (const id of PANELS) {
       expect(await items.evaluateAll(small)).toEqual([]);
     });
 
-    test("the popup renders inside the container it was given", async ({
+    test("the open popup stays in its cell, under the panel's brand, and is on top at its centre", async ({
       page,
     }) => {
-      const { cell: c, trigger, list } = live(page, id);
+      // Whether the library portals into the cell's node or renders in place in the top layer.
+      const { trigger, list } = live(page, id);
       await trigger.click();
       await settledOpen(list);
       expect(
         await list.evaluate((l) => {
-          const portal = l.closest("[data-base-ui-portal]");
+          const r = l.getBoundingClientRect();
           return {
-            parent: portal?.parentElement?.className,
             inCell: !!l.closest('[data-cell="rest"]'),
+            panel: l.closest("[data-brand]")?.getAttribute("data-panel"),
+            onTop: l.contains(
+              document.elementFromPoint(
+                r.left + r.width / 2,
+                r.top + r.height / 2,
+              ),
+            ),
           };
         }),
-      ).toEqual({ parent: "spec-select-portal", inCell: true });
-      await expect(c.locator(".spec-select-portal [role=listbox]")).toHaveCount(
-        1,
-      );
+      ).toEqual({ inCell: true, panel: id, onTop: true });
     });
 
     test("focus ring: --ring-width solid --accent on the keyboard-focused trigger", async ({
