@@ -17,29 +17,22 @@
   padding: var(--space-16);
 }
 
-/* Floating UI places a popup against its document's viewport: here the frame, which is shorter than
+/* UI SDK places a popup against its document's viewport: here the frame, which is shorter than
    the longest list, so it could flip the popup above the trigger, out of the frame, and shrink
-   --available-height. The picture pins only the positioner: its box starts under the trigger (the
-   frame's padding, the label line, the field gap, the trigger), and --available-height is the kit's
-   max height plus offset, so the kit's own clamp resolves to its max height. The popup's margin
-   (the offset), drawing, items and max height all come from the kit's rules. When Floating UI has
-   flipped the popup (data-side="top"), the kit puts the offset below the popup instead of above, so
-   the pin moves the box down by the offset to keep the same picture. The live "long list" cell and
-   select.kit.spec.ts check the real placement, offset and clamp. */
-.spec-select-frame__body .orr-select__positioner {
+   --available-height. The picture pins only the popup's placement (UI SDK writes top, left and
+   --available-height on the popup itself): its box starts the kit's offset under the trigger (the
+   frame's padding, the label line, the field gap, the trigger, the offset), on whichever side UI SDK
+   chose, and --available-height is the kit's max height plus offset, so the kit's own clamp resolves
+   to its max height. The label line is its font size times its line height (the line-height token
+   is a ratio). The popup's drawing, items and max height all come from the kit's rules. The
+   live "long list" cell and select.kit.spec.ts check the real placement, offset and clamp. */
+.spec-select-frame__body .orr-select__popup {
   top: calc(
-    var(--space-16) + var(--type-line-height-13) + var(--space-8) +
-      var(--hit-target-min)
+    var(--space-16) + var(--type-size-13) * var(--type-line-height-13) +
+      var(--space-8) + var(--hit-target-min) + var(--orr-select-offset)
   ) !important;
   left: var(--space-16) !important;
-  transform: none !important;
   --available-height: calc(
     var(--orr-select-max-height) + var(--orr-select-offset)
-  ) !important;
-}
-.spec-select-frame__body .orr-select__positioner[data-side="top"] {
-  top: calc(
-    var(--space-16) + var(--type-line-height-13) + var(--space-8) +
-      var(--hit-target-min) + var(--orr-select-offset)
   ) !important;
 }

@@ -1,9 +1,8 @@
 // Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a
-// placeholder. Validation is Base UI's own: Form runs each field's check on submit, blocks the submit,
+// placeholder. The form checks itself on submit (reportValidity): UI SDK's Field blocks the submit,
 // focuses the first invalid control, and Field.Error match="valueMissing" says what to fix. Root gets
 // `items` so the trigger shows the label, not the raw value. Spacing is token variables only.
-import { useState } from "react";
-import { Form } from "@base-ui/react/form";
+import { useState, type FormEvent } from "react";
 import { Button, Field, Select } from "../index";
 
 const INNER = { mercury: "Mercury", venus: "Venus", mars: "Mars" };
@@ -13,9 +12,17 @@ const ITEMS: Record<string, string> = { ...INNER, ...OUTER };
 export default function NewChart() {
   const [made, setMade] = useState<string | null>(null);
 
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const form = event.currentTarget;
+    if (!form.reportValidity()) return;
+    setMade(ITEMS[String(new FormData(form).get("body"))] ?? null);
+  }
+
   return (
-    <Form
-      onFormSubmit={(values) => setMade(ITEMS[String(values.body)] ?? null)}
+    <form
+      noValidate
+      onSubmit={submit}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -65,6 +72,6 @@ export default function NewChart() {
         </Button>
         <span role="status">{made ? `Chart made for ${made}.` : ""}</span>
       </div>
-    </Form>
+    </form>
   );
 }

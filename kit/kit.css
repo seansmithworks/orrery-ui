@@ -7,6 +7,8 @@
    for example `@layer orrery.kit, app;`, so your layers come after the kit. */
 /* UI SDK writes its popover reset in @layer ui-sdk, in a stylesheet it adds after the page's own.
    Declared first here, it ranks under the kit, so the kit's padding, border and fill win. */
+/* UI SDK writes a popover reset in the cascade layer ui-sdk, through a style sheet added after the
+   page's own. Declared here first, so ui-sdk ranks under orrery.kit wherever the page puts it. */
 @layer ui-sdk, orrery.kit;
 @import "./control.css";
 @import "./floating.css";

@@ -74,7 +74,7 @@
   }
 
   /* open: the hover line stays while the list is showing */
-  .orr-select[data-popup-open] {
+  .orr-select[data-open] {
     border-color: var(--text);
   }
 
@@ -98,10 +98,11 @@
     cursor: not-allowed;
   }
 
-  /* popup: on the overlay layer, below the trigger, never narrower than it */
+  /* popup: below the trigger, never narrower than it. UI SDK opens it in the browser's top layer,
+     so it needs no z-index; the positioner only holds the kit-local properties above, and draws no
+     box of its own (a box would add a gap inside the Field). */
   .orr-select__positioner {
-    z-index: var(--orr-z-overlay);
-    outline: 0;
+    display: contents;
   }
   .orr-select__popup {
     box-sizing: border-box;
@@ -118,12 +119,17 @@
     line-height: var(--type-line-height-14);
     transform-origin: var(--transform-origin);
     outline: 0;
+    /* The popup is a popover: the kit undoes the browser's popover padding and scrolling itself
+       (the list scrolls), as UI SDK's own reset does not reach a popup in another document. The
+       gap to the trigger is not a margin: UI SDK places the popup's box, and Select.tsx passes
+       --orr-select-offset to it as sideOffset. */
+    padding: 0;
+    overflow: visible;
   }
-  .orr-select__popup[data-side="bottom"] {
-    margin-top: var(--orr-select-offset);
-  }
-  .orr-select__popup[data-side="top"] {
-    margin-bottom: var(--orr-select-offset);
+  /* A closed popup UI SDK keeps in the page carries hidden. The display above outranks the
+     browser's own [hidden] rule and UI SDK's (which ranks under the kit), so the kit hides it. */
+  .orr-select__popup[hidden] {
+    display: none;
   }
   .orr-select__list {
     box-sizing: border-box;

@@ -8,6 +8,7 @@ import {
   focusRing,
   expectRing,
 } from "./kit-test";
+import { patternProblems, transitionsOff } from "./check-pattern";
 
 /**
  * select.kit.spec.ts: the Select block on the specimen page, once per brand panel.
@@ -486,4 +487,28 @@ test.describe("golden example (fixtures/kit-examples.html)", () => {
     await expect(error).toBeHidden();
     await expect(trigger).not.toHaveAttribute("aria-invalid", "true");
   });
+});
+
+test.describe("WAI-ARIA pattern (UI SDK checkPattern)", () => {
+  for (const id of PANELS) {
+    // UI SDK's select moves DOM focus into its list (aria-activedescendant is only for a search
+    // field), so the open list is checked as a listbox, not the trigger as a combobox.
+    test(`${id}: the open list of the live select passes checkPattern "listbox"`, async ({
+      page,
+    }) => {
+      // Transitions off, so the check reads the settled DOM after each key it presses.
+      await transitionsOff(page);
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(list).toBeVisible();
+      expect(
+        await patternProblems(
+          page,
+          `[data-panel="${id}"] [data-block="Select"] [data-cell="rest"] [role="listbox"]`,
+          "listbox",
+        ),
+      ).toBe("");
+    });
+  }
 });

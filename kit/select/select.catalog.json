@@ -2,60 +2,67 @@
   "example": "Select.example.tsx",
   "components": {
     "Select": {
-      "description": "A select on Base UI: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
+      "description": "A select on UI SDK: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
       "parts": {
         "Root": {
           "description": "Holds the value and the open state; it renders no element of its own.",
           "className": false,
-          "passthrough": "@base-ui/react/select#Select.Root.Props<unknown>",
+          "passthrough": "@ui-sdk/react/select#Select",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "items": {
                 "x-type": "object",
-                "x-from": "base-ui",
-                "description": "Maps each value to its label, so the trigger shows the label and not the raw value."
+                "description": "Maps each value to its label (or UI SDK list data), so the trigger shows the label and not the raw value."
               },
               "value": {
                 "x-type": "object",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The selected value when controlled; pair it with onValueChange. null shows the placeholder."
               },
               "defaultValue": {
                 "x-type": "object",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The value selected on first render when the value is not controlled."
               },
               "onValueChange": {
                 "x-type": "function",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Called with the next value whenever an item is picked."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Stops the select from opening or changing; inside Field.Root, Field.Root's disabled does the same."
               },
               "name": {
                 "type": "string",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The value's name when the form is submitted, if Field.Root does not give one."
               },
               "required": {
                 "type": "boolean",
-                "x-from": "base-ui",
-                "description": "A value must be chosen; inside Base UI's Form, submitting empty fails with valueMissing for Field.Error."
+                "x-from": "ui-sdk",
+                "description": "A value must be chosen: a form submit with none is blocked and fails with valueMissing for Field.Error."
               },
               "open": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Controls the open state; pair it with onOpenChange."
               },
               "modal": {
-                "type": "boolean",
-                "x-from": "base-ui",
-                "description": "Unset, true: while open, page scroll locks and outside presses only close. false leaves the page usable."
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "enum": ["pointer"]
+                  }
+                ],
+                "x-from": "ui-sdk",
+                "description": "true: while open, page scroll locks and the page is inert. pointer: outside presses only close. false: the page stays usable."
               }
             },
             "required": []
@@ -64,12 +71,12 @@
         "Trigger": {
           "description": "The button that opens the list; it shows the selected label or the placeholder, with the Input's look.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/select#Select.Trigger.Props",
+          "passthrough": "@ui-sdk/react/select#SelectTrigger",
           "props": {
             "type": "object",
             "properties": {
               "placeholder": {
-                "x-type": "node",
+                "type": "string",
                 "description": "Shown, muted, while nothing is selected. It is not a label; Field.Label still names the select."
               }
             },
@@ -77,33 +84,26 @@
           }
         },
         "Popup": {
-          "description": "Portal, positioner, popup and list in one part; it opens below the trigger, at least as wide, on document.body.",
+          "description": "Positioner, popup and list in one part; it opens below the trigger, at least as wide, in the browser's top layer.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/select#Select.Popup.Props",
+          "passthrough": "@ui-sdk/react/select#SelectContent",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "container": {
                 "x-type": "object",
-                "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+                "description": "The element, or a ref to it, the popup mounts into instead of in place. It still opens in the top layer."
               },
               "side": {
                 "type": "string",
-                "enum": [
-                  "top",
-                  "bottom",
-                  "left",
-                  "right",
-                  "inline-end",
-                  "inline-start"
-                ],
-                "description": "The trigger's side the popup opens on; unset, Base UI's bottom. It flips when there is no room."
+                "enum": ["top", "bottom", "left", "right", "start", "end"],
+                "description": "The trigger's side the popup opens on; unset, bottom. It flips when there is no room."
               },
               "align": {
                 "type": "string",
                 "enum": ["start", "center", "end"],
-                "description": "The popup's alignment along that side; unset, Base UI's center."
+                "description": "The popup's alignment along that side; unset, center."
               },
               "sideOffset": {
                 "description": "Extra px on top of the kit's CSS offset. Neither applies when alignItemWithTrigger lays the popup over the trigger.",
@@ -112,17 +112,12 @@
               "collisionPadding": {
                 "type": "number",
                 "default": 8,
-                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter. Base UI's is 5."
+                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter."
               },
               "alignItemWithTrigger": {
                 "type": "boolean",
                 "default": false,
                 "description": "Kit-set off: the popup opens below the trigger. On, it covers the trigger with the selected item over the value."
-              },
-              "finalFocus": {
-                "x-type": "object",
-                "x-from": "base-ui",
-                "description": "What takes focus on close: a ref, a function returning an element, or false. Default: the trigger."
               }
             },
             "required": []
@@ -131,34 +126,34 @@
         "Item": {
           "description": "One option; its text is the label used for typeahead, and a check in the text colour marks the selected one.",
           "inside": ["Popup", "Group"],
-          "passthrough": "@base-ui/react/select#Select.Item.Props",
+          "passthrough": "@ui-sdk/react/select#SelectItem",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "value": {
-                "x-type": "object",
-                "x-from": "base-ui",
+                "type": "string",
+                "x-from": "ui-sdk",
                 "description": "The value this item stands for; one of the keys of Root's items."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Shows the item muted and stops it from being picked."
               },
               "label": {
                 "type": "string",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The text typeahead matches, when it should differ from the item's visible text."
               }
             },
-            "required": []
+            "required": ["value"]
           }
         },
         "Group": {
           "description": "Groups related items under a GroupLabel.",
           "inside": "Popup",
-          "passthrough": "@base-ui/react/select#Select.Group.Props",
+          "passthrough": "@ui-sdk/react/select#SelectGroup",
           "slots": ["default"],
           "props": {
             "type": "object",
@@ -167,9 +162,9 @@
           }
         },
         "GroupLabel": {
-          "description": "The muted heading of a group; Base UI points the group's aria-labelledby at it.",
+          "description": "The muted heading of a group; UI SDK points the group's aria-labelledby at it.",
           "inside": "Group",
-          "passthrough": "@base-ui/react/select#Select.GroupLabel.Props",
+          "passthrough": "@ui-sdk/react/select#SelectGroupLabel",
           "slots": ["default"],
           "props": {
             "type": "object",
@@ -180,7 +175,7 @@
         "Separator": {
           "description": "A hairline between groups.",
           "inside": "Popup",
-          "passthrough": "@base-ui/react/select#Select.Separator.Props",
+          "passthrough": "@ui-sdk/react/select#SelectSeparator",
           "props": {
             "type": "object",
             "properties": {},
