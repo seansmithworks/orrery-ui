@@ -40,3 +40,42 @@
     outline-offset: var(--ring-width);
   }
 }
+
+/* kit/select/select.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-select:not([data-disabled])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+  }
+  .orr-select:not([data-disabled])[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}
+
+/* kit/checkbox/checkbox.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-checkbox:not([data-disabled])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+  }
+  .orr-checkbox[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}
+
+/* kit/textarea/textarea.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-textarea:not([data-disabled], [readonly])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+  }
+  .orr-textarea:not([data-disabled])[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}
