@@ -1,10 +1,12 @@
 import type { ComponentPropsWithRef } from "react";
-import { useRender } from "@base-ui/react/use-render";
+import { renderElement, type PartProps } from "@ui-sdk/react/primitive";
 import { cx } from "../cx";
 
-export type CardProps = Omit<useRender.ComponentProps<"div">, "className"> & {
-  className?: string;
-};
+// className and children are plain: UI SDK's state-function forms have no state to read on a card.
+export type CardProps = Omit<PartProps<"div">, "className" | "children"> &
+  Pick<ComponentPropsWithRef<"div">, "children"> & {
+    className?: string;
+  };
 
 type SlotProps = Omit<ComponentPropsWithRef<"div">, "className"> & {
   className?: string;
@@ -12,11 +14,11 @@ type SlotProps = Omit<ComponentPropsWithRef<"div">, "className"> & {
 
 /** The card surface: a plain in-flow container. `render` swaps the element (section, article, li). */
 function Root({ className, render, ...props }: CardProps) {
-  return useRender({
-    defaultTagName: "div",
+  return renderElement(
+    "div",
+    { ...props, className: cx("orr-card", className) },
     render,
-    props: { ...props, className: cx("orr-card", className) },
-  });
+  );
 }
 
 function Header({ className, ...props }: SlotProps) {

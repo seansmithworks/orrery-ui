@@ -6,8 +6,8 @@
    The root renders cx("orr-tabs", "orr-control", className), its own class first (Tabs.tsx), so the selected colours
    in control.css reach the bar. The list is a full-width row over a --line divider; tabs that do not fit scroll
    sideways. Each tab is --hit-target-min high, its label --text-muted, --text when selected or hovered. The selected
-   bar is one element (Base UI's Indicator) spanning everything the list scrolls, clipped to the selected tab by the
-   --active-tab-left and --active-tab-right properties Base UI measures. Moving to another tab animates the clip, so
+   bar is one element (UI SDK's TabsIndicator) spanning everything the list scrolls, clipped to the selected tab by the
+   --active-tab-left and --active-tab-right properties UI SDK measures. Moving to another tab animates the clip, so
    the bar slides without animating layout. */
 
 @layer orrery.kit {
@@ -68,8 +68,9 @@
   }
 
   /* The selected bar: as wide as everything the list scrolls (the selected tab's offset, width and the rest, as
-     Base UI measures them), sitting on the divider, clipped to the selected tab. It scrolls with the tabs. Base UI
-     keeps it hidden until it has measured the tab, so it never paints at a wrong place. */
+     UI SDK measures them), sitting on the divider, clipped to the selected tab. It scrolls with the tabs. Until UI SDK
+     has measured the tab the properties are unset, so the width is invalid, the bar is zero wide and never paints
+     at a wrong place. */
   .orr-tabs__indicator {
     position: absolute;
     left: 0;
@@ -84,7 +85,7 @@
   }
 
   /* selected */
-  .orr-tabs__tab[data-active] {
+  .orr-tabs__tab[data-selected] {
     color: var(--text);
   }
 

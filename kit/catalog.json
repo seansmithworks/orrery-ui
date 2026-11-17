@@ -150,7 +150,7 @@
       "parts": {
         "Root": {
           "description": "The surface; it renders a div unless render swaps in another element such as section, article or li.",
-          "passthrough": "@base-ui/react/use-render#useRender.ComponentProps<\"div\">",
+          "passthrough": "@ui-sdk/react/primitive#PartProps<\"div\">",
           "slots": [
             "default"
           ],
@@ -159,7 +159,7 @@
             "properties": {
               "render": {
                 "x-type": "element",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Replaces the div with another element, for example render={<article />} or render={<li />}."
               }
             },
@@ -1003,11 +1003,11 @@
       }
     },
     "Tabs": {
-      "description": "Tabs on Base UI: a row of tabs that each show one panel, moved through with the arrow keys, Home and End.",
+      "description": "Tabs on UI SDK: a row of tabs that each show one panel, moved through with the arrow keys, Home and End.",
       "parts": {
         "Root": {
           "description": "Holds the selected value and groups the list and the panels, in one horizontal row.",
-          "passthrough": "@base-ui/react/tabs#Tabs.Root.Props",
+          "passthrough": "@ui-sdk/react/tabs#Tabs",
           "slots": [
             "default"
           ],
@@ -1015,18 +1015,18 @@
             "type": "object",
             "properties": {
               "value": {
-                "x-type": "object",
-                "x-from": "base-ui",
-                "description": "The selected tab's value (usually a string), when you control it; pair with onValueChange. Use defaultValue otherwise."
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The selected tab's value, when you control it; pair with onValueChange. Use defaultValue otherwise."
               },
               "defaultValue": {
-                "x-type": "object",
-                "x-from": "base-ui",
+                "type": "string",
+                "x-from": "ui-sdk",
                 "description": "The tab selected first, when it manages its own state. Unset, the first enabled tab."
               },
               "onValueChange": {
                 "x-type": "function",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Called with the newly selected tab's value."
               }
             },
@@ -1036,7 +1036,7 @@
         "List": {
           "description": "The row of tabs, with the selected bar drawn under the selected tab.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/tabs#Tabs.List.Props",
+          "passthrough": "@ui-sdk/react/tabs#TabsList",
           "slots": [
             "default"
           ],
@@ -1045,7 +1045,7 @@
             "properties": {
               "activateOnFocus": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "default": false,
                 "description": "Select a tab as the arrow keys reach it. Off by default: arrows move focus, Enter or Space selects."
               }
             },
@@ -1055,7 +1055,7 @@
         "Tab": {
           "description": "One tab: a button that shows its panel when selected.",
           "inside": "List",
-          "passthrough": "@base-ui/react/tabs#Tabs.Tab.Props",
+          "passthrough": "@ui-sdk/react/tabs#TabsTab",
           "slots": [
             "default"
           ],
@@ -1063,13 +1063,13 @@
             "type": "object",
             "properties": {
               "value": {
-                "x-type": "object",
-                "x-from": "base-ui",
-                "description": "Names the tab, usually a string; the Panel with the same value is the one it shows."
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "Names the tab; the Panel with the same value is the one it shows."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Blocks selecting the tab. The arrow keys still reach it, so a screen reader announces it as unavailable."
               }
             },
@@ -1081,7 +1081,7 @@
         "Panel": {
           "description": "The content one tab shows, in the page only while its tab is selected unless keepMounted is set.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/tabs#Tabs.Panel.Props",
+          "passthrough": "@ui-sdk/react/tabs#TabsPanel",
           "slots": [
             "default"
           ],
@@ -1089,13 +1089,13 @@
             "type": "object",
             "properties": {
               "value": {
-                "x-type": "object",
-                "x-from": "base-ui",
+                "type": "string",
+                "x-from": "ui-sdk",
                 "description": "The value of the Tab that shows this panel."
               },
               "keepMounted": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Keep the panel in the page, hidden, while another tab is selected, so its state survives."
               }
             },

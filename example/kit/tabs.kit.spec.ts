@@ -7,6 +7,7 @@ import {
   focusRing,
   expectRing,
 } from "./kit-test";
+import { patternProblems, transitionsOff } from "./check-pattern";
 
 /**
  * tabs.kit.spec.ts: the Tabs block on the specimen page, once per brand panel.
@@ -315,6 +316,22 @@ for (const id of PANELS) {
 
     test("Tabs: axe, no violations in the panel", async ({ page }) => {
       expect(await violations(page, id)).toEqual([]);
+    });
+
+    test("Tabs: UI SDK's checkPattern finds no departure from the WAI-ARIA tabs pattern", async ({
+      page,
+    }) => {
+      await transitionsOff(page);
+      for (const name of ["first selected", "disabled"]) {
+        expect(
+          await patternProblems(
+            page,
+            `[data-panel="${id}"] [data-block="Tabs"] [data-cell="${name}"] .orr-tabs`,
+            "tabs",
+          ),
+          name,
+        ).toBe("");
+      }
     });
   });
 }
