@@ -145,6 +145,74 @@
         "code": "// Golden example: the footer of an edit form. Cancel and Save, with Save showing progress while it works,\n// and an undo icon in the dense toolbar above. Spacing is token variables only.\nimport { useEffect, useState } from \"react\";\nimport { Button, IconButton } from \"../index\";\n\nfunction UndoGlyph() {\n  return (\n    <svg\n      viewBox=\"0 0 20 20\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth={1.5}\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n      aria-hidden=\"true\"\n    >\n      <path d=\"M8 4L4 8l4 4M4 8h7a5 5 0 010 10H8\" />\n    </svg>\n  );\n}\n\nexport default function EditOrbitFooter() {\n  const [saving, setSaving] = useState(false);\n  const [edits, setEdits] = useState(2);\n\n  useEffect(() => {\n    if (!saving) return;\n    const done = setTimeout(() => {\n      setSaving(false);\n      setEdits(0);\n    }, 1200);\n    return () => clearTimeout(done);\n  }, [saving]);\n\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-16)\",\n      }}\n    >\n      {/* A dense toolbar of size s controls keeps --space-12 between them, so each keeps its 44px hit area. */}\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <IconButton\n          variant=\"quiet\"\n          size=\"s\"\n          aria-label=\"Undo last edit\"\n          disabled={edits === 0 || saving}\n          onClick={() => setEdits((n) => Math.max(0, n - 1))}\n        >\n          <UndoGlyph />\n        </IconButton>\n        <span style={{ color: \"var(--text-muted)\" }}>\n          {edits === 0 ? \"All changes saved\" : `${edits} unsaved edits`}\n        </span>\n      </div>\n      <div\n        style={{\n          display: \"flex\",\n          justifyContent: \"flex-end\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"quiet\" disabled={saving} onClick={() => setEdits(0)}>\n          Discard edits\n        </Button>\n        <Button\n          variant=\"primary\"\n          loading={saving}\n          disabled={edits === 0}\n          onClick={() => setSaving(true)}\n        >\n          Save changes\n        </Button>\n      </div>\n    </div>\n  );\n}\n"
       }
     },
+    "Checkbox": {
+      "description": "A checkbox on Base UI; inside Field.Root it takes the field's label, description, error and state, and shows a dash when mixed.",
+      "passthrough": "@base-ui/react/checkbox#Checkbox.Root.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "checked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it is ticked, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
+          },
+          "defaultChecked": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Whether it starts ticked, when it manages its own state."
+          },
+          "onCheckedChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new checked value when the person ticks or unticks it."
+          },
+          "indeterminate": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Shows a dash and announces mixed, for a box that sums up a group that is partly ticked. It wins over checked."
+          },
+          "disabled": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
+          },
+          "required": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Inside a Base UI Form, a submit without the tick is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
+          },
+          "name": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "The name submitted with the form. Inside Field.Root, the field's name wins."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "One yes or no choice that takes effect when the form is sent: include charts, email me.",
+        "A tick the person must give before an action, such as agreeing to terms."
+      ],
+      "avoidWhen": [
+        {
+          "text": "Exactly one option of a set may be picked.",
+          "instead": "fieldset"
+        },
+        {
+          "text": "The choice runs an action the moment it is pressed.",
+          "instead": "Button"
+        }
+      ],
+      "a11y": [
+        "Wrap the Checkbox and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
+        "For a required tick, set required and name, inside a Base UI Form, with Field.Error match=\"valueMissing\".",
+        "Use indeterminate only on a box that sums up a group of boxes, and keep it in step with them."
+      ],
+      "example": {
+        "file": "kit/checkbox/Checkbox.example.tsx",
+        "code": "// Golden example: confirm deleting an orbit. One optional choice with a hint, and one required tick. Base UI's Form\n// validates on submit: a missing tick blocks the submit, focuses the box and shows the valueMissing error.\n// Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Checkbox, Field } from \"../index\";\n\nexport default function ConfirmDeleteOrbit() {\n  const [deleted, setDeleted] = useState(false);\n\n  return (\n    <Form\n      onFormSubmit={() => setDeleted(true)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Checkbox name=\"deleteCharts\" defaultChecked />\n          Also delete its 12 charts\n        </Field.Label>\n        <Field.Description>\n          Charts that other dashboards use are kept.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Checkbox name=\"understood\" required />I understand this cannot be\n          undone\n        </Field.Label>\n        <Field.Error match=\"valueMissing\">\n          Tick this box to confirm. Orbit 7 cannot be restored.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Delete orbit\n        </Button>\n        <span role=\"status\">{deleted ? \"Orbit 7 deleted.\" : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+      }
+    },
     "Dialog": {
       "description": "A modal dialog on Base UI: focus is trapped while open, Escape and an outside press close it, and focus returns to the trigger.",
       "parts": {
@@ -777,6 +845,53 @@
       "example": {
         "file": "kit/select/Select.example.tsx",
         "code": "// Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a\n// placeholder. Validation is Base UI's own: Form runs each field's check on submit, blocks the submit,\n// focuses the first invalid control, and Field.Error match=\"valueMissing\" says what to fix. Root gets\n// `items` so the trigger shows the label, not the raw value. Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Field, Select } from \"../index\";\n\nconst INNER = { mercury: \"Mercury\", venus: \"Venus\", mars: \"Mars\" };\nconst OUTER = { jupiter: \"Jupiter\", saturn: \"Saturn\", neptune: \"Neptune\" };\nconst ITEMS: Record<string, string> = { ...INNER, ...OUTER };\n\nexport default function NewChart() {\n  const [made, setMade] = useState<string | null>(null);\n\n  return (\n    <Form\n      onFormSubmit={(values) => setMade(ITEMS[String(values.body)] ?? null)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"body\">\n        <Field.Label>Body</Field.Label>\n        <Select.Root items={ITEMS} required onValueChange={() => setMade(null)}>\n          <Select.Trigger placeholder=\"Choose a body\" />\n          <Select.Popup>\n            <Select.Group>\n              <Select.GroupLabel>Inner planets</Select.GroupLabel>\n              {Object.entries(INNER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n            <Select.Separator />\n            <Select.Group>\n              <Select.GroupLabel>Outer planets</Select.GroupLabel>\n              {Object.entries(OUTER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n          </Select.Popup>\n        </Select.Root>\n        <Field.Description>\n          The chart centres on this body and follows its orbit.\n        </Field.Description>\n        <Field.Error match=\"valueMissing\">\n          Choose a body for the chart to follow.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Make chart\n        </Button>\n        <span role=\"status\">{made ? `Chart made for ${made}.` : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+      }
+    },
+    "Textarea": {
+      "description": "Multi-line text; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
+      "passthrough": "@base-ui/react/field#Field.Control.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "number",
+            "default": 3,
+            "description": "Visible lines before the text scrolls. The person can still drag the box taller."
+          },
+          "readOnly": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
+          },
+          "placeholder": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "A hint shown while empty. It does not replace the label."
+          },
+          "onValueChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new text on each edit. Use it to control the value."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "Free text that runs to several lines: a note, a message, a description, feedback."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The text is one line: a name, an email, a URL.",
+          "instead": "Input"
+        }
+      ],
+      "a11y": [
+        "Place it inside Field.Root with a Field.Label; on its own it has no name unless you give it aria-label.",
+        "Say any length or format limit in Field.Description before the person types, not only in the error."
+      ],
+      "example": {
+        "file": "kit/textarea/Textarea.example.tsx",
+        "code": "// Golden example: a note on a support request. The note explains what helps up front and says what to fix\n// in words when it is empty. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Textarea } from \"../index\";\n\nexport default function SupportNote() {\n  const [note, setNote] = useState(\"\");\n  const [error, setError] = useState<string | null>(null);\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = note.trim()\n      ? null\n      : \"Write a few words about what went wrong.\";\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"note\" invalid={error !== null}>\n        <Field.Label>What happened</Field.Label>\n        <Textarea\n          rows={4}\n          value={note}\n          onValueChange={(value) => {\n            setNote(value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          Say what you clicked and what you expected. We read every note.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send note\n        </Button>\n        <span role=\"status\">{sent ? \"Note sent.\" : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     }
   }

@@ -10,6 +10,8 @@
 @import "./field/field.css";
 @import "./dialog/dialog.css";
 @import "./select/select.css";
+@import "./checkbox/checkbox.css";
+@import "./textarea/textarea.css";
 
 @layer orrery.kit {
   /* Kit-local properties. Only the Iris springs are dialled tokens today, so the kit's own
