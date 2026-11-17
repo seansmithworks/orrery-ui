@@ -195,9 +195,10 @@ const tests = {
 
   '[catalog-matches-kit] coverage: a component folder with no catalog file fails'() {
     const root = seededTree('folder');
-    fs.mkdirSync(path.join(root, 'kit/tabs'));
-    fs.writeFileSync(path.join(root, 'kit/tabs/Tabs.tsx'), 'export function Tabs() { return null; }\n');
-    has(coverageProblems(readKit(loadCatalog(root), root), loadCatalog(root), root), /^catalog: kit\/tabs\/ holds a component but no tabs\.catalog\.json$/);
+    // A folder name no real component uses (kit/tabs was used here until Tabs became a real component).
+    fs.mkdirSync(path.join(root, 'kit/seeded'));
+    fs.writeFileSync(path.join(root, 'kit/seeded/Seeded.tsx'), 'export function Seeded() { return null; }\n');
+    has(coverageProblems(readKit(loadCatalog(root), root), loadCatalog(root), root), /^catalog: kit\/seeded\/ holds a component but no seeded\.catalog\.json$/);
   },
 };
 
