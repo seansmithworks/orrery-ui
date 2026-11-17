@@ -1,16 +1,20 @@
 // Golden example: chart settings. Two settings that stay on or off, each named for what turns on, saved with the
 // form. An on switch submits its name with the value "on"; an off switch submits nothing, as a native checkbox.
 // Spacing is token variables only.
-import { useState } from "react";
-import { Form } from "@base-ui/react/form";
+import { useState, type FormEvent } from "react";
 import { Button, Field, Switch } from "../index";
 
 export default function ChartSettings() {
   const [saved, setSaved] = useState(false);
 
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setSaved(true);
+  }
+
   return (
-    <Form
-      onFormSubmit={() => setSaved(true)}
+    <form
+      onSubmit={submit}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -42,6 +46,6 @@ export default function ChartSettings() {
         </Button>
         <span role="status">{saved ? "Settings saved." : ""}</span>
       </div>
-    </Form>
+    </form>
   );
 }

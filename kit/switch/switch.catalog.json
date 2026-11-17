@@ -2,39 +2,38 @@
   "example": "Switch.example.tsx",
   "components": {
     "Switch": {
-      "description": "A switch on Base UI whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
-      "passthrough": "@base-ui/react/switch#Switch.Root.Props",
+      "description": "A switch on UI SDK whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
+      "passthrough": "@ui-sdk/react/switch#Switch",
       "props": {
         "type": "object",
         "properties": {
           "checked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it is on, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
           },
           "defaultChecked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it starts on, when it manages its own state."
           },
           "onCheckedChange": {
             "x-type": "function",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Called with the new value when the person turns it on or off."
           },
           "disabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
           },
           "name": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The name submitted with the form, with the value \"on\" when on and nothing when off. Inside Field.Root, the field's name wins."
           },
           "uncheckedValue": {
             "type": "string",
-            "x-from": "base-ui",
             "description": "The value submitted when it is off. Without it, an off switch submits nothing, as a native checkbox does."
           }
         },
