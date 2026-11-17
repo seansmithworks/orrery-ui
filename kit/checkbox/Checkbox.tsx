@@ -1,16 +1,24 @@
 "use client";
-import { Checkbox as BaseCheckbox } from "@base-ui/react/checkbox";
+import type { ComponentProps } from "react";
+import {
+  Checkbox as SdkCheckbox,
+  CheckboxIndicator as SdkCheckboxIndicator,
+} from "@ui-sdk/react/checkbox";
 import { cx } from "../cx";
 
+// checked and defaultChecked stay booleans: a mixed box is the indeterminate prop, not a checked value.
 export type CheckboxProps = Omit<
-  BaseCheckbox.Root.Props,
-  "className" | "children"
-> & {
-  className?: string;
-};
+  ComponentProps<typeof SdkCheckbox>,
+  "className" | "children" | "render" | "checked" | "defaultChecked"
+> &
+  Pick<ComponentProps<"input">, "checked" | "defaultChecked"> & {
+    /** Shows a dash and announces mixed. It wins over checked. */
+    indeterminate?: boolean;
+    className?: string;
+  };
 
 /**
- * Checkbox on Base UI: a box with a tick or, when indeterminate, a dash. Styles: kit.css (.orr-checkbox, .orr-control).
+ * Checkbox on UI SDK: a box with a tick or, when indeterminate, a dash. Styles: kit.css (.orr-checkbox, .orr-control).
  * Inside Field.Root it takes the field's label, description, error and state. The label wraps the box
  * and its text, so a click anywhere on the label toggles it:
  *
@@ -25,14 +33,23 @@ export type CheckboxProps = Omit<
  * </Field.Root>
  * ```
  */
-export function Checkbox({ className, ...props }: CheckboxProps) {
+export function Checkbox({
+  indeterminate,
+  checked,
+  className,
+  ...props
+}: CheckboxProps) {
   return (
     // Component class first: the kit baseline keys each element by its first orr- class.
-    <BaseCheckbox.Root
+    // A <span>, not UI SDK's default <button>: the box draws from the kit's CSS alone, with no
+    // button styles from the browser to undo.
+    <SdkCheckbox
       {...props}
+      checked={indeterminate ? "indeterminate" : checked}
+      render={<span />}
       className={cx("orr-checkbox", "orr-control", className)}
     >
-      <BaseCheckbox.Indicator className="orr-checkbox__indicator">
+      <SdkCheckboxIndicator className="orr-checkbox__indicator">
         <svg
           className="orr-checkbox__tick"
           viewBox="0 0 16 16"
@@ -54,7 +71,7 @@ export function Checkbox({ className, ...props }: CheckboxProps) {
         >
           <path d="M4.5 8h7" />
         </svg>
-      </BaseCheckbox.Indicator>
-    </BaseCheckbox.Root>
+      </SdkCheckboxIndicator>
+    </SdkCheckbox>
   );
 }

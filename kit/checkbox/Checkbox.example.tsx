@@ -1,16 +1,21 @@
-// Golden example: confirm deleting an orbit. One optional choice with a hint, and one required tick. Base UI's Form
-// validates on submit: a missing tick blocks the submit, focuses the box and shows the valueMissing error.
-// Spacing is token variables only.
-import { useState } from "react";
-import { Form } from "@base-ui/react/form";
+// Golden example: confirm deleting an orbit. One optional choice with a hint, and one required tick. The form
+// checks itself on submit (reportValidity): UI SDK's Field turns a missing tick into the valueMissing error in
+// the page and focuses the box, and the submit goes no further. Spacing is token variables only.
+import { useState, type FormEvent } from "react";
 import { Button, Checkbox, Field } from "../index";
 
 export default function ConfirmDeleteOrbit() {
   const [deleted, setDeleted] = useState(false);
 
+  function submit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    if (event.currentTarget.reportValidity()) setDeleted(true);
+  }
+
   return (
-    <Form
-      onFormSubmit={() => setDeleted(true)}
+    <form
+      noValidate
+      onSubmit={submit}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -47,6 +52,6 @@ export default function ConfirmDeleteOrbit() {
         </Button>
         <span role="status">{deleted ? "Orbit 7 deleted." : ""}</span>
       </div>
-    </Form>
+    </form>
   );
 }
