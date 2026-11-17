@@ -27,6 +27,7 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 | `data-open`, `data-closed` | `data-open`, `data-closed` | popups |
 | `data-starting-style`, `data-ending-style` | same | popup transitions |
 | `data-nested` | `data-nested` | dialog |
+| `data-active` | `data-selected` | the selected tab; tabs.css selects on it |
 | `data-base-ui-focus-guard` | none | UI SDK traps focus without guard spans |
 | `data-base-ui-portal` | none | UI SDK renders in place in the top layer |
 | (none) | `data-slot="<part>"` | extra, not styled by the kit |
@@ -37,6 +38,9 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 - **`initialFocus={false}`** is `"none"`; UI SDK takes an element or a function, not a ref.
 - **Field.Error `match`** has no `"valid"` key in UI SDK's `ValidityKey`.
 - **Button `onClick`** gets `(event, { source })`; a returned Promise makes it pending (`data-pending`).
+- **Tabs `activateOnFocus`** (Base UI, on the List, off by default) is UI SDK's `activation` on the root, `"automatic"` by default. The kit keeps `activateOnFocus` on `Tabs.List`, reports it to `Tabs.Root` through a context, and passes `"manual"` unless it is set.
+- **Tabs `value`** is a string in UI SDK (any value in Base UI); the catalog lists it as `"type": "string"`.
+- **`useRender`** is `renderElement(tag, props, render)` from `@ui-sdk/react/primitive`, typed with its `PartProps<"div">`; the same `render` element or function works. Card's passthrough is `@ui-sdk/react/primitive#PartProps<"div">`.
 
 ## Gotchas
 
@@ -44,3 +48,4 @@ The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `
 - **Field.Error `match` meaning.** In Base UI, `match` true renders the error even on a disabled field. UI SDK's `invalid={true}` on the Field shows errors at once; check the catalog's `invalid` and `match` descriptions against the new behaviour when Field moves.
 - **Centring in the top layer.** `inset: 0; margin: auto` makes the recorded margins text-derived, which breaks the platform-stable baseline. Centre with `top: 50%; left: 50%; translate: -50% -50%`.
 - **npm tags.** `latest` lags `beta`; always install the exact version.
+- **Tabs indicator.** `TabsIndicator` writes the same `--active-tab-left`, `-right`, `-width` (and top, bottom, height) as Base UI, measured against the list's scroll area, and re-measures on selection and on a resize of the list or any tab; the kit measures nothing. Unlike Base UI it is not hidden before the first measure: the properties are unset, so tabs.css's `width: calc(...)` is invalid and the bar is zero wide until then.
