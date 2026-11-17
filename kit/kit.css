@@ -5,6 +5,9 @@
    so any unlayered rule of your own wins over the kit whatever its specificity or load order:
    a single class is enough to override. If your own CSS uses layers, declare the order first,
    for example `@layer orrery.kit, app;`, so your layers come after the kit. */
+/* UI SDK writes its popover reset in @layer ui-sdk, in a stylesheet it adds after the page's own.
+   Declared first here, it ranks under the kit, so the kit's padding, border and fill win. */
+@layer ui-sdk, orrery.kit;
 @import "./control.css";
 @import "./floating.css";
 @import "./button/button.css";
