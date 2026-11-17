@@ -89,10 +89,10 @@ const tests = {
     has(bad, /Button\.props\.loading type is string, but the component's type is boolean/);
   },
 
-  '[catalog-matches-kit] props: a Base UI prop not marked x-from fails, and finalFocus is a real Dialog.Popup prop'() {
-    const bad = propsProblems(kit, seeded((f) => { delete f.dialog.components.Dialog.parts.Popup.props.properties.finalFocus['x-from']; }));
-    has(bad, /Dialog\.parts\.Popup\.props\.finalFocus is not declared under kit\/; mark it "x-from" with its library, "ui-sdk" or "base-ui"/);
-    assert.ok(kit.exports.get('Dialog').parts.get('Popup').names.has('finalFocus'), 'Dialog.Popup has no finalFocus prop');
+  '[catalog-matches-kit] props: a library prop not marked x-from fails, and open is a real Dialog.Root prop'() {
+    const bad = propsProblems(kit, seeded((f) => { delete f.dialog.components.Dialog.parts.Root.props.properties.open['x-from']; }));
+    has(bad, /Dialog\.parts\.Root\.props\.open is not declared under kit\/; mark it "x-from" with its library, "ui-sdk" or "base-ui"/);
+    assert.ok(kit.exports.get('Dialog').parts.get('Root').names.has('open'), 'Dialog.Root has no open prop');
     const gone = propsProblems(kit, seeded((f) => { f.dialog.components.Dialog.parts.Popup.props.properties.returnFocus = { 'x-type': 'object', 'x-from': 'base-ui', description: 'No such prop.' }; }));
     has(gone, /Dialog\.parts\.Popup\.props\.returnFocus is listed, but the component's props type has no returnFocus$/);
   },

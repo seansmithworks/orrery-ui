@@ -2,30 +2,34 @@
   "example": "Dialog.example.tsx",
   "components": {
     "Dialog": {
-      "description": "A modal dialog on Base UI: focus is trapped while open, Escape and an outside press close it, and focus returns to the trigger.",
+      "description": "A modal dialog on UI SDK: focus is trapped while open, Escape and an outside press close it, and focus returns to the trigger.",
       "parts": {
         "Root": {
           "description": "Holds the open state; it renders no element of its own.",
           "className": false,
-          "passthrough": "@base-ui/react/dialog#Dialog.Root.Props",
+          "passthrough": "@ui-sdk/react/dialog#Dialog",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "open": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Controls the open state; pair it with onOpenChange."
               },
               "defaultOpen": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Opens the dialog on first render when the state is not controlled."
               },
               "onOpenChange": {
                 "x-type": "function",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Called with the next open state whenever the dialog asks to open or close."
+              },
+              "disablePointerDismissal": {
+                "type": "boolean",
+                "description": "When true, a press outside the dialog, on its backdrop, does not close it. Escape still does."
               }
             },
             "required": []
@@ -34,7 +38,7 @@
         "Trigger": {
           "description": "The button that opens the dialog; it renders a kit Button.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/dialog#Dialog.Trigger.Props",
+          "passthrough": "@ui-sdk/react/dialog#DialogTrigger",
           "slots": ["default"],
           "props": {
             "type": "object",
@@ -54,25 +58,23 @@
           }
         },
         "Popup": {
-          "description": "The backdrop, viewport and dialog box in one part, in a portal on document.body (a nested dialog's goes in its parent's).",
+          "description": "The backdrop and dialog box in one part, mounted on document.body (a nested dialog's beside its parent's); open, both sit in the top layer.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/dialog#Dialog.Popup.Props",
+          "passthrough": "@ui-sdk/react/dialog#DialogContent",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "container": {
                 "x-type": "object",
-                "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+                "description": "The element, or a ref to it, the dialog mounts into instead of document.body."
               },
               "finalFocus": {
                 "x-type": "object",
-                "x-from": "base-ui",
                 "description": "What takes focus on close: a ref, a function returning an element, or false. Needed when the trigger may be gone by then."
               },
               "initialFocus": {
                 "x-type": "object",
-                "x-from": "base-ui",
                 "description": "What takes focus on open: a ref, a function returning an element, or false. Default: the first tabbable element."
               }
             },
@@ -87,16 +89,16 @@
           "props": { "type": "object", "properties": {}, "required": [] }
         },
         "Title": {
-          "description": "The heading that names the dialog; Base UI points the popup's aria-labelledby at it.",
+          "description": "The heading that names the dialog; UI SDK points the popup's aria-labelledby at it.",
           "inside": ["Popup", "Header"],
-          "passthrough": "@base-ui/react/dialog#Dialog.Title.Props",
+          "passthrough": "@ui-sdk/react/dialog#DialogTitle",
           "slots": ["default"],
           "props": { "type": "object", "properties": {}, "required": [] }
         },
         "Description": {
-          "description": "The supporting text; Base UI points the popup's aria-describedby at it.",
+          "description": "The supporting text; UI SDK points the popup's aria-describedby at it.",
           "inside": "Popup",
-          "passthrough": "@base-ui/react/dialog#Dialog.Description.Props",
+          "passthrough": "@ui-sdk/react/dialog#DialogDescription",
           "slots": ["default"],
           "props": { "type": "object", "properties": {}, "required": [] }
         },
@@ -110,7 +112,7 @@
         "Close": {
           "description": "A button that closes the dialog; it renders a kit Button unless render gives another element.",
           "inside": ["Actions", "Popup"],
-          "passthrough": "@base-ui/react/dialog#Dialog.Close.Props",
+          "passthrough": "@ui-sdk/react/dialog#DialogClose",
           "slots": ["default"],
           "props": {
             "type": "object",
@@ -127,7 +129,7 @@
               },
               "render": {
                 "x-type": "element",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Another element to close with, in place of the kit Button."
               }
             },
