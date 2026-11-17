@@ -14,6 +14,7 @@
 @import "./select/select.css";
 @import "./checkbox/checkbox.css";
 @import "./switch/switch.css";
+@import "./tabs/tabs.css";
 @import "./textarea/textarea.css";
 
 @layer orrery.kit {

@@ -15,5 +15,6 @@ export type { CardProps } from "./card/Card";
 export { Select, type SelectPopupProps, type SelectTriggerProps } from "./select/Select";
 export { Checkbox, type CheckboxProps } from "./checkbox/Checkbox";
 export { Switch, type SwitchProps } from "./switch/Switch";
+export { Tabs } from "./tabs/Tabs";
 export { Textarea } from "./textarea/Textarea";
 export type { TextareaProps } from "./textarea/Textarea";
