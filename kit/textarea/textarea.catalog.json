@@ -1,0 +1,48 @@
+{
+  "example": "Textarea.example.tsx",
+  "components": {
+    "Textarea": {
+      "description": "Multi-line text; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
+      "passthrough": "@base-ui/react/field#Field.Control.Props",
+      "props": {
+        "type": "object",
+        "properties": {
+          "rows": {
+            "type": "number",
+            "default": 3,
+            "description": "Visible lines before the text scrolls. The person can still drag the box taller."
+          },
+          "readOnly": {
+            "type": "boolean",
+            "x-from": "base-ui",
+            "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
+          },
+          "placeholder": {
+            "type": "string",
+            "x-from": "base-ui",
+            "description": "A hint shown while empty. It does not replace the label."
+          },
+          "onValueChange": {
+            "x-type": "function",
+            "x-from": "base-ui",
+            "description": "Called with the new text on each edit. Use it to control the value."
+          }
+        },
+        "required": []
+      },
+      "useWhen": [
+        "Free text that runs to several lines: a note, a message, a description, feedback."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The text is one line: a name, an email, a URL.",
+          "instead": "Input"
+        }
+      ],
+      "a11y": [
+        "Place it inside Field.Root with a Field.Label; on its own it has no name unless you give it aria-label.",
+        "Say any length or format limit in Field.Description before the person types, not only in the error."
+      ]
+    }
+  }
+}
