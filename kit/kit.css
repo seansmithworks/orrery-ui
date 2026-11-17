@@ -8,6 +8,7 @@
 @import "./button/button.css";
 @import "./field/field.css";
 @import "./dialog/dialog.css";
+@import "./checkbox/checkbox.css";
 @import "./textarea/textarea.css";
 
 @layer orrery.kit {
