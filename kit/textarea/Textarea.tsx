@@ -1,9 +1,10 @@
 "use client";
-import { Field as BaseField } from "@base-ui/react/field";
+import type { ComponentProps } from "react";
+import { Textarea as SdkTextarea } from "@ui-sdk/react/textarea";
 import { cx } from "../cx";
 
 export type TextareaProps = Omit<
-  BaseField.Control.Props,
+  ComponentProps<typeof SdkTextarea>,
   "className" | "render"
 > & {
   className?: string;
@@ -12,14 +13,14 @@ export type TextareaProps = Omit<
 };
 
 /**
- * Multi-line text. Base UI has no textarea primitive, so this is Field.Control rendered as a
- * `<textarea>`: inside Field.Root it takes the field's label, description, error and state.
+ * Multi-line text on UI SDK: a native `<textarea>`. Inside Field.Root it takes the field's
+ * label, description, error and state.
  */
 export function Textarea({ className, rows = 3, ...props }: TextareaProps) {
   return (
-    <BaseField.Control
+    <SdkTextarea
       {...props}
-      render={<textarea rows={rows} />}
+      rows={rows}
       className={cx("orr-textarea", className)}
     />
   );
