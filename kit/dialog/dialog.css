@@ -1,6 +1,6 @@
 /* Dialog. Every value is a token or a kit-local property from kit.css.
-   Floating level ("level 3") has no drawing decided yet. STRAWMAN (Sean's call 8):
-   page fill plus the heavy --line-strong hairline, no shadow. */
+   The popup's fill, border, radius and shadow are the floating level's drawing: the .orr-floating
+   class in kit/floating.css, which Dialog.tsx adds to the popup. */
 
 @layer orrery.kit {
   /* Backdrop and viewport sit on the overlay layer, so positioned page content
@@ -41,9 +41,6 @@
     max-height: 100%;
     overflow: auto;
     padding: var(--space-24);
-    border: var(--line-width) solid var(--line-strong);
-    border-radius: var(--radius-panel);
-    background-color: var(--page);
     color: var(--text);
     font-family: var(--font-sans);
   }
