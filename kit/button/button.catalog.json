@@ -2,8 +2,8 @@
   "example": "Button.example.tsx",
   "components": {
     "Button": {
-      "description": "A button on Base UI with a text label; while loading it ignores presses, stays focusable, is announced busy and keeps its width.",
-      "passthrough": "@base-ui/react/button#Button.Props",
+      "description": "A button on UI SDK with a text label; while loading it ignores presses, stays focusable, is announced busy and keeps its width.",
+      "passthrough": "@ui-sdk/react/button#Button",
       "slots": ["default"],
       "props": {
         "type": "object",
@@ -27,18 +27,18 @@
           },
           "disabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Blocks presses and removes the button from the tab order; prefer loading while an action is in progress."
           },
           "focusableWhenDisabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Keeps a disabled button in the tab order. The kit forces it on while loading, whatever you pass."
           },
           "type": {
             "type": "string",
             "enum": ["button", "submit", "reset"],
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The native button type; set submit on the button that sends a form."
           }
         },
@@ -64,7 +64,7 @@
     "IconButton": {
       "description": "A square Button holding one icon and no visible text; it warns in development when it has no accessible name.",
       "extends": "Button",
-      "passthrough": "@base-ui/react/button#Button.Props",
+      "passthrough": "@ui-sdk/react/button#Button",
       "slots": ["default"],
       "props": {
         "type": "object",

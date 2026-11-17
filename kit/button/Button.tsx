@@ -1,21 +1,27 @@
 "use client";
-import { Button as BaseButton } from "@base-ui/react/button";
+import type { ComponentProps } from "react";
+import { Button as SdkButton } from "@ui-sdk/react/button";
 import { cx } from "../cx";
 
 export type ButtonVariant = "primary" | "secondary" | "quiet";
 export type ButtonSize = "s" | "m";
 
-export type ButtonProps = Omit<BaseButton.Props, "className"> & {
-  /** primary: accent fill. secondary: layer fill plus hairline. quiet: text only. */
-  variant?: ButtonVariant;
-  /** m is the hit target (44px); s draws 32px and keeps a 44px hit area. */
-  size?: ButtonSize;
-  /** Disabled for input, still focusable, announced as busy. */
-  loading?: boolean;
-  className?: string;
-};
+// children is a plain node: the kit wraps it in a label span, so UI SDK's state-function children do not apply.
+export type ButtonProps = Omit<
+  ComponentProps<typeof SdkButton>,
+  "className" | "children"
+> &
+  Pick<ComponentProps<"button">, "children"> & {
+    /** primary: accent fill. secondary: layer fill plus hairline. quiet: text only. */
+    variant?: ButtonVariant;
+    /** m is the hit target (44px); s draws 32px and keeps a 44px hit area. */
+    size?: ButtonSize;
+    /** Disabled for input, still focusable, announced as busy. */
+    loading?: boolean;
+    className?: string;
+  };
 
-/** Button on Base UI. Styles: kit.css (.orr-button). */
+/** Button on UI SDK. Styles: kit.css (.orr-button). */
 export function Button({
   variant = "secondary",
   size = "m",
@@ -24,13 +30,22 @@ export function Button({
   focusableWhenDisabled,
   className,
   children,
+  onKeyDown,
   ...rest
 }: ButtonProps) {
+  // Disabled but focusable (always so while loading): UI SDK ignores the press, but Enter and
+  // Space would still dispatch a native click on the element. Cancel the keydown, as Base UI did,
+  // so no click event fires at all.
+  const inert = loading || (disabled && focusableWhenDisabled);
   // While loading, the label stays in place (and in the accessible name) but is not painted;
   // the spinner sits over it, so the button keeps its width.
   return (
-    <BaseButton
+    <SdkButton
       {...rest}
+      onKeyDown={(event) => {
+        if (inert && event.key !== "Tab") event.preventDefault();
+        onKeyDown?.(event);
+      }}
       disabled={disabled || loading}
       focusableWhenDisabled={loading || focusableWhenDisabled}
       aria-busy={loading || undefined}
@@ -41,7 +56,7 @@ export function Button({
     >
       <span className="orr-button__label">{children}</span>
       {loading && <span className="orr-button__spinner" aria-hidden="true" />}
-    </BaseButton>
+    </SdkButton>
   );
 }
 
