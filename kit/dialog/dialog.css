@@ -3,11 +3,10 @@
    class in kit/floating.css, which Dialog.tsx adds to the popup. */
 
 @layer orrery.kit {
-  /* Backdrop and viewport sit on the overlay layer, so positioned page content
-     that comes later in the document (or carries its own z-index) never paints over an open dialog.
-     A nested dialog's viewport comes later in the document, so it sits above its parent. */
-  .orr-dialog__backdrop,
-  .orr-dialog__viewport {
+  /* UI SDK puts the backdrop and the popup in the browser's top layer while open, above every
+     z-index; a nested dialog opens later, so it sits above its parent. The z-index is for a
+     browser with no top layer, where they render in place. */
+  .orr-dialog__backdrop {
     z-index: var(--orr-z-overlay);
   }
 
@@ -22,23 +21,24 @@
     );
   }
 
-  /* Menus, popovers and dialogs stay inside the window with an 8px gutter. */
-  .orr-dialog__viewport {
-    position: fixed;
-    inset: 0;
-    box-sizing: border-box;
-    display: grid;
-    place-items: center;
-    padding: var(--space-8);
-  }
-
+  /* Menus, popovers and dialogs stay inside the window with an 8px gutter. The popup centres
+     itself: the top layer has no viewport part to sit in. translate, not auto margins, so its
+     recorded box does not depend on its text. bottom is set too, with a fit-content height, so
+     the vertical insets are over-constrained and bottom is ignored: left auto, it would resolve
+     to a used value derived from the text's height. inset and margin are set in full, so the box
+     does not lean on UI SDK's popover reset over the browser's [popover] defaults. */
   .orr-dialog {
+    position: fixed;
+    inset: 50% auto 50% 50%;
+    translate: -50% -50%;
+    margin: 0;
     box-sizing: border-box;
     display: flex;
     flex-direction: column;
     gap: var(--space-8);
-    width: min(100%, var(--orr-dialog-width));
-    max-height: 100%;
+    width: min(100% - 2 * var(--space-8), var(--orr-dialog-width));
+    height: fit-content;
+    max-height: calc(100% - 2 * var(--space-8));
     overflow: auto;
     padding: var(--space-24);
     color: var(--text);
