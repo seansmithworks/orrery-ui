@@ -9,6 +9,7 @@
 @import "./button/button.css";
 @import "./field/field.css";
 @import "./dialog/dialog.css";
+@import "./card/card.css";
 @import "./select/select.css";
 @import "./checkbox/checkbox.css";
 @import "./textarea/textarea.css";
