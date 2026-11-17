@@ -30,13 +30,22 @@ export function Button({
   focusableWhenDisabled,
   className,
   children,
+  onKeyDown,
   ...rest
 }: ButtonProps) {
+  // Disabled but focusable (always so while loading): UI SDK ignores the press, but Enter and
+  // Space would still dispatch a native click on the element. Cancel the keydown, as Base UI did,
+  // so no click event fires at all.
+  const inert = loading || (disabled && focusableWhenDisabled);
   // While loading, the label stays in place (and in the accessible name) but is not painted;
   // the spinner sits over it, so the button keeps its width.
   return (
     <SdkButton
       {...rest}
+      onKeyDown={(event) => {
+        if (inert && event.key !== "Tab") event.preventDefault();
+        onKeyDown?.(event);
+      }}
       disabled={disabled || loading}
       focusableWhenDisabled={loading || focusableWhenDisabled}
       aria-busy={loading || undefined}
