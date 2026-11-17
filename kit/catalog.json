@@ -4,14 +4,14 @@
   "conventions": {
     "import": "Import components from kit/index.ts and the styles once from kit/kit.css, after the brand token CSS.",
     "className": "Every component and part accepts className unless its entry says \"className\": false; className is never listed in props.",
-    "passthrough": "Props not listed forward to the passthrough type; a listed one marked \"x-from\": \"base-ui\" is a passthrough prop worth knowing.",
+    "passthrough": "Props not listed forward to the passthrough type, or to the props of the passthrough component; a listed one marked \"x-from\" (its library, ui-sdk or base-ui) is a passthrough prop worth knowing.",
     "x-type": "A prop JSON cannot carry: node (any React child), element (one React element), function, or object (a DOM node or a ref).",
     "brands": "Brands differ through token values only. There is no brand, theme or style variant prop."
   },
   "components": {
     "Button": {
-      "description": "A button on Base UI with a text label; while loading it ignores presses, stays focusable, is announced busy and keeps its width.",
-      "passthrough": "@base-ui/react/button#Button.Props",
+      "description": "A button on UI SDK with a text label; while loading it ignores presses, stays focusable, is announced busy and keeps its width.",
+      "passthrough": "@ui-sdk/react/button#Button",
       "slots": [
         "default"
       ],
@@ -44,12 +44,12 @@
           },
           "disabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Blocks presses and removes the button from the tab order; prefer loading while an action is in progress."
           },
           "focusableWhenDisabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Keeps a disabled button in the tab order. The kit forces it on while loading, whatever you pass."
           },
           "type": {
@@ -59,7 +59,7 @@
               "submit",
               "reset"
             ],
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The native button type; set submit on the button that sends a form."
           }
         },
@@ -92,7 +92,7 @@
     "IconButton": {
       "description": "A square Button holding one icon and no visible text; it warns in development when it has no accessible name.",
       "extends": "Button",
-      "passthrough": "@base-ui/react/button#Button.Props",
+      "passthrough": "@ui-sdk/react/button#Button",
       "slots": [
         "default"
       ],
