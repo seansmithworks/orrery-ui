@@ -180,20 +180,25 @@ for (const id of PANELS) {
       page,
     }) => {
       const t = (name: string) => tab(page, id, "first selected", name);
-      const panelOf = () =>
-        cell(page, id, "first selected").getByRole("tabpanel");
+      // The shown panel, by name. During a switch Base UI briefly keeps the outgoing panel mounted, so the
+      // count settles to one after the new panel is in.
+      const shows = async (name: string) => {
+        const c = cell(page, id, "first selected");
+        await expect(c.getByRole("tabpanel", { name })).toBeVisible();
+        await expect(c.getByRole("tabpanel")).toHaveCount(1);
+      };
       await t("Overview").focus();
       await page.keyboard.press("ArrowRight");
       await expect(t("Moons")).toBeFocused();
       await expect(t("Overview")).toHaveAttribute("aria-selected", "true");
       await page.keyboard.press("Enter");
       await expect(t("Moons")).toHaveAttribute("aria-selected", "true");
-      await expect(panelOf()).toHaveAccessibleName("Moons");
+      await shows("Moons");
       await page.keyboard.press("End");
       await expect(t("History")).toBeFocused();
       await page.keyboard.press("Space");
       await expect(t("History")).toHaveAttribute("aria-selected", "true");
-      await expect(panelOf()).toHaveAccessibleName("History");
+      await shows("History");
       await page.keyboard.press("ArrowRight");
       await expect(t("Overview")).toBeFocused();
       await page.keyboard.press("ArrowLeft");
@@ -323,7 +328,8 @@ test.describe("golden example (fixtures/kit-examples.html)", () => {
     await expect(example.getByRole("tablist")).toHaveAccessibleName("Luna");
     await expect(example.getByRole("tabpanel")).toHaveText(/Period 27\.3/);
     await example.getByRole("tab", { name: "Passes" }).click();
-    await expect(example.getByRole("tabpanel")).toHaveAccessibleName("Passes");
-    await expect(example.getByRole("tabpanel")).toHaveText(/Next close pass/);
+    const passes = example.getByRole("tabpanel", { name: "Passes" });
+    await expect(passes).toHaveText(/Next close pass/);
+    await expect(example.getByRole("tabpanel")).toHaveCount(1);
   });
 });
