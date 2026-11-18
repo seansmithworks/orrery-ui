@@ -428,5 +428,164 @@
       "kind": "test",
       "ref": "kit/catalog/test.mjs"
     }
+  },
+  {
+    "id": "space-scale-only",
+    "layer": "rule",
+    "statement": "Space comes only from the --space-* scale; 8 is the rhythm between components, and --space-4, --space-12 and --space-20 are fine steps inside one.",
+    "applies": [
+      "source"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "not-built",
+      "text": "no-literal-spacing fails a px value the space scale already holds, but an off-scale px value (7px) still passes, and whether a gap sits between components or inside one is judgement."
+    }
+  },
+  {
+    "id": "grid-system",
+    "layer": "rule",
+    "statement": "Pages use --grid-columns columns, a gutter from --grid-gutter-tight, -standard or -roomy, margins from --grid-margin-mobile to --grid-margin-wide, capped at --grid-max-width.",
+    "applies": [
+      "page"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "judgement",
+      "text": "Prose: no kit component or page reads the grid tokens yet, so there is nothing to check until the eval loop shows the line changes output."
+    }
+  },
+  {
+    "id": "type-role-size",
+    "layer": "rule",
+    "statement": "In CSS files given to the source checker, a font-size is var(--type-size-<step>) for a step one of the type roles in tokens/base/roles.tokens.json uses; a literal size, a calc() or a step no role uses fails.",
+    "applies": [
+      "source"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "not-built",
+      "text": "The source check is built in the Foundations type lane (step 5)."
+    }
+  },
+  {
+    "id": "type-line-height-pair",
+    "layer": "rule",
+    "statement": "In CSS files given to the source checker, a rule that sets font-size: var(--type-size-<step>) sets line-height: var(--type-line-height-<step>) for the same step, and a line-height is only ever that pair.",
+    "applies": [
+      "source"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "not-built",
+      "text": "The source check is built in the Foundations type lane (step 5)."
+    }
+  },
+  {
+    "id": "prose-measure",
+    "layer": "rule",
+    "statement": "Prose caps at --layout-measure.",
+    "applies": [
+      "page"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "judgement",
+      "text": "Which block is prose is a judgement about its content. The kit sets no global measure; Artifact pages cap prose in their bundle CSS."
+    }
+  },
+  {
+    "id": "text-wrap-rendered",
+    "layer": "rule",
+    "statement": "Headings balance, paragraphs never end on a lone word, and labels, buttons and tabs are one line that never wraps or truncates.",
+    "applies": [
+      "page"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "not-built",
+      "text": "The rendered check over the kit's golden examples and specimen is built in the Foundations render lane (step 7)."
+    }
+  },
+  {
+    "id": "font-family-token",
+    "layer": "rule",
+    "statement": "In CSS files given to the source checker, every font-family is var(--font-<name>) for a font token that exists, or a CSS-wide keyword; a named face, a generic family or a literal stack fails.",
+    "applies": [
+      "source"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "not-built",
+      "text": "The source check is built in the Foundations type lane (step 4)."
+    }
+  },
+  {
+    "id": "tabular-numerals",
+    "layer": "rule",
+    "statement": "Numbers that line up (tables, stats, times) use tabular numerals.",
+    "applies": [
+      "source",
+      "page"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "judgement",
+      "text": "kit/text.css sets tabular numerals on table, time and data elements at zero specificity; which other numbers line up is a judgement about the content."
+    }
+  },
+  {
+    "id": "color-roles-only",
+    "layer": "rule",
+    "statement": "Components read color roles, never hues: page, layer-1, layer-2, line, text, text-muted, accent. Brands change values, never roles.",
+    "applies": [
+      "source",
+      "tokens"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "judgement",
+      "text": "Partly enforced elsewhere: no-literal-color fails a literal color in kit CSS and required-roles makes every brand set every role. Whether a component reads the right role for its job is judgement."
+    }
+  },
+  {
+    "id": "brand-orrery-neutral",
+    "layer": "rule",
+    "statement": "Brand orrery's page, layer-1, layer-2, text and text-muted roles are neutral in light and dark.",
+    "applies": [
+      "tokens"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "not-built",
+      "text": "The token gate is built in the Foundations colour lane (step 6)."
+    }
+  },
+  {
+    "id": "no-decorative-effects",
+    "layer": "rule",
+    "statement": "No decorative gradients, glows or tinted shadows.",
+    "applies": [
+      "source",
+      "page"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "judgement",
+      "text": "Whether an effect is decorative is judgement; a scanner for gradient functions waits on no-gradients, a held decision about Iris's trigger highlight."
+    }
+  },
+  {
+    "id": "motion-no-new-timing",
+    "layer": "rule",
+    "statement": "Agents never add a duration or easing; kit timing waits for the Tuner.",
+    "applies": [
+      "source"
+    ],
+    "check": null,
+    "reason": {
+      "kind": "judgement",
+      "text": "Prose: kit timing lives in kit-local properties marked UN-DIALLED in kit/kit.css, and a new literal duration is not detected yet."
+    }
   }
 ]

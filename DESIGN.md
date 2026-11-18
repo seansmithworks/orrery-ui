@@ -9,34 +9,34 @@ Preset `refined-minimal`, with motion governed by §4 below instead of the prese
 
 ## Foundations
 
-Applies to kit, Iris and Artifact pages. Theory is assumed; these are Orrery's choices. Lines marked (prose) are unproven until the eval loop shows they change output. Each line is a rule in `tokens/rules/rules.json`, which names the check that enforces it or says why none can.
+Applies to kit, Iris and Artifact pages. Theory is assumed; these are Orrery's choices. Lines marked (prose) are unproven until the eval loop shows they change output. Each line ends with its rule in `tokens/rules/rules.json`, which names the check that enforces it or says why none can.
 
 **Space and grid**
-- Space comes only from `--space-*`. 8 is the rhythm between components; `--space-4`, `--space-12` and `--space-20` are fine steps inside one.
-- Pages use `--grid-columns` columns, a gutter from `--grid-gutter-tight`, `-standard` or `-roomy`, margins from `--grid-margin-mobile` to `--grid-margin-wide`, capped at `--grid-max-width`. (prose)
-- Every interactive element's hit area is at least `--hit-target-min` each way; small controls reach it with a pseudo-element, never by growing.
+- Space comes only from `--space-*`. 8 is the rhythm between components; `--space-4`, `--space-12` and `--space-20` are fine steps inside one. Rule: `space-scale-only`.
+- Pages use `--grid-columns` columns, a gutter from `--grid-gutter-tight`, `-standard` or `-roomy`, margins from `--grid-margin-mobile` to `--grid-margin-wide`, capped at `--grid-max-width`. (prose) Rule: `grid-system`.
+- Every interactive element's hit area is at least `--hit-target-min` each way; small controls reach it with a pseudo-element, never by growing. Rule: `hit-target-rendered`.
 
 **Type**
-- Pick a role, never a size: title, lead, heading, subhead, body, body-sm, caption, stat (sans); label, data (mono).
-- A `--type-size-*` always travels with its own `--type-line-height-*`; never set a line height by hand.
-- Prose caps at `--layout-measure`.
-- Headings balance. Paragraphs never end on a lone word. Labels, buttons and tabs are one line; they never wrap or truncate.
-- Two families, `--font-sans` and `--font-mono`: the system faces in brand Orrery. No serif and no web font unless a brand sets one. Mono is for data and labels only.
-- Numbers that line up (tables, stats, times) use tabular numerals.
+- Pick a role, never a size: title, lead, heading, subhead, body, body-sm, caption, stat (sans); label, data (mono). Rule: `type-role-size`.
+- A `--type-size-*` always travels with its own `--type-line-height-*`; never set a line height by hand. Rule: `type-line-height-pair`.
+- Prose caps at `--layout-measure`. Rule: `prose-measure`.
+- Headings balance. Paragraphs never end on a lone word. Labels, buttons and tabs are one line; they never wrap or truncate. Rule: `text-wrap-rendered`.
+- Two families, `--font-sans` and `--font-mono`: the system faces in brand Orrery. No serif and no web font unless a brand sets one. Mono is for data and labels only. Rule: `font-family-token`.
+- Numbers that line up (tables, stats, times) use tabular numerals. Rule: `tabular-numerals`.
 
 **Colour**
-- Components read roles, never hues: page, layer-1, layer-2, line, text, text-muted, accent. Brands change values, never roles.
-- Brand Orrery is neutral: a white light page, not off-white or cream; layers step by value, not warmth; the accent is the text colour, not orange or blue. Hue enters only through a brand file.
-- The accent marks two things: the focus ring and the primary button fill. Selected and on states use text with a page-colour mark.
-- No decorative gradients, glows or tinted shadows.
+- Components read roles, never hues: page, layer-1, layer-2, line, text, text-muted, accent. Brands change values, never roles. Rule: `color-roles-only`.
+- Brand Orrery is neutral: a white light page, not off-white or cream; layers step by value, not warmth; the accent is the text colour, not orange or blue. Hue enters only through a brand file. Rule: `brand-orrery-neutral`.
+- The accent marks two things: the focus ring and the primary button fill. Selected and on states use text with a page-colour mark. Rule: `accent-primary-and-ring-only`.
+- No decorative gradients, glows or tinted shadows. Rule: `no-decorative-effects`.
 
 **Accessibility floor**
-- Text meets AA in every brand and mode.
-- Focus is a `--ring-width` outline in `--accent`, on keyboard focus, never removed.
-- Under reduced motion every spring falls back to its declared reduced form; nothing moves by transform.
+- Text meets AA in every brand and mode. Rules: `contrast-aa-tokens`, `contrast-aa-page`.
+- Focus is a `--ring-width` outline in `--accent`, on keyboard focus, never removed. Rules: `focus-ring-drawn`, `focus-ring-contrast`.
+- Under reduced motion every spring falls back to its declared reduced form; nothing moves by transform. Rules: `reduced-motion-form`, `reduced-motion-implemented`.
 
 **Motion**
-- §4 governs. Agents never add a duration or easing; kit timing waits for the Tuner. (prose)
+- §4 governs. Agents never add a duration or easing; kit timing waits for the Tuner. (prose) Rule: `motion-no-new-timing`.
 
 ## 1. Visual Theme
 
