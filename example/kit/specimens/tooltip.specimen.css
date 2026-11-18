@@ -46,3 +46,12 @@
   top: var(--space-16) !important;
   left: var(--space-16) !important;
 }
+
+/* A label's width follows its text, which differs between macOS and Linux, and so does the used
+   value of its right inset. The picture gives the label a fixed width and over-constrains the
+   horizontal insets (left, width and right all set), so right is ignored and records as the plain
+   length below, never a text-derived one. tooltip.kit.spec.ts checks the real, text-sized label. */
+.spec-tooltip-frame__body .orr-tooltip {
+  width: calc(var(--space-72) * 2) !important;
+  right: 0 !important;
+}
