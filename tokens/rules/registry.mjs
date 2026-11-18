@@ -121,9 +121,9 @@ export function registryProblems(rules, { root = REPO, names = testNames(root), 
     else if (kind === 'artifact-checker') why = artifact.includes(ref) ? null : `${ARTIFACT_CHECK} has no rule ${ref} (it has: ${artifact.join(', ')})`;
     else if (!exists(ref, root)) why = `file ${ref} does not exist`;
     if (why) return bad.push(`${at} check ref does not resolve: ${why}`);
-    // Exercised: a named seeded-failure test for a gate or source check; a mutation in the artifact checker's own test; a test file is its own.
+    // Exercised: a named seeded-failure test for a gate or source check; a mutation in the artifact checker's own test; a test file (a name with test, or a Playwright .spec.) is its own.
     // check.test must name a real test whose title carries the rule id in brackets, so a ref cannot be re-pointed at an unrelated test.
-    const needsTest = kind === 'token-gate' || kind === 'source-check' || (kind === 'test' && !/test/.test(path.basename(ref)));
+    const needsTest = kind === 'token-gate' || kind === 'source-check' || (kind === 'test' && !/test|\.spec\./.test(path.basename(ref)));
     if (needsTest) {
       if (typeof test !== 'string' || !test) bad.push(`${at} check has no seeded-failure test; name one in check.test`);
       else if (!names.has(test)) bad.push(`${at} check.test names a test that does not exist: ${test}`);

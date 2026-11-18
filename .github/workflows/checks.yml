@@ -93,3 +93,7 @@ jobs:
           if-no-files-found: ignore
       # The opt-in Iris bridge (example/role-bridge.spec.ts): light and bridge-alone equal bare, dark is its own baseline.
       - run: npm run test:bridge
+      # DESIGN.md Foundations, rendered (example/kit-text.spec.ts): every kit golden example and the specimen at 375
+      # and 1280 wide. No lone last word, no one-word heading line, labels on one whole line, every tab stop draws
+      # the ring, every hit area meets --hit-target-min. Last, so a failure here skips none of the gates above.
+      - run: npx playwright test -c example/playwright.config.ts kit-text --project=chromium

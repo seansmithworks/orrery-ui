@@ -54,15 +54,13 @@
   {
     "id": "hit-target-rendered",
     "layer": "floor",
-    "statement": "Every rendered interactive element has a hit area of at least 44px on each axis.",
+    "statement": "On every kit golden example and the kit specimen at 375 and 1280 wide, every interactive element with an orr- class (a tab panel or a dialog excepted) answers presses over at least --hit-target-min on each axis through its centre, pseudo-element hit areas included; Artifact pages are not checked.",
     "applies": [
-      "page",
-      "source"
+      "page"
     ],
-    "check": null,
-    "reason": {
-      "kind": "not-built",
-      "text": "Checkable on Artifact pages in the Artifact checker's rendered pass; not built in this lane. For kit components the real floor is the rendered hit-area test in the Phase 2 component specs."
+    "check": {
+      "kind": "test",
+      "ref": "example/kit-text.spec.ts"
     }
   },
   {
@@ -93,15 +91,13 @@
   {
     "id": "focus-ring-drawn",
     "layer": "floor",
-    "statement": "Every focusable element shows a visible focus ring.",
+    "statement": "On every kit golden example and the kit specimen at 375 and 1280 wide, every stop the Tab key reaches draws an outline of --ring-width in its scope's --accent; Artifact pages are not checked here (their checker finds a missing outline but only warns).",
     "applies": [
-      "page",
-      "source"
+      "page"
     ],
-    "check": null,
-    "reason": {
-      "kind": "not-built",
-      "text": "Checkable in the Artifact checker's rendered pass, which already finds the no-outline case but only warns (artifact/check/check.mjs, 'no visible focus outline'); making it fail is not built in this lane. A source scan cannot know which elements are focusable."
+    "check": {
+      "kind": "test",
+      "ref": "example/kit-text.spec.ts"
     }
   },
   {
@@ -497,14 +493,13 @@
   {
     "id": "text-wrap-rendered",
     "layer": "rule",
-    "statement": "Headings balance, paragraphs never end on a lone word, and labels, buttons and tabs are one line that never wraps or truncates.",
+    "statement": "On every kit golden example and the kit specimen (all three panels and their held-open frames), at 375 and 1280 wide in Chromium: a paragraph or list item of two lines or more ends on two words or more, a heading of two words or more has no one-word line, and button, tab, field label and select value text is one line that is not truncated, cut by a clipping ancestor or past the viewport.",
     "applies": [
       "page"
     ],
-    "check": null,
-    "reason": {
-      "kind": "not-built",
-      "text": "The rendered check over the kit's golden examples and specimen is built in the Foundations render lane (step 7)."
+    "check": {
+      "kind": "test",
+      "ref": "example/kit-text.spec.ts"
     }
   },
   {
