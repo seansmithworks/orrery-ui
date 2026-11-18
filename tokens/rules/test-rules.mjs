@@ -131,6 +131,21 @@ export function ruleTests({ tmp, run }) {
       assert.equal(hits('k.css', `.a::after { content: "${dash}"; }`, 'em-dash').length, 1);
     },
 
+    '[font-family-token] source rules: font-family-token fails a named face, a generic family, a literal stack, a fallback, an unknown token and the font shorthand, naming the line, and passes the font tokens and a CSS-wide keyword'() {
+      const bad = ['.a {', '  font-family: Georgia;', '  font-family: serif;', '  font-family: "Inter", system-ui, sans-serif;', '  font-family: var(--font-sans, Inter);', '  font-family: var(--font-serif);', '  font: 14px/1.5 Inter;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', bad, 'font-family-token').map((s) => s.split(':')[0] + ':' + s.split(':')[1]), [
+        '2 font-family-token font-family: Georgia',
+        '3 font-family-token font-family: serif',
+        '4 font-family-token font-family: "Inter", system-ui, sans-serif',
+        '5 font-family-token font-family: var(--font-sans, Inter)',
+        '6 font-family-token font-family: var(--font-serif)',
+        '7 font-family-token font: 14px/1.5 Inter',
+      ]);
+      assert.match(hits('k.css', bad, 'font-family-token')[4], /--font-serif is not a font token; use var\(--font-sans\) or var\(--font-mono\)$/);
+      const ok = ['.a { font-family: var(--font-sans); }', '.b { font-family: var(--font-mono); }', '.c { font-family: inherit; font: inherit; }'].join('\n');
+      assert.deepEqual(hits('k.css', ok, 'font-family-token'), []);
+    },
+
     'source rules: the CLI prints file:line rule-id message and exits 1, exits 0 when clean, and exits 2 on a missing path'() {
       const dir = path.join(tmp, 'cli');
       fs.mkdirSync(dir, { recursive: true });

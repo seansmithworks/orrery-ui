@@ -510,14 +510,14 @@
   {
     "id": "font-family-token",
     "layer": "rule",
-    "statement": "In CSS files given to the source checker, every font-family is var(--font-<name>) for a font token that exists, or a CSS-wide keyword; a named face, a generic family or a literal stack fails.",
+    "statement": "In CSS files given to the source checker, every font-family is var(--font-<name>) for a font token that exists, or a CSS-wide keyword; a named face, a generic family, a literal stack, a var() fallback and the font shorthand fail.",
     "applies": [
       "source"
     ],
-    "check": null,
-    "reason": {
-      "kind": "not-built",
-      "text": "The source check is built in the Foundations type lane (step 4)."
+    "check": {
+      "kind": "source-check",
+      "ref": "font-family-token",
+      "test": "[font-family-token] source rules: font-family-token fails a named face, a generic family, a literal stack, a fallback, an unknown token and the font shorthand, naming the line, and passes the font tokens and a CSS-wide keyword"
     }
   },
   {

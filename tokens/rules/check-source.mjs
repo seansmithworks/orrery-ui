@@ -314,6 +314,26 @@ function controlMinSize(file, text) {
   return out;
 }
 
+// ---- Type. DESIGN.md, Foundations, Type: two font tokens.
+const CSS_WIDE = new Set(['inherit', 'initial', 'unset', 'revert', 'revert-layer']);
+const isCssWide = (v) => CSS_WIDE.has(v.trim().toLowerCase());
+// Font token names (font-sans, font-mono), read from the committed token output so this rule never keeps its own copy.
+const fontTokens = () => new Set([...fs.readFileSync(path.join(REPO, 'tokens/generated/css/orrery.css'), 'utf8').matchAll(/^\s*--(font-[\w-]+):/gm)].map((m) => m[1]));
+
+function fontFamilyToken(file, text) {
+  const fonts = fontTokens(), out = [];
+  const tokens = [...fonts].map((f) => `var(--${f})`).join(' or ');
+  for (const d of cssDecls(text)) {
+    const v = d.value.trim();
+    if (d.prop === 'font' && !isCssWide(v)) out.push({ line: d.line, message: `font: ${v}: the font shorthand sets a family and a size by hand; use font-family: ${tokens} and a type size with its line height` });
+    if (d.prop !== 'font-family' || isCssWide(v)) continue;
+    const m = /^var\(\s*--([\w-]+)\s*\)$/.exec(v);
+    if (m && fonts.has(m[1])) continue;
+    out.push({ line: d.line, message: m ? `font-family: ${v}: --${m[1]} is not a font token; use ${tokens}` : `font-family: ${v}: use ${tokens}, never a named face, a generic family, a literal stack or a fallback` });
+  }
+  return out;
+}
+
 // Em dash, U+2014. The Artifact checker has no em dash rule in code (artifact/SKILL.md lists none either), so this is the only definition:
 // the character, its HTML entities and its escapes, anywhere outside a comment.
 const EM_DASH = /—|&mdash;|&#0*8212;|&#x0*2014;|\\u\{?0*2014\}?|\\0*2014(?![0-9a-fA-F])/gi;
@@ -370,6 +390,7 @@ export const CHECKS = {
   'control-min-size': { exts: CSS_EXT, run: controlMinSize },
   'inline-style-literal': { exts: ['.tsx', '.jsx'], run: inlineStyle },
   'em-dash': { exts: [...CSS_EXT, ...JS_EXT, ...HTML_EXT], run: emDash },
+  'font-family-token': { exts: CSS_EXT, run: fontFamilyToken },
 };
 
 /**
