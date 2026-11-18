@@ -79,10 +79,14 @@ const DisabledContext = createContext(false);
 // The values of the disabled items, which each Item registers. The kit owns an item's disabled
 // state, not UI SDK: UI SDK's select skips a disabled item with the arrow keys and the pointer
 // (skipDisabled is fixed on), and the kit keeps Base UI's behaviour, where the highlight reaches
-// it and a press or Enter on it neither selects it nor closes the list.
+// it and no press, key or typeahead ever chooses it.
 const DisabledItemsContext = createContext<Set<string> | null>(null);
 
 type Change = { reason: string; cancel: () => void };
+// One value, or several with `multiple`.
+type Value = string | readonly string[] | null;
+const valuesOf = (v: Value): readonly string[] =>
+  v === null ? [] : typeof v === "string" ? [v] : v;
 
 /** Holds the value and the open state. It renders no element of its own. */
 function Root({
@@ -97,6 +101,11 @@ function Root({
   // Set when a press on a disabled item was refused, so the close UI SDK runs right after it
   // (choose sets the value, then hides) is refused too.
   const [refused] = useState(() => ({ current: false }));
+  // The last value the select took, for an uncontrolled select: a change is refused when it adds
+  // a disabled value to it.
+  const [accepted] = useState(() => ({
+    current: (props.value ?? props.defaultValue ?? null) as Value,
+  }));
   // A map gives labels only, as in Base UI: it becomes itemToLabel, never UI SDK's items. Given
   // items data, UI SDK takes each option's state from the data, not from the rendered Select.Item.
   const map = items && !Array.isArray(items) ? items : undefined;
@@ -105,17 +114,22 @@ function Root({
     items: map ? undefined : (items as ListData<string> | undefined),
     itemToLabel:
       itemToLabel ?? (map ? (value: string) => map[value] ?? value : undefined),
-    onValueChange: (value: string | null, details: Change) => {
-      if (
-        details.reason === "item-press" &&
-        value !== null &&
-        disabledItems.has(value)
-      ) {
-        refused.current = true;
+    // Every path to a value runs through here: a press, Enter, typing on the closed trigger, a
+    // reset, a controller. A change that would add a disabled value is refused, whatever its reason.
+    onValueChange: (value: Value, details: Change) => {
+      const current =
+        props.value !== undefined ? (props.value as Value) : accepted.current;
+      const before = new Set(valuesOf(current));
+      if (valuesOf(value).some((v) => !before.has(v) && disabledItems.has(v))) {
+        // A press on the item also closes the list (choose sets the value, then hides) in single
+        // mode; Root refuses that close too. A refused typeahead opens and closes nothing.
+        if (details.reason === "item-press" && !props.multiple)
+          refused.current = true;
         details.cancel();
         return;
       }
-      (onValueChange as ((v: string | null, d: Change) => void) | undefined)?.(
+      accepted.current = value;
+      (onValueChange as ((v: Value, d: Change) => void) | undefined)?.(
         value,
         details,
       );
