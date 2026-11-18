@@ -1155,7 +1155,7 @@
           "transition-property": "all",
           "transition-timing-function": "ease",
           "visibility": "visible",
-          "white-space": "normal",
+          "white-space": "nowrap",
           "z-index": "auto"
         },
         "p.orr-dialog__description#0": {
@@ -1770,7 +1770,7 @@
           "transition-property": "all",
           "transition-timing-function": "ease",
           "visibility": "visible",
-          "white-space": "normal",
+          "white-space": "nowrap",
           "z-index": "auto"
         }
       },
@@ -3162,7 +3162,7 @@
           "transition-property": "all",
           "transition-timing-function": "ease",
           "visibility": "visible",
-          "white-space": "normal",
+          "white-space": "nowrap",
           "z-index": "auto"
         },
         "p.orr-dialog__description#0": {
@@ -3777,7 +3777,7 @@
           "transition-property": "all",
           "transition-timing-function": "ease",
           "visibility": "visible",
-          "white-space": "normal",
+          "white-space": "nowrap",
           "z-index": "auto"
         }
       },
@@ -5169,7 +5169,7 @@
           "transition-property": "all",
           "transition-timing-function": "ease",
           "visibility": "visible",
-          "white-space": "normal",
+          "white-space": "nowrap",
           "z-index": "auto"
         },
         "p.orr-dialog__description#0": {
@@ -5784,7 +5784,7 @@
           "transition-property": "all",
           "transition-timing-function": "ease",
           "visibility": "visible",
-          "white-space": "normal",
+          "white-space": "nowrap",
           "z-index": "auto"
         }
       },
