@@ -62,7 +62,9 @@ jobs:
   # is recorded. The full npm run test:geometry is not run here yet.
   roles:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 20, not 15: main's run takes about 12 minutes before the kit-text step, and a slow runner took 13 on the
+    # kit specs alone (PR #52's first run was cancelled at 15 with no test failed).
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
