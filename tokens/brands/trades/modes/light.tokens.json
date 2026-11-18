@@ -1,0 +1,274 @@
+{
+  "$extensions": {
+    "com.orrery": {
+      "mode": {
+        "id": "light",
+        "name": "Day"
+      }
+    }
+  },
+  "color": {
+    "$type": "color",
+    "page": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "hex": "#ffffff"
+      }
+    },
+    "layer-1": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9647,
+          0.9647,
+          0.9608
+        ],
+        "hex": "#f6f6f5"
+      }
+    },
+    "layer-2": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9294,
+          0.9294,
+          0.9216
+        ],
+        "hex": "#ededeb"
+      }
+    },
+    "line": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "alpha": 0.1
+      }
+    },
+    "line-strong": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "line-dashed": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5412,
+          0.5412,
+          0.5255
+        ],
+        "hex": "#8a8a86"
+      }
+    },
+    "text": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "text-muted": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3686,
+          0.3686,
+          0.3686
+        ],
+        "hex": "#5e5e5e"
+      }
+    },
+    "accent": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "on-accent": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "hex": "#ffffff"
+      }
+    },
+    "scale-1": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.9294,
+          0.9294,
+          0.9216
+        ],
+        "hex": "#ededeb"
+      }
+    },
+    "scale-2": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7882,
+          0.7882,
+          0.7725
+        ],
+        "hex": "#c9c9c5"
+      }
+    },
+    "scale-3": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.5412,
+          0.5412,
+          0.5255
+        ],
+        "hex": "#8a8a86"
+      }
+    },
+    "scale-4": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.3686,
+          0.3686,
+          0.3686
+        ],
+        "hex": "#5e5e5e"
+      }
+    },
+    "scale-5": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "scale-1-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "scale-2-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "scale-3-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      }
+    },
+    "scale-4-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "hex": "#ffffff"
+      }
+    },
+    "scale-5-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          1.0,
+          1.0,
+          1.0
+        ],
+        "hex": "#ffffff"
+      }
+    },
+    "move": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.8235,
+          0.5725,
+          0.0078
+        ],
+        "hex": "#d29202"
+      },
+      "$description": "Brand-local signal: 'your move'. Fill or 4px rule only, with `on-accent`-dark ink (#11100E); never text on page. Not an Orrery role."
+    },
+    "live": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.7059,
+          0.0314,
+          0.1765
+        ],
+        "hex": "#b4082d"
+      },
+      "$description": "Brand-local signal: now / urgent. Dot, rule or fill with white text only. Not an Orrery role."
+    },
+    "move-ink": {
+      "$value": {
+        "colorSpace": "srgb",
+        "components": [
+          0.0667,
+          0.0627,
+          0.0549
+        ],
+        "hex": "#11100e"
+      },
+      "$description": "Ink on a `move` fill, both modes (7.4:1). Brand-local."
+    }
+  },
+  "shadow": {
+    "shadow-lift": {
+      "$value": []
+    }
+  }
+}

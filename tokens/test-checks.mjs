@@ -172,7 +172,7 @@ export function checkTests({ tmp, run }) {
     'checks: the real source passes every check with no failure line'() {
       const checks = checker();
       assert.deepEqual(checks.locks(), []);
-      assert.deepEqual(checks.brands, ['orrery', 'solar']);
+      assert.deepEqual(checks.brands, ['orrery', 'primetime', 'solar', 'trades']);
     },
   };
 }

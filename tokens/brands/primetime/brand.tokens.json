@@ -1,0 +1,58 @@
+{
+  "$description": "Brand primetime: the trades-agent 'Prime time' broadcast theme (mood board round 5, 2026-11-16). Slate night ground, white score-bug bars drawn as `text` fills with `page` ink, one amber accent for 'your move', crimson 'now' as a brand-local fill. Fixed dark: one mode. A test of Orrery as a product base, not an Orrery look.",
+  "$extensions": {
+    "com.orrery": {
+      "name": "primetime",
+      "modes": [
+        "dark"
+      ],
+      "unlocked": [
+        "color.*",
+        "shadow.*",
+        "font.*",
+        "elevation.*",
+        "radius.*"
+      ]
+    }
+  },
+  "font": {
+    "$type": "fontFamily",
+    "$extensions": {
+      "com.orrery": {
+        "fonts": []
+      }
+    },
+    "sans": {
+      "$value": [
+        "Libre Franklin",
+        "ui-sans-serif",
+        "system-ui",
+        "sans-serif"
+      ]
+    },
+    "mono": {
+      "$value": [
+        "Doto",
+        "ui-monospace",
+        "SF Mono",
+        "Menlo",
+        "monospace"
+      ]
+    }
+  },
+  "radius": {
+    "$type": "dimension",
+    "radius-panel": {
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      }
+    },
+    "radius-control": {
+      "$value": {
+        "value": 0,
+        "unit": "px"
+      }
+    }
+  }
+}

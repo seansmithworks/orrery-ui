@@ -1,0 +1,54 @@
+{
+  "$description": "Brand trades: fill plus hairline, never shadow, like brand orrery. `draw` is the brand's choice per level: `fill` (fill only), `hairline` (fill, line, line-width) or `shadow` (fill, shadow). A level with no drawing here is not emitted.",
+  "elevation": {
+    "level-0": {
+      "$extensions": {
+        "com.orrery": {
+          "draw": "fill"
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{color.page}"
+      }
+    },
+    "level-1": {
+      "$extensions": {
+        "com.orrery": {
+          "draw": "hairline"
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{color.layer-1}"
+      },
+      "line": {
+        "$type": "color",
+        "$value": "{color.line}"
+      },
+      "line-width": {
+        "$type": "dimension",
+        "$value": "{border.line-width}"
+      }
+    },
+    "level-2": {
+      "$extensions": {
+        "com.orrery": {
+          "draw": "hairline"
+        }
+      },
+      "fill": {
+        "$type": "color",
+        "$value": "{color.layer-2}"
+      },
+      "line": {
+        "$type": "color",
+        "$value": "{color.line}"
+      },
+      "line-width": {
+        "$type": "dimension",
+        "$value": "{border.line-width}"
+      }
+    }
+  }
+}
