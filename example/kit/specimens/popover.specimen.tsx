@@ -26,7 +26,7 @@ function Contents({ compact }: { compact?: boolean }) {
 /**
  * The open state, held open inside its own frame (../held-open-frame.tsx), never the panel's live
  * portal: the frame's document is the popup's viewport, whatever the library does with a popup.
- * Not modal, so the rest of the page stays usable; inert, because it is a picture of the open state.
+ * Not modal, so the rest of the page stays usable. Not inert, so the hit-area test can press its buttons; initialFocus="none" keeps it from taking focus on mount.
  */
 function OpenCell({ name, compact }: { name: string; compact?: boolean }) {
   return (
@@ -38,12 +38,11 @@ function OpenCell({ name, compact }: { name: string; compact?: boolean }) {
         className="spec-popover-frame"
         bodyClassName="spec-popover-frame__body"
         title={`Share popover, ${name}, held open`}
-        inert
       >
         {(body) => (
           <Popover.Root open modal={false}>
             <Popover.Trigger>Share</Popover.Trigger>
-            <Popover.Popup container={body}>
+            <Popover.Popup container={body} initialFocus="none">
               <Contents compact={compact} />
             </Popover.Popup>
           </Popover.Root>

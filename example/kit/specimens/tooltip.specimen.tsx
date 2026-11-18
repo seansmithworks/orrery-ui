@@ -28,7 +28,7 @@ function SaveGlyph() {
 
 /**
  * The open state, held open inside its own frame (../held-open-frame.tsx): the frame's document is
- * the label's viewport, whatever the library does with a popup. Inert, a picture of the open state.
+ * the label's viewport, whatever the library does with a popup. A picture of the open state.
  * `controlled` open stays open with no pointer on the trigger.
  */
 function OpenCell({
@@ -49,7 +49,6 @@ function OpenCell({
         className="spec-tooltip-frame"
         bodyClassName={`spec-tooltip-frame__body spec-tooltip-frame__body--${side}`}
         title={`Export tooltip, ${name}, held open`}
-        inert
       >
         {(body) => (
           <Tooltip.Root open>
