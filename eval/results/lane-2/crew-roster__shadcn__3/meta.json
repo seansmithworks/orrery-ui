@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-roster",
+  "condition": "shadcn",
+  "rep": 3,
+  "wallMs": 18461,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 17924,
+    "total_cost_usd": 0.043768,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 4198,
+      "cache_read_input_tokens": 25600,
+      "output_tokens": 2440,
+      "output_tokens_details": {
+        "thinking_tokens": 109
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 4198,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 433,
+          "cache_read_input_tokens": 7934,
+          "cache_creation_input_tokens": 1656,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1656
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew roster to `solution.tsx`. I haven't run it, since I can't run code here. I also didn't open the `dropdown-menu`, `input` or `label` components. I assumed they export the standard shadcn names.\n\n- **Layout:** The page has a \"Crew\" heading and a \"Filter crew\" search field. The five people are listed with their names and roles.\n- **Filtering:** The list narrows by name as you type. The match ignores case and surrounding spaces.\n- **Actions:** Each row has an icon button labelled \"Actions for <name>\". It opens a menu with Edit, Reassign and Remove. Remove takes that person off the list. Edit and Reassign don't do anything yet, because you didn't say what they should do.\n- **Empty state:** When nobody matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" but"
+  }
+}

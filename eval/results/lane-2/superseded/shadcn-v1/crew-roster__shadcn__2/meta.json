@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-roster",
+  "condition": "shadcn",
+  "rep": 2,
+  "wallMs": 15968,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 15254,
+    "total_cost_usd": 0.0396585,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 3642,
+      "cache_read_input_tokens": 25145,
+      "output_tokens": 2256,
+      "output_tokens_details": {
+        "thinking_tokens": 22
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 3642,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 314,
+          "cache_read_input_tokens": 7499,
+          "cache_creation_input_tokens": 1535,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1535
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew roster to `./solution.tsx`. I couldn't run code here, so it hasn't been compiled or tested in a browser.\n\n- **Heading and filter:** The page has a \"Crew\" heading and a \"Filter crew\" search field. The list narrows by name, ignoring case, as the user types.\n- **List:** It shows the five people with their names and roles.\n- **Actions:** Each row has a compact icon button labelled \"Actions for <name>\". It opens a menu with Edit, Reassign and Remove.\n- **Remove:** Choosing Remove takes that person off the list. Edit and Reassign don't do anything yet, since you didn't say what they should do.\n- **Empty state:** When nobody matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field and brings everyone back.\n- **Styling:** It us"
+  }
+}

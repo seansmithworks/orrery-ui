@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-roster",
+  "condition": "shadcn",
+  "rep": 2,
+  "wallMs": 18786,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 18241,
+    "total_cost_usd": 0.08141190000000001,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 12984,
+      "cache_read_input_tokens": 34199,
+      "output_tokens": 2604,
+      "output_tokens_details": {
+        "thinking_tokens": 219
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 12984,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 368,
+          "cache_read_input_tokens": 16533,
+          "cache_creation_input_tokens": 1843,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1843
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew roster to `./solution.tsx`. I couldn't run it here, so it's untested.\n\n- **Filter:** \"Filter crew\" is a labelled search field. It narrows the list by name, ignoring case, as you type.\n- **Rows:** The five people show with their roles. Each row has a compact \"Actions for <name>\" button, built on the workspace's dropdown menu. Its menu lists Edit, Reassign and Remove.\n- **Remove:** Choosing Remove takes that person off the list. Edit and Reassign don't do anything yet, because you didn't say what they should do.\n- **Empty state:** When nobody matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field and brings everyone back.\n- **Brands:** Colours come from the theme classes (`bg-background`, `text-muted-foreground`, `borde"
+  }
+}

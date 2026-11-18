@@ -1,0 +1,37 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 6
+  },
+  "brand": {
+    "score": 0.75,
+    "pass": false,
+    "details": [
+      "solution.css:60 colour function with literal channels: rgba(0"
+    ],
+    "literals": 1,
+    "ratios": {
+      "lightDark": 0.9999970703125,
+      "darkSolar": 1
+    }
+  },
+  "notes": [],
+  "total": 0.95
+}

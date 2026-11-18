@@ -1,0 +1,16 @@
+{
+  "id": "workspace-settings",
+  "title": "Workspace settings with a danger zone",
+  "lane": 2,
+  "prompt": "Build the settings page for a workspace called \"Orbit Lab\". Heading: \"Workspace settings\". The settings are split into three sections the user switches between, one visible at a time: \"General\", \"Notifications\" and \"Danger zone\" (General shows first). General: a text field \"Workspace name\" prefilled with \"Orbit Lab\"; a choice of \"Default role for new members\" between Viewer, Editor and Admin (Editor chosen); a primary button \"Save changes\" that shows the status text \"Settings saved.\". Notifications: two on/off settings, \"Weekly summary email\" (on) and \"Mentions\" (off). Danger zone: one sentence explaining that deleting is permanent, and a button \"Delete workspace\". That button asks for confirmation in a modal titled \"Delete Orbit Lab?\" with the text \"This removes all projects and members. It cannot be undone.\" and two actions, \"Cancel\" (closes it) and \"Delete workspace\" (closes it and shows the status text \"Workspace deleted.\" on the page).",
+  "steps": [
+    { "role": "tab", "name": "Danger zone" },
+    { "role": "button", "name": "Delete workspace" }
+  ],
+  "overlay": {
+    "pre": [{ "role": "tab", "name": "Danger zone" }],
+    "trigger": { "role": "button", "name": "Delete workspace" },
+    "kind": "dialog",
+    "text": "Delete Orbit Lab?"
+  }
+}

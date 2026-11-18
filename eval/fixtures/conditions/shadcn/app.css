@@ -1,0 +1,43 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+/* shadcn/ui theme. The colours point at the brand variables in brand.css, so every Tailwind colour below follows
+   the active brand (data-brand and data-theme on <html>). */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme inline {
+  --color-background: var(--page);
+  --color-foreground: var(--text);
+  --color-card: var(--layer-1);
+  --color-card-foreground: var(--text);
+  --color-popover: var(--layer-1);
+  --color-popover-foreground: var(--text);
+  --color-primary: var(--accent);
+  --color-primary-foreground: var(--on-accent);
+  --color-secondary: var(--layer-2);
+  --color-secondary-foreground: var(--text);
+  --color-muted: var(--layer-1);
+  --color-muted-foreground: var(--text-muted);
+  --color-accent: var(--layer-2);
+  --color-accent-foreground: var(--text);
+  /* The brands have no danger hue, so destructive is the accent; the destructive button and badge pair it with
+     primary-foreground (stock shadcn pairs it with white, which fails contrast wherever the accent is light). */
+  --color-destructive: var(--accent);
+  --color-border: var(--line);
+  --color-input: var(--line-strong);
+  --color-ring: var(--accent);
+  --radius-sm: calc(var(--radius-control) - 2px);
+  --radius-md: var(--radius-control);
+  --radius-lg: var(--radius-panel);
+  --radius-xl: calc(var(--radius-panel) + 4px);
+  /* font-sans and font-mono need no entry: brand.css sets --font-sans and --font-mono on <html>. */
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

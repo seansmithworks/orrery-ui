@@ -1,0 +1,56 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "shadcn",
+  "rep": 1,
+  "wallMs": 17688,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 7,
+    "duration_ms": 16459,
+    "total_cost_usd": 0.0739109,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 12519,
+      "cache_read_input_tokens": 45549,
+      "output_tokens": 1926,
+      "output_tokens_details": {
+        "thinking_tokens": 141
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 12519,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 333,
+          "cache_read_input_tokens": 15288,
+          "cache_creation_input_tokens": 1038,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1038
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal.\n- **Dialog:** I used the workspace's `AlertDialog`, which is built for destructive confirmations. It's titled \"Delete this project?\" and carries the description you gave.\n- **Actions:** \"Keep project\" closes the dialog. The primary \"Delete\" button closes it and sets the status text \"Project deleted.\" on the page.\n- **Status text:** it sits in a `role=\"status\"` paragraph that is always on the page, so screen readers announce it when it fills in.\n- **Brand:** all colours come from the theme classes, so it should follow orrery light, orrery dark and solar. The three buttons have a minimum 44px touch target, taken from `--hit-target-min`.\n\nThe brands h"
+  }
+}

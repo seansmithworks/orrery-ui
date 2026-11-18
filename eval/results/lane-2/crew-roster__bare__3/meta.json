@@ -1,0 +1,57 @@
+{
+  "scenario": "crew-roster",
+  "condition": "bare",
+  "rep": 3,
+  "wallMs": 27763,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 27233,
+    "total_cost_usd": 0.0886281,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 9730,
+      "cache_read_input_tokens": 28321,
+      "output_tokens": 4686,
+      "output_tokens_details": {
+        "thinking_tokens": 217
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 9730,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 441,
+          "cache_read_input_tokens": 10845,
+          "cache_creation_input_tokens": 4277,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4277
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew roster to `solution.tsx`, with its styles in `solution.css`. I couldn't run any code here, so none of it has been rendered or tested.\n\n- **Filter:** the \"Filter crew\" field narrows the list by name as you type. The match ignores case and surrounding spaces.\n- **Rows:** each of the five people shows their name and role. Each row has an \"Actions for <name>\" button that opens a menu with Edit, Reassign and Remove.\n- **Remove:** Remove takes that person off the list. Edit and Reassign only close the menu, because you didn't say what they should do.\n- **Menu keyboard and mouse:** the menu closes on Escape, a click outside, or Tab. The arrow keys move between items.\n- **Empty state:** when nothing matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" button. "
+  }
+}

@@ -6,6 +6,7 @@ import path from 'node:path';
 import { EVAL, RESULTS, SCORERS, scenarios } from './lib/common.mjs';
 import { scoreCell } from './lib/score.mjs';
 import { startRender } from './lib/render.mjs';
+import { selftestLane2 } from './lane2/selftest.mjs';
 
 const root = path.join(RESULTS, 'selftest');
 fs.rmSync(root, { recursive: true, force: true });
@@ -39,5 +40,6 @@ try {
 } finally {
   await rs.close();
 }
+await selftestLane2(fail);
 console.log(failures === 0 ? 'SELFTEST OK' : `SELFTEST FAILED (${failures})`);
 process.exit(failures === 0 ? 0 : 1);

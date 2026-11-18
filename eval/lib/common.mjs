@@ -17,7 +17,8 @@ export function scenarios() {
     .readdirSync(path.join(EVAL, 'scenarios'))
     .filter((f) => f.endsWith('.json'))
     .sort()
-    .map((f) => JSON.parse(fs.readFileSync(path.join(EVAL, 'scenarios', f), 'utf8')));
+    .map((f) => JSON.parse(fs.readFileSync(path.join(EVAL, 'scenarios', f), 'utf8')))
+    .filter((s) => s.lane !== 2); // lane-2-only scenarios (no golden twin, no lane-1 reference); lane 2 reads them all
 }
 
 export const scenarioById = (id) => scenarios().find((s) => s.id === id);

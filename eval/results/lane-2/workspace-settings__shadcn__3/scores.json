@@ -1,0 +1,42 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 0.7,
+    "pass": false,
+    "details": [
+      "1280px page: \"Viewer\" is 20x20, its hit area is under 44x44",
+      "1280px page: \"Editor\" is 20x20, its hit area is under 44x44",
+      "1280px page: \"Admin\" is 20x20, its hit area is under 44x44",
+      "375px page: \"Viewer\" is 20x20, its hit area is under 44x44",
+      "375px page: \"Editor\" is 20x20, its hit area is under 44x44",
+      "375px page: \"Admin\" is 20x20, its hit area is under 44x44"
+    ],
+    "total": 20
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999599609375,
+      "darkSolar": 1
+    }
+  },
+  "notes": [],
+  "total": 0.9400000000000001
+}

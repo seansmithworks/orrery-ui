@@ -1,0 +1,57 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "bare",
+  "rep": 1,
+  "wallMs": 23589,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 21374,
+    "total_cost_usd": 0.0674623,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 8310,
+      "cache_read_input_tokens": 28163,
+      "output_tokens": 3139,
+      "output_tokens_details": {
+        "thinking_tokens": 56
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 8310,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 390,
+          "cache_read_input_tokens": 10972,
+          "cache_creation_input_tokens": 2635,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2635
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the card to `solution.tsx` and `solution.css`. I couldn't run code here, so I haven't rendered it or checked it in any of the three brands.\n\n- **Content:** \"Ada Okafor\" is the heading, with \"Flight engineer, Orbit 7\" below it. The three tabs are Overview, Passes and History, with Overview selected first. Each tab shows the text you gave. The footer has a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n- **Tabs:** They use proper tab roles, and the arrow keys, Home and End move between them. I added this on my own.\n- **Brand:** All colours, spacing, radii, type sizes and the 44px minimum touch target come from `brand.css` variables, so the card follows orrery light, orrery dark and solar. The host page has no background of its own, so the page wrapper sets `--pa"
+  }
+}

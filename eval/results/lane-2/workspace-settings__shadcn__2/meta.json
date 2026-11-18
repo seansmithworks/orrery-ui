@@ -1,0 +1,56 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "shadcn",
+  "rep": 2,
+  "wallMs": 33395,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 11,
+    "duration_ms": 32825,
+    "total_cost_usd": 0.1171565,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 16333,
+      "cache_read_input_tokens": 36885,
+      "output_tokens": 4812,
+      "output_tokens_details": {
+        "thinking_tokens": 779
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 16333,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 439,
+          "cache_read_input_tokens": 18514,
+          "cache_creation_input_tokens": 3293,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 3293
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `./solution.tsx`. I couldn't run or render it, so it is untested.\n\n- **Layout:** The page has the \"Workspace settings\" heading and three switchable sections, with General showing first.\n- **General:** It has the \"Workspace name\" field prefilled with \"Orbit Lab\" and the three-way role choice with Editor selected. \"Save changes\" shows \"Settings saved.\"\n- **Notifications:** \"Weekly summary email\" starts on and \"Mentions\" starts off.\n- **Danger zone:** It has a one-sentence permanence warning and a \"Delete workspace\" button.\n- **Delete confirmation:** The button opens the \"Delete Orbit Lab?\" modal. \"Cancel\" closes it. The modal's \"Delete workspace\" closes it and shows \"Workspace deleted.\" on the page.\n- **Brand handling:** The page uses only the brand-mapped Tailwi"
+  }
+}

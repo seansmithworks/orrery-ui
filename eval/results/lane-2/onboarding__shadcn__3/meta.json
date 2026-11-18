@@ -1,0 +1,56 @@
+{
+  "scenario": "onboarding",
+  "condition": "shadcn",
+  "rep": 3,
+  "wallMs": 23601,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 7,
+    "duration_ms": 23041,
+    "total_cost_usd": 0.0632381,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 6115,
+      "cache_read_input_tokens": 35581,
+      "output_tokens": 3520,
+      "output_tokens_details": {
+        "thinking_tokens": 64
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 6115,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 444,
+          "cache_read_input_tokens": 9172,
+          "cache_creation_input_tokens": 2366,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2366
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the three-step sign-up flow to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Step indicator:** every step shows \"Step N of 3\".\n- **Step 1, \"Your details\":**\n  - \"Continue\" shows \"Enter your name.\" for an empty name and \"Enter a valid email.\" for an email without an @, each under its own field.\n  - The flow stays on step 1 until both are fixed.\n  - The email field is plain text, so the browser's own validation can't pre-empt my message.\n- **Step 2, \"Your team\":** a radio group with \"Solo\", \"Small crew (2 to 10)\" and \"Large crew (11 or more)\", with \"Back\" and \"Continue\". \"Solo\" is selected by default, so exactly one option is always chosen.\n- **Step 3, \"Confirm\":**\n  - A summary of name, email and team, and the \"I agree to the terms\" checkbox.\n  - \"Create account\" is di"
+  }
+}

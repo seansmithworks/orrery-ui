@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "shadcn",
+  "rep": 2,
+  "wallMs": 19565,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 8,
+    "duration_ms": 19030,
+    "total_cost_usd": 0.07144629999999999,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 11173,
+      "cache_read_input_tokens": 47043,
+      "output_tokens": 2203,
+      "output_tokens_details": {
+        "thinking_tokens": 220
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 11173,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 355,
+          "cache_read_input_tokens": 15307,
+          "cache_creation_input_tokens": 1163,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1163
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew card to `./solution.tsx`. I couldn't run it, so I haven't checked how it renders.\n\n- **Header and tabs:** \"Ada Okafor\" is the heading, with \"Flight engineer, Orbit 7\" below it. The three tabs are Overview, Passes and History, with Overview selected first. Each tab shows the text you gave.\n- **Footer:** \"Remove from crew\" is a quiet (ghost) button. \"Save changes\" is the primary button.\n- **Brand:** I used only the workspace's shadcn components and the brand-mapped Tailwind colours. The card should follow orrery light, orrery dark and solar without any brand-specific code.\n- **Touch targets:** The tabs and both buttons have a minimum height of `--hit-target-min` (44px).\n- **Tab list:** I gave the tab list a border. Its muted background is the same colour as the card, so with"
+  }
+}

@@ -1,0 +1,21 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-32);
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-sans);
+  display: flex;
+  gap: var(--space-12);
+  align-items: flex-start;
+}
+.btn {
+  min-height: var(--hit-target-min);
+  padding: var(--space-12) var(--space-16);
+  border: var(--line-width) solid var(--line-strong);
+  background: var(--layer-1);
+  color: var(--text);
+  font: inherit;
+}
+.no-ring:focus {
+  outline: none;
+}

@@ -1,0 +1,56 @@
+{
+  "scenario": "profile-settings",
+  "condition": "orrery",
+  "rep": 2,
+  "wallMs": 28229,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 11,
+    "duration_ms": 27370,
+    "total_cost_usd": 0.19895550000000004,
+    "usage": {
+      "input_tokens": 14,
+      "cache_creation_input_tokens": 37858,
+      "cache_read_input_tokens": 181655,
+      "output_tokens": 2933,
+      "output_tokens_details": {
+        "thinking_tokens": 102
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 37858,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 355,
+          "cache_read_input_tokens": 42799,
+          "cache_creation_input_tokens": 340,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 340
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "The profile settings form is in `./solution.tsx`. I haven't run it, because I can't run code in this workspace.\n\n- **Display name:** a text input with the hint \"Shown to your crew.\"\n- **Time zone:** a select with UTC, Berlin and Tokyo, showing the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\".\n- **Save button:** a primary \"Save profile\" button that submits the form. After saving, the status text \"Profile saved.\" appears next to it. Editing any field clears that text again.\n\nIt uses the kit components (`Field`, `Input`, `Select`, `Switch`, `Button`). Colours and spacing come only from token variables, so it should follow whichever brand is active. I checked that the variables I used (`--page`, `--text`, `--space-24`, `--layout-measure`) "
+  }
+}

@@ -1,0 +1,56 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "shadcn",
+  "rep": 2,
+  "wallMs": 13274,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 12474,
+    "total_cost_usd": 0.040041900000000005,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 5419,
+      "cache_read_input_tokens": 26999,
+      "output_tokens": 1565,
+      "output_tokens_details": {
+        "thinking_tokens": 81
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 5419,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 323,
+          "cache_read_input_tokens": 9717,
+          "cache_creation_input_tokens": 974,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 974
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `./solution.tsx`. I haven't run it, since I can't run code here.\n\n- **Trigger:** a secondary \"Delete project\" button opens the dialog.\n- **Dialog:** it's the workspace's `AlertDialog`, titled \"Delete this project?\" with the description \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" closes the dialog. The primary \"Delete\" button closes it and sets the status text \"Project deleted.\" on the page.\n- **Status text:** it sits in a `role=\"status\"` paragraph, so screen readers announce it.\n- **Theming:** it uses only the brand theme classes (`bg-background`, `text-foreground` and the shadcn button variants), so it follows the orrery light, orrery dark and solar brands. The page sets its own background because the host doesn't provide o"
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 0,
+    "pass": false,
+    "details": [
+      "orrery-light: after steps: axe aria-hidden-focus (serious): 1 node(s), e.g. #root",
+      "orrery-dark: after steps: axe aria-hidden-focus (serious): 1 node(s), e.g. #root",
+      "solar: after steps: axe aria-hidden-focus (serious): 1 node(s), e.g. #root"
+    ]
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 18
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999296875,
+      "darkSolar": 0.9999892578125
+    }
+  },
+  "notes": [],
+  "total": 0.8
+}

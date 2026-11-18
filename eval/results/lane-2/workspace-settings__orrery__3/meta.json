@@ -1,0 +1,56 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "orrery",
+  "rep": 3,
+  "wallMs": 35158,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 12,
+    "duration_ms": 34445,
+    "total_cost_usd": 0.2197215,
+    "usage": {
+      "input_tokens": 14,
+      "cache_creation_input_tokens": 40158,
+      "cache_read_input_tokens": 188215,
+      "output_tokens": 4024,
+      "output_tokens_details": {
+        "thinking_tokens": 274
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 40158,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 419,
+          "cache_read_input_tokens": 45226,
+          "cache_creation_input_tokens": 406,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 406
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `./solution.tsx`. I couldn't run it, so it hasn't been rendered or tested. I did check that the colour, spacing and width variables it uses exist in `tokens/generated/css/orrery.css`.\n\n- **Layout:** The page has an h1 \"Workspace settings\" and uses the kit's `Tabs`, with \"General\" showing first. Colour and spacing come from the brand variables, so it should follow all three brands.\n- **General:** \"Workspace name\" is prefilled with \"Orbit Lab\". \"Default role for new members\" is a radio group with Editor chosen. \"Save changes\" is the primary button and shows \"Settings saved.\" in a status region. The status clears if you edit either field afterwards.\n- **Notifications:** \"Weekly summary email\" is on and \"Mentions\" is off, both as kit `Switch` controls.\n- **Danger z"
+  }
+}

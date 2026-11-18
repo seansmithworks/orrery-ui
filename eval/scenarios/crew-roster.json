@@ -1,0 +1,13 @@
+{
+  "id": "crew-roster",
+  "title": "Filterable roster with row actions and an empty state",
+  "lane": 2,
+  "prompt": "Build a crew roster. Heading: \"Crew\". A search field labelled \"Filter crew\" narrows the list by name as the user types. The list shows five people, each with a name and a role: Ada Okafor (Flight engineer), Bo Lindqvist (Navigator), Chen Wei (Pilot), Dara Moss (Medic), Eli Hart (Comms). Each row has a compact actions button labelled \"Actions for <name>\" (for example \"Actions for Ada Okafor\") that opens a short list of actions: \"Edit\", \"Reassign\" and \"Remove\". Choosing Remove takes that person off the list. When nobody matches the filter, show \"No crew match your filter.\" and a button \"Clear filter\" that empties the field and shows everyone again.",
+  "steps": [{ "role": "button", "name": "Actions for Ada Okafor" }],
+  "overlay": {
+    "pre": [],
+    "trigger": { "role": "button", "name": "Actions for Ada Okafor" },
+    "kind": "menu",
+    "text": "Reassign"
+  }
+}

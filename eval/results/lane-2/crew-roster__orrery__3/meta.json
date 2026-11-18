@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-roster",
+  "condition": "orrery",
+  "rep": 3,
+  "wallMs": 22457,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 21351,
+    "total_cost_usd": 0.1757425,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 35014,
+      "cache_read_input_tokens": 55805,
+      "output_tokens": 3009,
+      "output_tokens_details": {
+        "thinking_tokens": 372
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 35014,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 472,
+          "cache_read_input_tokens": 38270,
+          "cache_creation_input_tokens": 2136,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2136
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the roster to `solution.tsx`. I couldn't run it, and I didn't check the token names it uses against the CSS.\n\n- **Heading and filter:** the page has a \"Crew\" heading and a \"Filter crew\" search field. The list narrows by name, ignoring case, as you type.\n- **Rows:** the five people each show their name and role. Each has a compact icon button labelled \"Actions for <name>\". It opens a menu with Edit, Reassign and Remove.\n- **Actions:** only Remove does anything. It takes that person off the list. Edit and Reassign just close the menu.\n- **Focus after Remove:** focus returns to the \"Crew\" heading, because the row's button is gone.\n- **Empty state:** when nothing matches, it shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field and shows everyone "
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "scenario": "profile-settings",
+  "condition": "bare",
+  "rep": 2,
+  "wallMs": 21177,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 20364,
+    "total_cost_usd": 0.0641108,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 8022,
+      "cache_read_input_tokens": 27868,
+      "output_tokens": 2922,
+      "output_tokens_details": {
+        "thinking_tokens": 59
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 8022,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 381,
+          "cache_read_input_tokens": 10728,
+          "cache_creation_input_tokens": 2575,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2575
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the profile settings form to `solution.tsx`, with its styles in `solution.css`. I couldn't run code here, so none of it has been rendered or tested.\n\n- **Fields:**\n  - \"Display name\" is a text field with the hint \"Shown to your crew.\", linked to the input for screen readers.\n  - \"Time zone\" is a select with the placeholder \"Choose a time zone\" and the options UTC, Berlin and Tokyo.\n  - \"Email me about new orbits\" is a switch.\n- **Saving:** \"Save profile\" is a primary submit button. Submitting shows \"Profile saved.\" next to it. The status clears as soon as you edit any field, so it never describes stale data.\n- **Brand:** all colours, spacing, radii, type sizes and the focus ring come from the `brand.css` variables, so it follows orrery light, orrery dark and solar. The host page ad"
+  }
+}

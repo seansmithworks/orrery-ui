@@ -1,0 +1,57 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "bare",
+  "rep": 2,
+  "wallMs": 35330,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 34236,
+    "total_cost_usd": 0.1052174,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 10921,
+      "cache_read_input_tokens": 29074,
+      "output_tokens": 5861,
+      "output_tokens_details": {
+        "thinking_tokens": 194
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10921,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 491,
+          "cache_read_input_tokens": 11138,
+          "cache_creation_input_tokens": 5257,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 5257
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `solution.tsx`, with its styles in `solution.css`. I couldn't run code here, so none of it has been run or checked in a browser.\n\n- **Sections:** \"General\", \"Notifications\" and \"Danger zone\" are tabs, one panel at a time, starting on General. The arrow keys move between tabs.\n- **General:** \"Workspace name\" is prefilled with \"Orbit Lab\". \"Default role for new members\" is a radio group with Editor chosen. \"Save changes\" shows \"Settings saved.\", and the message clears if you edit either field afterwards.\n- **Notifications:** \"Weekly summary email\" starts on and \"Mentions\" starts off. Both are toggle switches.\n- **Danger zone:** one sentence says deleting is permanent, with a \"Delete workspace\" button under it. The button opens a modal titled \"Delete Orbit Lab?\" w"
+  }
+}

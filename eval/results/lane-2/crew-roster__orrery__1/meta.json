@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-roster",
+  "condition": "orrery",
+  "rep": 1,
+  "wallMs": 27070,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 8,
+    "duration_ms": 25899,
+    "total_cost_usd": 0.1908831,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 36769,
+      "cache_read_input_tokens": 95771,
+      "output_tokens": 3421,
+      "output_tokens_details": {
+        "thinking_tokens": 271
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 36769,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 463,
+          "cache_read_input_tokens": 39949,
+          "cache_creation_input_tokens": 2212,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2212
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew roster to `./solution.tsx`. I couldn't run it, so it hasn't been type-checked or viewed in any of the three brands.\n\n- **Layout:** the \"Crew\" heading sits above a \"Filter crew\" search field. Below that, each of the five people is a card row with their name and role. The page uses only kit components and token variables (`--space-*`, `--text`, `--text-muted`, `--page`), so it should follow the active brand.\n- **Filter:** typing narrows the list by name, ignoring case. When nobody matches, it shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field, shows everyone again and puts focus back in the field.\n- **Actions:** each row has a compact icon button labelled \"Actions for <name>\", for example \"Actions for Ada Okafor\". It opens a menu wit"
+  }
+}

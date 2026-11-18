@@ -1,0 +1,56 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "shadcn",
+  "rep": 3,
+  "wallMs": 31116,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 11,
+    "duration_ms": 30572,
+    "total_cost_usd": 0.1130811,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 15997,
+      "cache_read_input_tokens": 36871,
+      "output_tokens": 4539,
+      "output_tokens_details": {
+        "thinking_tokens": 475
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 15997,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 500,
+          "cache_read_input_tokens": 18504,
+          "cache_creation_input_tokens": 2967,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2967
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `./solution.tsx`. I couldn't run or render it, so it hasn't been tested.\n\n- **Sections:** \"General\", \"Notifications\" and \"Danger zone\" are tabs, with General showing first. Only the selected section is rendered.\n- **General:**\n  - \"Workspace name\" is prefilled with \"Orbit Lab\".\n  - \"Default role for new members\" is a Viewer / Editor / Admin radio group with Editor selected.\n  - \"Save changes\" shows \"Settings saved.\", and the message clears when you edit a field.\n- **Notifications:** \"Weekly summary email\" is on and \"Mentions\" is off.\n- **Danger zone:**\n  - I wrote the sentence as \"Deleting this workspace is permanent and cannot be reversed.\"\n  - \"Delete workspace\" opens a modal titled \"Delete Orbit Lab?\" with your text, plus \"Cancel\" and \"Delete workspace\" butt"
+  }
+}

@@ -1,0 +1,11 @@
+.page {
+  min-height: 100vh;
+  margin: 0;
+  padding: var(--space-32);
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.faint {
+  color: var(--layer-2);
+}
