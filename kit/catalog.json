@@ -4,7 +4,7 @@
   "conventions": {
     "import": "Import components from kit/index.ts and the styles once from kit/kit.css, after the brand token CSS.",
     "className": "Every component and part accepts className unless its entry says \"className\": false; className is never listed in props.",
-    "passthrough": "Props not listed forward to the passthrough type, or to the props of the passthrough component; a listed one marked \"x-from\" (its library, ui-sdk or base-ui) is a passthrough prop worth knowing.",
+    "passthrough": "Props not listed forward to the passthrough type, or to the props of the passthrough component; a listed one marked \"x-from\" (ui-sdk) is a passthrough prop worth knowing.",
     "x-type": "A prop JSON cannot carry: node (any React child), element (one React element), function, or object (a DOM node or a ref).",
     "brands": "Brands differ through token values only. There is no brand, theme or style variant prop."
   },

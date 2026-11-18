@@ -1,5 +1,7 @@
 # Moving a kit component from Base UI to UI SDK
 
+**Status: complete.** M0 (Button, the worked example), M1 (every other kit component, PRs #40 to #45) and M2 (`@base-ui/react` removed from `package.json` and the lockfile, `x-from: "base-ui"` removed from the catalog check; this PR) are done. Every kit component runs on `@ui-sdk/react`. The notes below stay as the record of how.
+
 The recipe each M1 lane follows. Pinned: `@ui-sdk/react` and `@ui-sdk/core` at `0.1.0-beta.7`, exact. Button is the worked example (M0). M0 found two blockers, below. The Field one is resolved: Field, Input, Textarea, Checkbox, Switch and Select moved together in one lane.
 
 ## Two blockers found in M0

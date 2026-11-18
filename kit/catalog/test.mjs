@@ -91,9 +91,9 @@ const tests = {
 
   '[catalog-matches-kit] props: a library prop not marked x-from fails, and open is a real Dialog.Root prop'() {
     const bad = propsProblems(kit, seeded((f) => { delete f.dialog.components.Dialog.parts.Root.props.properties.open['x-from']; }));
-    has(bad, /Dialog\.parts\.Root\.props\.open is not declared under kit\/; mark it "x-from" with its library, "ui-sdk" or "base-ui"/);
+    has(bad, /Dialog\.parts\.Root\.props\.open is not declared under kit\/; mark it "x-from": "ui-sdk"/);
     assert.ok(kit.exports.get('Dialog').parts.get('Root').names.has('open'), 'Dialog.Root has no open prop');
-    const gone = propsProblems(kit, seeded((f) => { f.dialog.components.Dialog.parts.Popup.props.properties.returnFocus = { 'x-type': 'object', 'x-from': 'base-ui', description: 'No such prop.' }; }));
+    const gone = propsProblems(kit, seeded((f) => { f.dialog.components.Dialog.parts.Popup.props.properties.returnFocus = { 'x-type': 'object', 'x-from': 'ui-sdk', description: 'No such prop.' }; }));
     has(gone, /Dialog\.parts\.Popup\.props\.returnFocus is listed, but the component's props type has no returnFocus$/);
   },
 
@@ -103,17 +103,12 @@ const tests = {
     has(bad, /^catalog: kit\/button\/button\.catalog\.json Button\.props\.variant enum is primary, secondary, quiet, but the type allows primary, secondary, quiet, danger$/);
   },
 
-  '[catalog-matches-kit] props: a passthrough that does not resolve fails, naming the entry and the ref'() {
-    const c = seeded((f) => { f.button.components.Button.passthrough = '@base-ui/react/button#Button.Propz'; });
-    const bad = propsProblems(readKit(c), c);
-    has(bad, /^catalog: kit\/button\/button\.catalog\.json Button\.passthrough @base-ui\/react\/button#Button\.Propz does not resolve: /);
-  },
-
-  '[catalog-matches-kit] props: a UI SDK component passthrough resolves to its props; a misspelt one fails, and an unknown x-from fails'() {
+  '[catalog-matches-kit] props: a UI SDK component passthrough resolves to its props; a misspelt one fails, and an unknown x-from fails, the retired library included'() {
     assert.ok(kit.passthrough.get('@ui-sdk/react/button#Button')?.props?.has('focusableWhenDisabled'), 'the UI SDK Button passthrough has no focusableWhenDisabled');
     const c = seeded((f) => { f.button.components.Button.passthrough = '@ui-sdk/react/button#Buton'; });
     has(propsProblems(readKit(c), c), /^catalog: kit\/button\/button\.catalog\.json Button\.passthrough @ui-sdk\/react\/button#Buton does not resolve: /);
-    has(schemaProblems(seeded((f) => { f.button.components.Button.props.properties.disabled['x-from'] = 'radix'; })), /Button\.props\.properties\.disabled\.x-from may only be "ui-sdk" or "base-ui"$/);
+    has(schemaProblems(seeded((f) => { f.button.components.Button.props.properties.disabled['x-from'] = 'radix'; })), /Button\.props\.properties\.disabled\.x-from may only be "ui-sdk"$/);
+    has(schemaProblems(seeded((f) => { f.button.components.Button.props.properties.disabled['x-from'] = ['base', 'ui'].join('-'); })), /Button\.props\.properties\.disabled\.x-from may only be "ui-sdk"$/);
   },
 
   '[catalog-matches-kit] props: className false on a part that takes className fails, and a missing false where it takes none fails'() {

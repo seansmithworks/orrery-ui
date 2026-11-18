@@ -25,8 +25,8 @@ export const LIMITS = { description: 140, propDescription: 140, item: 120, items
 const JSON_TYPES = ['string', 'boolean', 'number'];
 // Values JSON cannot carry. object: a DOM node, a ref, or another object that is not a React element.
 const X_TYPES = ['node', 'element', 'function', 'object'];
-// The behaviour libraries a passthrough prop can come from (x-from).
-const X_FROM = ['ui-sdk', 'base-ui'];
+// The behaviour library a passthrough prop can come from (x-from).
+const X_FROM = ['ui-sdk'];
 const ENTRY_KEYS = ['description', 'props', 'extends', 'passthrough', 'slots', 'parts', 'requiredParts', 'useWhen', 'avoidWhen', 'a11y', 'className'];
 const PART_KEYS = [...ENTRY_KEYS.filter((k) => !['parts', 'requiredParts'].includes(k)), 'inside'];
 // A native element an `instead` may point to.
@@ -88,8 +88,8 @@ export function readKit(catalog, root = REPO) {
   const cfg = ts.getParsedCommandLineOfConfigFile(path.join(root, 'tsconfig.json'), {}, { ...ts.sys, onUnRecoverableConfigFileDiagnostic() {} });
   const refs = passthroughRefs(catalog);
   const virtualPath = path.join(root, PASSTHROUGH_FILE);
-  // The name after # is a props type (Base UI's Button.Props) or a component (UI SDK's Button, whose props type is not
-  // exported by name): T reads the first, C the props of the second. Whichever resolves is the passthrough.
+  // The name after # is a component (UI SDK's Button, whose props type is not exported by name) or a type
+  // (PartProps<"div">): T reads the second, C the props of the first. Whichever resolves is the passthrough.
   const virtualText = refs.map((r, i) => { const [mod, type] = r.split('#'); return `import type * as M${i} from ${JSON.stringify(mod)};\nexport type T${i} = M${i}.${type};\nexport type C${i} = Parameters<typeof M${i}.${type}>[0];\n`; }).join('');
   const host = ts.createCompilerHost(cfg.options);
   const { getSourceFile, fileExists, readFile } = host;
@@ -335,7 +335,7 @@ function propsOne(kit, entries, at, name, entry, model) {
     if (!model.names.has(n)) { bad.push(`${p} is listed, but the component's props type has no ${n}`); continue; }
     const owned = model.owned.has(n);
     if (owned && decl['x-from']) bad.push(`${p} is declared under kit/, so it is kit-owned and takes no x-from`);
-    if (!owned && !X_FROM.includes(decl['x-from'])) bad.push(`${p} is not declared under kit/; mark it "x-from" with its library, ${X_FROM.map((x) => `"${x}"`).join(' or ')} (a listed passthrough prop)`);
+    if (!owned && !X_FROM.includes(decl['x-from'])) bad.push(`${p} is not declared under kit/; mark it "x-from": ${X_FROM.map((x) => `"${x}"`).join(' or ')} (a listed passthrough prop)`);
     if (!owned && pt?.props && !pt.props.has(n)) bad.push(`${p} has x-from, but the passthrough ${entry.passthrough} has no ${n}`);
     const why = typeMismatch(kit.checker, decl, model.constituents.filter((c) => c.has(n)).map((c) => c.get(n).type));
     if (why) bad.push(`${p} ${why}`);
@@ -487,7 +487,7 @@ export function proseProblems(catalog) {
 export const CONVENTIONS = {
   import: 'Import components from kit/index.ts and the styles once from kit/kit.css, after the brand token CSS.',
   className: 'Every component and part accepts className unless its entry says "className": false; className is never listed in props.',
-  passthrough: 'Props not listed forward to the passthrough type, or to the props of the passthrough component; a listed one marked "x-from" (its library, ui-sdk or base-ui) is a passthrough prop worth knowing.',
+  passthrough: 'Props not listed forward to the passthrough type, or to the props of the passthrough component; a listed one marked "x-from" (ui-sdk) is a passthrough prop worth knowing.',
   'x-type': 'A prop JSON cannot carry: node (any React child), element (one React element), function, or object (a DOM node or a ref).',
   brands: 'Brands differ through token values only. There is no brand, theme or style variant prop.',
 };
