@@ -698,6 +698,428 @@
         "code": "// Golden example: sign in with an emailed link. The workspace is read-only, the email field explains its\n// format up front and says what to fix in words when the address is incomplete. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Input } from \"../index\";\n\nconst check = (email: string) =>\n  /^[^@\\s]+@[^@\\s]+\\.[^@\\s]+$/.test(email)\n    ? null\n    : \"Add the part after the @, for example ada@orbit.dev.\";\n\nexport default function SignInWithLink() {\n  const [email, setEmail] = useState(\"ada@orbit\");\n  const [error, setError] = useState<string | null>(check(\"ada@orbit\"));\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = check(email);\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"workspace\">\n        <Field.Label>Workspace</Field.Label>\n        <Input readOnly value=\"orbit-lab\" />\n        <Field.Description>\n          You were invited to this workspace.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root name=\"email\" invalid={error !== null}>\n        <Field.Label>Email</Field.Label>\n        <Input\n          type=\"email\"\n          autoComplete=\"email\"\n          value={email}\n          onChange={(event) => {\n            setEmail(event.target.value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          We send a sign-in link to this address. No password needed.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send sign-in link\n        </Button>\n        <span role=\"status\">{sent ? `Link sent to ${email}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     },
+    "Menu": {
+      "description": "A menu on UI SDK: arrows, Home, End and typing move the highlight, Enter runs, Escape closes, focus returns to the trigger.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state and runs the actions; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@ui-sdk/react/menu#Menu",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "onAction": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the value of the plain item that ran. Checkbox and radio items report through their own handlers."
+              },
+              "open": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "modal": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "pointer"
+                    ]
+                  }
+                ],
+                "x-from": "ui-sdk",
+                "description": "true: while open, page scroll locks and the page is inert. pointer: outside presses only close. false: the page stays usable."
+              },
+              "loop": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Whether the arrow keys wrap from the last item to the first; unset, they do."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The button that opens the menu; it renders a kit Button.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/menu#MenuTrigger",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "quiet"
+                ],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": [
+                  "s",
+                  "m"
+                ],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Stops the trigger from opening the menu; a disabled trigger cannot take focus."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "Positioner and popup in one part; it opens below the trigger, aligned to its start, in the browser's top layer.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/menu#MenuContent",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the popup mounts into instead of in place. It still opens in the top layer."
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "top",
+                  "bottom",
+                  "left",
+                  "right",
+                  "start",
+                  "end"
+                ],
+                "x-from": "ui-sdk",
+                "description": "The trigger's side the popup opens on; unset, bottom. It flips when there is no room."
+              },
+              "align": {
+                "type": "string",
+                "enum": [
+                  "start",
+                  "center",
+                  "end"
+                ],
+                "x-from": "ui-sdk",
+                "description": "The popup's alignment along that side; unset, start."
+              },
+              "sideOffset": {
+                "type": "number",
+                "description": "Extra px on top of the kit's CSS offset between the trigger and the popup."
+              },
+              "collisionPadding": {
+                "type": "number",
+                "x-from": "ui-sdk",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter."
+              },
+              "finalFocus": {
+                "x-type": "object",
+                "x-from": "ui-sdk",
+                "description": "What takes focus on close: a selector, an element, a function, or none. Needed when an action removes the trigger."
+              }
+            },
+            "required": []
+          }
+        },
+        "Item": {
+          "description": "An action whose text is the label typeahead matches; a disabled one stays focusable and never runs.",
+          "inside": [
+            "Popup",
+            "Group",
+            "SubPopup"
+          ],
+          "passthrough": "@ui-sdk/react/menu#MenuItem",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "Passed to the Root's onAction when the item runs."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Shows the item muted; the arrow keys and pointer still reach it, and it never runs or closes the menu."
+              },
+              "shortcut": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "A key hint like mod+d, shown at the item's end and set as aria-keyshortcuts. It binds no key unless the menu is data-driven."
+              },
+              "onSelect": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Runs when the item is chosen; preventDefault keeps the menu open and skips onAction. A returned Promise marks it pending."
+              },
+              "label": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The text typeahead matches, when it should differ from the item's visible text."
+              }
+            },
+            "required": []
+          }
+        },
+        "CheckboxItem": {
+          "description": "An item that switches one option on and off; a check marks it while on, and the menu stays open.",
+          "inside": [
+            "Popup",
+            "Group",
+            "SubPopup"
+          ],
+          "passthrough": "@ui-sdk/react/menu#MenuCheckboxItem",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "Identifies the item in the Root's onCheckedChange."
+              },
+              "checked": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Whether the item is on, when controlled; pair it with onCheckedChange."
+              },
+              "defaultChecked": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Whether the item starts on, when it is not controlled."
+              },
+              "onCheckedChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the next on or off state when the item is toggled."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Shows the item muted; it stays focusable and never toggles."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        "RadioGroup": {
+          "description": "Radio items that share one value; name it with a GroupLabel, and aria-label when the label is not inside.",
+          "inside": [
+            "Popup",
+            "SubPopup"
+          ],
+          "passthrough": "@ui-sdk/react/menu#MenuRadioGroup",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "x-type": "object",
+                "x-from": "ui-sdk",
+                "description": "The chosen value, when controlled; pair it with onValueChange."
+              },
+              "defaultValue": {
+                "x-type": "object",
+                "x-from": "ui-sdk",
+                "description": "The value chosen at first, when the group is not controlled."
+              },
+              "onValueChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the next value when another item is chosen."
+              }
+            },
+            "required": []
+          }
+        },
+        "RadioItem": {
+          "description": "One choice in a RadioGroup; a dot marks the chosen one, and the menu stays open.",
+          "inside": "RadioGroup",
+          "passthrough": "@ui-sdk/react/menu#MenuRadioItem",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The value the group takes when this item is chosen."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Shows the item muted; it stays focusable and is never chosen."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        },
+        "Group": {
+          "description": "Groups related items under a GroupLabel.",
+          "inside": [
+            "Popup",
+            "SubPopup"
+          ],
+          "passthrough": "@ui-sdk/react/menu#MenuGroup",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "GroupLabel": {
+          "description": "The muted heading of a group; UI SDK names the group by it.",
+          "inside": [
+            "Group",
+            "RadioGroup"
+          ],
+          "passthrough": "@ui-sdk/react/menu#MenuGroupLabel",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Separator": {
+          "description": "A hairline between groups of items; it takes no focus.",
+          "inside": [
+            "Popup",
+            "SubPopup"
+          ],
+          "passthrough": "@ui-sdk/react/menu#MenuSeparator",
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Sub": {
+          "description": "A submenu that renders no element of its own, holding a SubTrigger and a SubPopup.",
+          "inside": [
+            "Popup",
+            "SubPopup"
+          ],
+          "className": false,
+          "passthrough": "@ui-sdk/react/menu#MenuSub",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "SubTrigger": {
+          "description": "The item that opens its submenu; a chevron at its end points toward it, mirrored in right-to-left text.",
+          "inside": "Sub",
+          "passthrough": "@ui-sdk/react/menu#MenuSubTrigger",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Shows the item muted; it stays focusable and never opens its submenu."
+              }
+            },
+            "required": []
+          }
+        },
+        "SubPopup": {
+          "description": "The submenu's popup, beside its SubTrigger; it stays inside its parent popup.",
+          "inside": "Sub",
+          "passthrough": "@ui-sdk/react/menu#MenuSubContent",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "collisionPadding": {
+                "type": "number",
+                "x-from": "ui-sdk",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root",
+        "Trigger",
+        "Popup",
+        "Item"
+      ],
+      "useWhen": [
+        "A short list of actions on one object, opened from a button.",
+        "Settings that change in place: on and off items, or one choice from a few.",
+        "Related actions grouped under one trigger so the page stays quiet."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The person picks a value for a form field.",
+          "instead": "Select"
+        },
+        {
+          "text": "One action is the main thing on the page.",
+          "instead": "Button"
+        },
+        {
+          "text": "The content is a form or free text, not a list of commands.",
+          "instead": "Dialog"
+        }
+      ],
+      "a11y": [
+        "Give Trigger visible text; an icon-only trigger needs an aria-label.",
+        "Name each RadioGroup with a GroupLabel, or an aria-label when the label sits outside it.",
+        "Show a result for every action: a closed menu leaves no sign that an item ran."
+      ],
+      "example": {
+        "file": "kit/menu/Menu.example.tsx",
+        "code": "// Golden example: the actions on a star chart. The trigger's text names the menu. Plain items run\n// through the Root's onAction (the status line reads the last one); the checkbox items and the radio\n// group stay open so several settings change in one visit, and report through their own change\n// handlers. Zoom is a submenu. Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Menu } from \"../index\";\n\nexport default function ChartMenu() {\n  const [last, setLast] = useState(\"Nothing yet.\");\n  const [grid, setGrid] = useState(true);\n  const [labels, setLabels] = useState(false);\n  const [projection, setProjection] = useState(\"polar\");\n\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        alignItems: \"center\",\n        gap: \"var(--space-12)\",\n      }}\n    >\n      <Menu.Root onAction={(value) => setLast(`Ran ${value}.`)}>\n        <Menu.Trigger>Chart</Menu.Trigger>\n        <Menu.Popup>\n          <Menu.Item value=\"rename\">Rename</Menu.Item>\n          <Menu.Item value=\"duplicate\" shortcut=\"mod+d\">\n            Duplicate\n          </Menu.Item>\n          <Menu.Item value=\"export\" disabled>\n            Export as image\n          </Menu.Item>\n          <Menu.Separator />\n          <Menu.Group>\n            <Menu.GroupLabel>Show</Menu.GroupLabel>\n            <Menu.CheckboxItem\n              value=\"grid\"\n              checked={grid}\n              onCheckedChange={setGrid}\n            >\n              Grid\n            </Menu.CheckboxItem>\n            <Menu.CheckboxItem\n              value=\"labels\"\n              checked={labels}\n              onCheckedChange={setLabels}\n            >\n              Body labels\n            </Menu.CheckboxItem>\n          </Menu.Group>\n          <Menu.Separator />\n          <Menu.RadioGroup\n            value={projection}\n            onValueChange={setProjection}\n            aria-label=\"Projection\"\n          >\n            <Menu.GroupLabel>Projection</Menu.GroupLabel>\n            <Menu.RadioItem value=\"polar\">Polar</Menu.RadioItem>\n            <Menu.RadioItem value=\"flat\">Flat</Menu.RadioItem>\n          </Menu.RadioGroup>\n          <Menu.Separator />\n          <Menu.Sub>\n            <Menu.SubTrigger>Zoom</Menu.SubTrigger>\n            <Menu.SubPopup>\n              <Menu.Item value=\"zoom-in\">Zoom in</Menu.Item>\n              <Menu.Item value=\"zoom-out\">Zoom out</Menu.Item>\n            </Menu.SubPopup>\n          </Menu.Sub>\n        </Menu.Popup>\n      </Menu.Root>\n      <span role=\"status\">\n        {last} Grid {grid ? \"on\" : \"off\"}, labels {labels ? \"on\" : \"off\"},{\" \"}\n        {projection}.\n      </span>\n    </div>\n  );\n}\n"
+      }
+    },
     "Select": {
       "description": "A select on UI SDK: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
       "parts": {

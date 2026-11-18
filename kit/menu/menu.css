@@ -1,0 +1,174 @@
+/* Menu. Every value is a token, a kit-local property from kit.css, or one of the UN-DIALLED
+   properties below. The trigger is a kit Button (kit/button/button.css); the popup has the floating
+   level's drawing and highlight (the .orr-floating class in kit/floating.css, which Menu.tsx adds to
+   the popup). Items are drawn as Select's items are.
+   States: item highlighted, disabled, disabled and highlighted, checked (a mark in the leading column).
+
+   One rule per state. No accent: a checked item is a mark in the text colour. */
+
+@layer orrery.kit {
+  .orr-menu__positioner {
+    /* UN-DIALLED: the gap between the trigger and the popup, the same as Select's. */
+    --orr-menu-offset: var(--space-4);
+    /* UN-DIALLED: the popup's tallest size before it scrolls, about nine items. */
+    --orr-menu-max-height: calc(var(--hit-target-min) * 9);
+    /* No box of its own: it only holds the properties above, as Select's does. */
+    display: contents;
+  }
+
+  .orr-menu__popup {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: var(--anchor-width);
+    max-width: var(--available-width);
+    max-height: min(
+      var(--orr-menu-max-height),
+      calc(var(--available-height) - var(--orr-menu-offset))
+    );
+    /* UN-DIALLED: the inset of the items from the popup edge. */
+    padding: var(--space-4);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    transform-origin: var(--transform-origin);
+    outline: 0;
+  }
+  /* A submenu is as wide as its items, not as its trigger item. */
+  .orr-menu__popup[data-nested] {
+    min-width: 0;
+  }
+  /* A closed popup UI SDK keeps in the page carries hidden; the display above outranks it. */
+  .orr-menu__popup[hidden] {
+    display: none;
+  }
+
+  /* item: [leading column] text [end column]. A plain item has no leading column unless a
+     checkbox or radio item shares its popup, which then keeps every label in one line. */
+  .orr-menu__item {
+    box-sizing: border-box;
+    display: flex;
+    flex: none;
+    align-items: center;
+    gap: var(--space-8);
+    min-height: var(--hit-target-min);
+    padding: 0 var(--space-8);
+    border-radius: var(--radius-control);
+    cursor: default;
+    outline: 0;
+    user-select: none;
+    -webkit-user-select: none;
+  }
+  .orr-menu__item-text {
+    flex: 1 1 auto;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+  /* Text-only items in a popup that holds a choice item line up with its labels. */
+  .orr-menu__popup:has(.orr-menu__item--choice)
+    .orr-menu__item:not(.orr-menu__item--choice) {
+    /* UN-DIALLED: the item padding, the indicator column (the glyph size) and the item gap. */
+    padding-inline-start: calc(
+      var(--space-8) + var(--space-20) + var(--space-8)
+    );
+  }
+
+  .orr-menu__indicator {
+    display: flex;
+    flex: none;
+  }
+  /* UN-DIALLED: a spacing token used as the glyph size, as Select's check and chevron. */
+  .orr-menu__indicator svg,
+  .orr-menu__chevron svg {
+    width: var(--space-20);
+    height: var(--space-20);
+  }
+  /* The indicator keeps its column while the item is off; only a checked item draws the mark. */
+  .orr-menu__item--choice:not([data-checked]) .orr-menu__indicator {
+    visibility: hidden;
+  }
+  .orr-menu__chevron {
+    display: flex;
+    flex: none;
+  }
+  /* The chevron points toward the submenu, which opens to the end side. */
+  [dir="rtl"] .orr-menu__chevron {
+    transform: scaleX(-1);
+  }
+
+  /* The keys UI SDK appends to an item that has a shortcut. */
+  .orr-menu__item > [data-slot="shortcut"] {
+    flex: none;
+    color: var(--text-muted);
+    font-size: var(--type-size-13);
+    line-height: var(--type-line-height-13);
+  }
+
+  /* item highlighted: keyboard or pointer is on it. The floating level's highlight, never the
+     accent. The shortcut follows the item's text colour. */
+  .orr-menu__item[data-highlighted] {
+    background-color: var(--orr-highlight-fill);
+    color: var(--orr-highlight-text);
+  }
+  .orr-menu__item[data-highlighted] > [data-slot="shortcut"] {
+    color: inherit;
+  }
+
+  /* item disabled: UI SDK keeps it focusable, so the highlight reaches it. */
+  .orr-menu__item[data-disabled] {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* item disabled and highlighted: Select's rule. It does not invert (muted text on the inverted fill
+     is unreadable); it keeps the popup fill and muted text and shows the position with an inset ring
+     in the muted colour. STRAWMAN awaiting sign-off, with Select's. */
+  .orr-menu__item[data-disabled][data-highlighted] {
+    background-color: var(--orr-floating-fill);
+    color: var(--text-muted);
+    box-shadow: inset 0 0 0 var(--line-width) var(--text-muted);
+  }
+
+  .orr-menu__group {
+    display: flex;
+    flex-direction: column;
+  }
+  .orr-menu__group-label {
+    padding: var(--space-8) var(--space-8) var(--space-4); /* UN-DIALLED */
+    color: var(--text-muted);
+    font-size: var(--type-size-13);
+    line-height: var(--type-line-height-13);
+    font-weight: 500; /* UN-DIALLED */
+  }
+  .orr-menu__separator {
+    flex: none;
+    height: var(--line-width);
+    /* UN-DIALLED: the vertical gap; the negative inline margin runs the line across the popup padding. */
+    margin: var(--space-4) calc(-1 * var(--space-4));
+    background-color: var(--line);
+  }
+
+  /* Motion, Select's pattern. Enter and exit fade; with motion allowed the popup also grows from
+     --orr-enter-scale toward the trigger. Reduced motion is opacity only. */
+  .orr-menu__popup {
+    transition: opacity var(--orr-dur) var(--orr-ease);
+  }
+  .orr-menu__popup:is([data-starting-style], [data-ending-style]) {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-menu__popup {
+      transition:
+        opacity var(--orr-dur) var(--orr-ease),
+        transform var(--orr-dur) var(--orr-ease);
+    }
+    .orr-menu__popup:is([data-starting-style], [data-ending-style]) {
+      transform: scale(var(--orr-enter-scale));
+    }
+  }
+}

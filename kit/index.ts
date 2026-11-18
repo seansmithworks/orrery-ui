@@ -12,7 +12,18 @@ export { Dialog } from "./dialog/Dialog";
 export type { DialogPopupProps } from "./dialog/Dialog";
 export { Card } from "./card/Card";
 export type { CardProps } from "./card/Card";
-export { Select, type SelectPopupProps, type SelectTriggerProps } from "./select/Select";
+export {
+  Select,
+  type SelectPopupProps,
+  type SelectTriggerProps,
+} from "./select/Select";
+export {
+  Menu,
+  type MenuItemProps,
+  type MenuPopupProps,
+  type MenuRootProps,
+  type MenuTriggerProps,
+} from "./menu/Menu";
 export { Checkbox, type CheckboxProps } from "./checkbox/Checkbox";
 export { Switch, type SwitchProps } from "./switch/Switch";
 export { Tabs } from "./tabs/Tabs";
