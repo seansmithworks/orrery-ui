@@ -1,0 +1,6 @@
+{
+  "id": "crew-tabs",
+  "title": "Tabbed crew card",
+  "prompt": "Build a card for a crew member named \"Ada Okafor\" (heading), with the line \"Flight engineer, Orbit 7\" below it. Inside the card, show three tabs: \"Overview\" (text: \"Leads the docking checklist.\"), \"Passes\" (text: \"Next close pass in four days.\") and \"History\" (text: \"Charted since March.\"). Overview is selected first. The card has a footer with a quiet button \"Remove from crew\" and a primary button \"Save changes\".",
+  "steps": [{ "role": "tab", "name": "Passes" }]
+}

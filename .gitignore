@@ -3,3 +3,8 @@ example/dist/
 dist/
 test-results/
 *.tgz
+
+# eval loop: run output stays local, only the committed summary is kept
+eval/results/*
+!eval/results/lane-1.md
+!eval/results/lane-1.json
