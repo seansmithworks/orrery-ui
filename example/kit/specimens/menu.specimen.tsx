@@ -167,7 +167,8 @@ function LongCell() {
 /**
  * The open state, held open inside its own frame (../held-open-frame.tsx), never the panel's live
  * portal: the frame's document is the popup's viewport, whatever the library does with a popup. Not
- * modal, so the rest of the page stays usable; inert, because it is a picture of the open state.
+ * modal, so the rest of the page stays usable. Not inert, unlike Select's: the kit's hit-area test
+ * presses every Button, the trigger included, and an inert frame cannot be hit-tested.
  */
 function OpenCell({ name, children }: { name: string; children: ReactNode }) {
   return (
@@ -179,7 +180,6 @@ function OpenCell({ name, children }: { name: string; children: ReactNode }) {
         className="spec-menu-frame"
         bodyClassName="spec-menu-frame__body"
         title={`Chart menu, ${name}, held open`}
-        inert
       >
         {(body) => (
           <Menu.Root open modal={false}>
