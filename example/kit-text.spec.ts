@@ -37,6 +37,7 @@ type Target = {
   open: (page: Page) => Promise<void>;
   /** Where kit text is read in the page's own document. Held-open frames are read whole. */
   scope: string;
+  widths: readonly number[];
 };
 
 const TARGETS: Target[] = [
@@ -47,11 +48,14 @@ const TARGETS: Target[] = [
       await expect(page.locator("[data-example]").first()).toBeVisible();
     },
     scope: "[data-example]",
+    widths: WIDTHS,
   },
   {
     name: "specimen",
     open: openSpecimen,
     scope: "[data-panel], [data-portal-for]",
+    // 1280 only: the specimen's 2-column grid is a test fixture, not product layout (73px cells at 375).
+    widths: [1280],
   },
 ];
 
@@ -379,7 +383,7 @@ test.describe("detectors", () => {
 });
 
 for (const target of TARGETS) {
-  for (const width of WIDTHS) {
+  for (const width of target.widths) {
     test.describe(`${target.name} at ${width}`, () => {
       // The specimen's hit-area pass probes about 400 elements; it takes 13s on a Mac and passed 30s on CI's runner.
       test.describe.configure({ timeout: 120_000 });
