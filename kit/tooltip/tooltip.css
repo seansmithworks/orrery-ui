@@ -1,0 +1,60 @@
+/* Tooltip. Every value is a token, a kit-local property from kit.css, or one of the UN-DIALLED
+   properties below. The label's fill, border and shadow are the floating level's drawing: the
+   .orr-floating class in kit/floating.css, which Tooltip.tsx adds to the popup.
+   STRAWMAN (Sean's call): the floating surface at the control radius, small type, no arrow.
+   Delays are UI SDK's defaults (600ms to open, none to close); DESIGN.md sets none. */
+
+@layer orrery.kit {
+  /* Kit-local, on the positioner only (never the shared :root). */
+  .orr-tooltip__positioner {
+    /* UN-DIALLED: the gap between the trigger and the label. */
+    --orr-tooltip-offset: var(--space-4);
+    /* UN-DIALLED: the label's widest size before it wraps: three 72px steps. */
+    --orr-tooltip-max-width: calc(var(--space-72) * 3);
+    display: contents;
+  }
+
+  /* The label sits in the browser's top layer, so it needs no z-index. UI SDK places its border
+     box, so the gap to the trigger is Tooltip.tsx's sideOffset, never a margin. */
+  .orr-tooltip {
+    --orr-floating-radius: var(--radius-control);
+    box-sizing: border-box;
+    max-width: min(
+      var(--orr-tooltip-max-width),
+      calc(100% - 2 * var(--space-8))
+    );
+    margin: 0;
+    overflow: visible;
+    /* UN-DIALLED */
+    padding: var(--space-4) var(--space-8);
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-13);
+    line-height: var(--type-line-height-13);
+    overflow-wrap: break-word;
+    transform-origin: var(--transform-origin);
+  }
+  /* A closed tooltip is in the page, hidden: the kit's display (if any) must not show it. */
+  .orr-tooltip[hidden] {
+    display: none;
+  }
+
+  /* Motion, the Select popup's pattern: fade; with motion allowed the label also grows from
+     --orr-enter-scale toward the trigger. Reduced motion is opacity only. */
+  .orr-tooltip {
+    transition: opacity var(--orr-dur) var(--orr-ease);
+  }
+  .orr-tooltip:is([data-starting-style], [data-ending-style]) {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-tooltip {
+      transition:
+        opacity var(--orr-dur) var(--orr-ease),
+        transform var(--orr-dur) var(--orr-ease);
+    }
+    .orr-tooltip:is([data-starting-style], [data-ending-style]) {
+      transform: scale(var(--orr-enter-scale));
+    }
+  }
+}

@@ -1,0 +1,139 @@
+{
+  "example": "Tooltip.example.tsx",
+  "components": {
+    "Tooltip": {
+      "description": "A tooltip on UI SDK: a short label on hover or focus; it names or describes its trigger, and Escape closes it.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state and the delays; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@ui-sdk/react/tooltip#Tooltip",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "enum": ["label", "description"],
+                "description": "label: the tooltip names its trigger. description: it adds a hint. Unset, it names a trigger with no name of its own."
+              },
+              "delay": {
+                "type": "number",
+                "x-from": "ui-sdk",
+                "description": "Milliseconds the pointer rests on the trigger before the tooltip opens; UI SDK's default is 600."
+              },
+              "closeDelay": {
+                "type": "number",
+                "x-from": "ui-sdk",
+                "description": "Milliseconds before it closes once the pointer leaves; UI SDK's default is 0."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Stops the tooltip from opening; the trigger keeps working."
+              },
+              "open": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "onOpenChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the next open state whenever the tooltip asks to open or close."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The element the tooltip names or describes; it renders a kit Button unless render gives another element.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/tooltip#TooltipTrigger",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": ["primary", "secondary", "quiet"],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": ["s", "m"],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "render": {
+                "x-type": "element",
+                "x-from": "ui-sdk",
+                "description": "Another element to trigger with, in place of the kit Button, such as an IconButton."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "The label, in the browser's top layer while open; it opens above the trigger and flips when there is no room.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/tooltip#TooltipContent",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the label mounts into instead of in place. It still opens in the top layer."
+              },
+              "side": {
+                "type": "string",
+                "enum": ["top", "bottom", "left", "right", "start", "end"],
+                "description": "The trigger's side the label opens on; unset, top. It flips when there is no room."
+              },
+              "align": {
+                "type": "string",
+                "enum": ["start", "center", "end"],
+                "description": "The label's alignment along that side; unset, center."
+              },
+              "sideOffset": {
+                "type": "number",
+                "description": "Extra px on top of the kit's CSS offset between the trigger and the label."
+              },
+              "collisionPadding": {
+                "type": "number",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the label keeps from the window's edges, the Dialog's gutter."
+              },
+              "children": {
+                "type": "string",
+                "description": "The label: short plain text. Never a link or a button; the label cannot take focus."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": ["Root", "Trigger", "Popup"],
+      "useWhen": [
+        "A short label for a control that shows only an icon.",
+        "A one-line hint on a control that has a visible name."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The content has a link, a button or more than a sentence.",
+          "instead": "Popover"
+        },
+        {
+          "text": "The message matters on touch screens, which have no hover.",
+          "instead": "p"
+        }
+      ],
+      "a11y": [
+        "Keep the label to plain text; a tooltip cannot take focus.",
+        "Put nothing in a tooltip that a touch user needs: a plain tap only presses the trigger.",
+        "On an icon-only trigger, set the Root's type to label so the tooltip is its name."
+      ]
+    }
+  }
+}

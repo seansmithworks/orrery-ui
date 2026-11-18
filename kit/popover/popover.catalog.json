@@ -1,0 +1,167 @@
+{
+  "example": "Popover.example.tsx",
+  "components": {
+    "Popover": {
+      "description": "A popover on UI SDK: a small panel beside its trigger; Escape and an outside press close it, and focus returns to the trigger.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@ui-sdk/react/popover#Popover",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "defaultOpen": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Opens the popover on first render when the state is not controlled."
+              },
+              "onOpenChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the next open state whenever the popover asks to open or close."
+              },
+              "modal": {
+                "anyOf": [
+                  { "type": "boolean" },
+                  { "type": "string", "enum": ["trap-focus"] }
+                ],
+                "x-from": "ui-sdk",
+                "description": "false: the page stays usable. true: focus is trapped, scroll locked and the page inert. Default false."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The button that opens the popover; it renders a kit Button.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/popover#PopoverTrigger",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": ["primary", "secondary", "quiet"],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": ["s", "m"],
+                "description": "The Button size; unset, it is the Button default, m."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "The panel, in the browser's top layer while open; it opens below the trigger and flips when there is no room.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/popover#PopoverContent",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the panel mounts into instead of in place. It still opens in the top layer."
+              },
+              "side": {
+                "type": "string",
+                "enum": ["top", "bottom", "left", "right", "start", "end"],
+                "description": "The trigger's side the panel opens on; unset, bottom. It flips when there is no room."
+              },
+              "align": {
+                "type": "string",
+                "enum": ["start", "center", "end"],
+                "description": "The panel's alignment along that side; unset, center."
+              },
+              "sideOffset": {
+                "type": "number",
+                "description": "Extra px on top of the kit's CSS offset between the trigger and the panel."
+              },
+              "collisionPadding": {
+                "type": "number",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the panel keeps from the window's edges, the Dialog's gutter."
+              }
+            },
+            "required": []
+          }
+        },
+        "Title": {
+          "description": "The heading that names the popover; UI SDK points the panel's aria-labelledby at it.",
+          "inside": "Popup",
+          "passthrough": "@ui-sdk/react/popover#PopoverTitle",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Description": {
+          "description": "The supporting text; UI SDK points the panel's aria-describedby at it.",
+          "inside": "Popup",
+          "passthrough": "@ui-sdk/react/popover#PopoverDescription",
+          "slots": ["default"],
+          "props": { "type": "object", "properties": {}, "required": [] }
+        },
+        "Close": {
+          "description": "A button that closes the popover; it renders a kit Button unless render gives another element.",
+          "inside": "Popup",
+          "passthrough": "@ui-sdk/react/popover#PopoverClose",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": ["primary", "secondary", "quiet"],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": ["s", "m"],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "render": {
+                "x-type": "element",
+                "x-from": "ui-sdk",
+                "description": "Another element to close with, in place of the kit Button."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": ["Root", "Trigger", "Popup", "Title"],
+      "useWhen": [
+        "A small task or a few details beside the control that opens them: edit a note, share, set a filter.",
+        "The page behind should stay usable while it is open."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The person must answer before going on.",
+          "instead": "Dialog"
+        },
+        {
+          "text": "A short label that names or hints at a control; it holds nothing to press.",
+          "instead": "Tooltip"
+        },
+        {
+          "text": "A list of options to choose one from.",
+          "instead": "Select"
+        }
+      ],
+      "a11y": [
+        "Give every Popover.Popup a Popover.Title; it is the panel's accessible name.",
+        "Offer a visible way out: a Popover.Close inside the panel.",
+        "The Trigger needs a visible name or an aria-label; the panel does not name it."
+      ]
+    }
+  }
+}

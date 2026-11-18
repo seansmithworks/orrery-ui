@@ -1,0 +1,48 @@
+/* Tooltip block layout only. Tokens, never literals. */
+
+.spec-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-12);
+}
+
+/* The open state's frame (../held-open-frame.tsx). Its document is the label's viewport. The
+   frame's padding is the padding of the frame document's body. */
+.spec-tooltip-frame {
+  min-height: calc(var(--space-72) * 2);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+.spec-tooltip-frame__body {
+  --spec-tooltip-height: calc(
+    2 * var(--space-4) + var(--type-size-13) * var(--type-line-height-13) + 2 *
+      var(--line-width)
+  );
+  /* The kit declares the offset on the label's positioner, below this body; the body's own padding
+     needs it too. Keep it equal to --orr-tooltip-offset in kit/tooltip/tooltip.css. */
+  --orr-tooltip-offset: var(--space-4);
+  padding: var(--space-16);
+}
+/* Above the trigger: room for the label and its offset over the trigger. */
+.spec-tooltip-frame__body--top {
+  padding-top: calc(
+    var(--space-16) + var(--spec-tooltip-height) + var(--orr-tooltip-offset)
+  );
+}
+
+/* UI SDK places a label against its document's viewport and writes top and left from the text-sized
+   boxes it measures. The picture pins only the placement, at the trigger's start edge: under the
+   trigger by the kit's offset, or above it by the label's own height and the offset. The label's
+   drawing and contents all come from the kit's rules. tooltip.kit.spec.ts checks the real placement
+   and offset on the live label. */
+.spec-tooltip-frame__body--bottom .orr-tooltip {
+  top: calc(
+    var(--space-16) + var(--hit-target-min) + var(--orr-tooltip-offset)
+  ) !important;
+  left: var(--space-16) !important;
+}
+.spec-tooltip-frame__body--top .orr-tooltip {
+  top: var(--space-16) !important;
+  left: var(--space-16) !important;
+}
