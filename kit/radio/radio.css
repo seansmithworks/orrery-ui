@@ -14,8 +14,14 @@
   .orr-radio-group {
     display: flex;
     flex-direction: column;
-    gap: var(--space-12);
     min-width: 0;
+  }
+
+  /* The space between options: at least --space-12, and enough that rings sit --hit-target-min apart, so no
+     option's hit area overlaps its neighbour's. The ring is centred on the first line, so ring to ring is the
+     option above's height plus this gap; a one-line option is 1lh tall. */
+  .orr-radio-option + .orr-radio-option {
+    margin-top: max(var(--space-12), calc(var(--hit-target-min) - 1lh));
   }
 
   /* The option. The ring sits centred on the first line of the text, however many lines the text wraps to. */
