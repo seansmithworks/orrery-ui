@@ -1,4 +1,4 @@
-import { useState } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -17,123 +17,170 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
-export default function SettingsPage() {
-  const [name, setName] = useState("Orbit Lab");
-  const [role, setRole] = useState("editor");
-  const [weekly, setWeekly] = useState(true);
-  const [mentions, setMentions] = useState(false);
-  const [saved, setSaved] = useState(false);
-  const [deleted, setDeleted] = useState(false);
+const hit = "min-h-[var(--hit-target-min)]";
+const ROLES = ["Viewer", "Editor", "Admin"] as const;
+
+function SettingRow({
+  id,
+  label,
+  checked,
+  onChange,
+}: {
+  id: string;
+  label: string;
+  checked: boolean;
+  onChange: (v: boolean) => void;
+}) {
+  return (
+    <div className={`flex items-center justify-between gap-4 border-b py-2 ${hit}`}>
+      <Label htmlFor={id} className="flex-1 py-2 text-base">
+        {label}
+      </Label>
+      <Switch
+        id={id}
+        checked={checked}
+        onCheckedChange={onChange}
+        className="relative after:absolute after:-inset-3 after:content-['']"
+      />
+    </div>
+  );
+}
+
+export default function WorkspaceSettings() {
+  const [name, setName] = React.useState("Orbit Lab");
+  const [role, setRole] = React.useState<string>("Editor");
+  const [saved, setSaved] = React.useState(false);
+  const [weekly, setWeekly] = React.useState(true);
+  const [mentions, setMentions] = React.useState(false);
+  const [deleted, setDeleted] = React.useState(false);
 
   return (
-    <main className="bg-background text-foreground min-h-screen p-6 sm:p-10">
-      <div className="mx-auto flex w-full max-w-2xl flex-col gap-6">
-        <h1 className="text-2xl font-semibold">Workspace settings</h1>
+    <main className="bg-background text-foreground mx-auto min-h-screen w-full max-w-[var(--layout-read)] px-4 py-10 sm:px-8">
+      <h1 className="mb-6 text-[length:var(--type-size-28)] leading-tight font-semibold">
+        Workspace settings
+      </h1>
 
-        <Tabs defaultValue="general" className="gap-6">
-          <TabsList>
-            <TabsTrigger value="general">General</TabsTrigger>
-            <TabsTrigger value="notifications">Notifications</TabsTrigger>
-            <TabsTrigger value="danger">Danger zone</TabsTrigger>
-          </TabsList>
+      <Tabs defaultValue="general" className="gap-6">
+        <TabsList className="h-auto w-full justify-start sm:w-fit">
+          {["general", "notifications", "danger"].map((v) => (
+            <TabsTrigger
+              key={v}
+              value={v}
+              className={`${hit} px-4 text-base`}
+            >
+              {v === "general"
+                ? "General"
+                : v === "notifications"
+                  ? "Notifications"
+                  : "Danger zone"}
+            </TabsTrigger>
+          ))}
+        </TabsList>
 
-          <TabsContent value="general" className="flex flex-col gap-6">
-            <div className="flex flex-col gap-2">
-              <Label htmlFor="ws-name">Workspace name</Label>
-              <Input
-                id="ws-name"
-                value={name}
-                onChange={(e) => {
-                  setName(e.target.value);
-                  setSaved(false);
-                }}
-              />
-            </div>
+        <TabsContent value="general" className="flex flex-col gap-6">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="ws-name" className="text-base">
+              Workspace name
+            </Label>
+            <Input
+              id="ws-name"
+              value={name}
+              onChange={(e) => {
+                setName(e.target.value);
+                setSaved(false);
+              }}
+              className={`${hit} text-base`}
+            />
+          </div>
 
-            <fieldset className="flex flex-col gap-3">
-              <legend className="mb-3 text-sm leading-none font-medium">
-                Default role for new members
-              </legend>
-              <RadioGroup
-                value={role}
-                onValueChange={(v) => {
-                  setRole(v);
-                  setSaved(false);
-                }}
-                aria-label="Default role for new members"
-              >
-                {[
-                  ["viewer", "Viewer"],
-                  ["editor", "Editor"],
-                  ["admin", "Admin"],
-                ].map(([value, label]) => (
-                  <div key={value} className="flex items-center gap-2">
-                    <RadioGroupItem value={value} id={`role-${value}`} />
-                    <Label htmlFor={`role-${value}`}>{label}</Label>
-                  </div>
-                ))}
-              </RadioGroup>
-            </fieldset>
+          <fieldset className="flex flex-col gap-2">
+            <legend className="mb-2 text-base font-medium">
+              Default role for new members
+            </legend>
+            <RadioGroup
+              value={role}
+              onValueChange={(v) => {
+                setRole(v);
+                setSaved(false);
+              }}
+              className="gap-1"
+            >
+              {ROLES.map((r) => (
+                <Label
+                  key={r}
+                  htmlFor={`role-${r}`}
+                  className={`flex cursor-pointer items-center gap-3 text-base ${hit}`}
+                >
+                  <RadioGroupItem value={r} id={`role-${r}`} className="size-5" />
+                  {r}
+                </Label>
+              ))}
+            </RadioGroup>
+          </fieldset>
 
-            <div className="flex items-center gap-4">
-              <Button onClick={() => setSaved(true)}>Save changes</Button>
-              {saved && (
-                <p role="status" className="text-muted-foreground text-sm">
-                  Settings saved.
-                </p>
-              )}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="notifications" className="flex flex-col gap-4">
-            <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="weekly">Weekly summary email</Label>
-              <Switch id="weekly" checked={weekly} onCheckedChange={setWeekly} />
-            </div>
-            <div className="flex items-center justify-between gap-4">
-              <Label htmlFor="mentions">Mentions</Label>
-              <Switch
-                id="mentions"
-                checked={mentions}
-                onCheckedChange={setMentions}
-              />
-            </div>
-          </TabsContent>
-
-          <TabsContent value="danger" className="flex flex-col gap-4">
-            <p className="text-sm">
-              Deleting this workspace is permanent and cannot be reversed.
+          <div className="flex flex-wrap items-center gap-4">
+            <Button className={`${hit} px-6 text-base`} onClick={() => setSaved(true)}>
+              Save changes
+            </Button>
+            <p role="status" className="text-muted-foreground text-base">
+              {saved ? "Settings saved." : ""}
             </p>
-            <div>
-              <AlertDialog>
-                <AlertDialogTrigger asChild>
-                  <Button variant="destructive">Delete workspace</Button>
-                </AlertDialogTrigger>
-                <AlertDialogContent>
-                  <AlertDialogHeader>
-                    <AlertDialogTitle>Delete Orbit Lab?</AlertDialogTitle>
-                    <AlertDialogDescription>
-                      This removes all projects and members. It cannot be undone.
-                    </AlertDialogDescription>
-                  </AlertDialogHeader>
-                  <AlertDialogFooter>
-                    <AlertDialogCancel>Cancel</AlertDialogCancel>
-                    <AlertDialogAction onClick={() => setDeleted(true)}>
-                      Delete workspace
-                    </AlertDialogAction>
-                  </AlertDialogFooter>
-                </AlertDialogContent>
-              </AlertDialog>
-            </div>
-          </TabsContent>
-        </Tabs>
+          </div>
+        </TabsContent>
 
-        {deleted && (
-          <p role="status" className="text-sm font-medium">
-            Workspace deleted.
+        <TabsContent value="notifications" className="flex flex-col">
+          <SettingRow
+            id="n-weekly"
+            label="Weekly summary email"
+            checked={weekly}
+            onChange={setWeekly}
+          />
+          <SettingRow
+            id="n-mentions"
+            label="Mentions"
+            checked={mentions}
+            onChange={setMentions}
+          />
+        </TabsContent>
+
+        <TabsContent value="danger" className="flex flex-col items-start gap-4">
+          <p className="text-base">
+            Deleting this workspace is permanent and cannot be reversed.
           </p>
-        )}
-      </div>
+          <AlertDialog>
+            <AlertDialogTrigger asChild>
+              <Button
+                variant="destructive"
+                className={`${hit} px-6 text-base`}
+              >
+                Delete workspace
+              </Button>
+            </AlertDialogTrigger>
+            <AlertDialogContent>
+              <AlertDialogHeader>
+                <AlertDialogTitle>Delete Orbit Lab?</AlertDialogTitle>
+                <AlertDialogDescription className="text-base">
+                  This removes all projects and members. It cannot be undone.
+                </AlertDialogDescription>
+              </AlertDialogHeader>
+              <AlertDialogFooter>
+                <AlertDialogCancel className={`${hit} px-6 text-base`}>
+                  Cancel
+                </AlertDialogCancel>
+                <AlertDialogAction
+                  className={`${hit} px-6 text-base`}
+                  onClick={() => setDeleted(true)}
+                >
+                  Delete workspace
+                </AlertDialogAction>
+              </AlertDialogFooter>
+            </AlertDialogContent>
+          </AlertDialog>
+          <p role="status" className="text-base">
+            {deleted ? "Workspace deleted." : ""}
+          </p>
+        </TabsContent>
+      </Tabs>
     </main>
   );
 }

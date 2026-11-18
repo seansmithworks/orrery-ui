@@ -1,4 +1,4 @@
-import { useState } from "react";
+import * as React from "react";
 import { Button } from "@/components/ui/button";
 import {
   AlertDialog,
@@ -12,16 +12,19 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const hit = "min-h-[var(--hit-target-min)] min-w-[var(--hit-target-min)]";
+
 export default function Page() {
-  const [open, setOpen] = useState(false);
-  const [deleted, setDeleted] = useState(false);
+  const [deleted, setDeleted] = React.useState(false);
 
   return (
-    <main className="bg-background text-foreground min-h-screen p-8">
+    <main className="bg-background text-foreground min-h-screen p-6 sm:p-12">
       <div className="flex flex-col items-start gap-4">
-        <AlertDialog open={open} onOpenChange={setOpen}>
+        <AlertDialog>
           <AlertDialogTrigger asChild>
-            <Button variant="secondary">Delete project</Button>
+            <Button variant="secondary" className={hit}>
+              Delete project
+            </Button>
           </AlertDialogTrigger>
           <AlertDialogContent>
             <AlertDialogHeader>
@@ -31,14 +34,14 @@ export default function Page() {
               </AlertDialogDescription>
             </AlertDialogHeader>
             <AlertDialogFooter>
-              <AlertDialogCancel>Keep project</AlertDialogCancel>
-              <AlertDialogAction onClick={() => setDeleted(true)}>
+              <AlertDialogCancel className={hit}>Keep project</AlertDialogCancel>
+              <AlertDialogAction className={hit} onClick={() => setDeleted(true)}>
                 Delete
               </AlertDialogAction>
             </AlertDialogFooter>
           </AlertDialogContent>
         </AlertDialog>
-        <p role="status" aria-live="polite" className="text-sm text-muted-foreground">
+        <p role="status" aria-live="polite" className="text-sm">
           {deleted ? "Project deleted." : ""}
         </p>
       </div>

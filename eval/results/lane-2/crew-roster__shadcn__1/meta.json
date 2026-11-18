@@ -2,7 +2,7 @@
   "scenario": "crew-roster",
   "condition": "shadcn",
   "rep": 1,
-  "wallMs": 20583,
+  "wallMs": 22758,
   "exit": 0,
   "limited": false,
   "timedOut": false,
@@ -14,16 +14,16 @@
   "run": {
     "is_error": false,
     "subtype": "success",
-    "num_turns": 6,
-    "duration_ms": 18031,
-    "total_cost_usd": 0.05169440000000001,
+    "num_turns": 8,
+    "duration_ms": 21628,
+    "total_cost_usd": 0.08120430000000001,
     "usage": {
       "input_tokens": 10,
-      "cache_creation_input_tokens": 5906,
-      "cache_read_input_tokens": 31404,
-      "output_tokens": 2491,
+      "cache_creation_input_tokens": 12144,
+      "cache_read_input_tokens": 43683,
+      "output_tokens": 2824,
       "output_tokens_details": {
-        "thinking_tokens": 23
+        "thinking_tokens": 85
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 5906,
+        "ephemeral_1h_input_tokens": 12144,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 362,
-          "cache_read_input_tokens": 8135,
-          "cache_creation_input_tokens": 1578,
+          "output_tokens": 361,
+          "cache_read_input_tokens": 14365,
+          "cache_creation_input_tokens": 1586,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 1578
+            "ephemeral_1h_input_tokens": 1586
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the crew roster to `./solution.tsx`. I couldn't run it, so it hasn't been tested or checked in the browser.\n\n- **Heading and filter:** The \"Crew\" heading sits above a search field labelled \"Filter crew\". The list narrows by name, case-insensitively, as the user types.\n- **List:** It shows the five people with their roles. Each row has an icon button labelled \"Actions for <name>\" that opens a menu with Edit, Reassign and Remove.\n- **Remove:** Choosing it takes that person off the list. Edit and Reassign are in the menu but do nothing yet, because you didn't say what they should do.\n- **Empty state:** When nobody matches, it shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field and brings everyone back.\n- **Styling:** It uses the workspace's sha"
+    "result": "I wrote the crew roster to `./solution.tsx`. I haven't run it, since I can't run code here, so it's untested.\n\n- **Heading and filter:** The page has a \"Crew\" heading and a \"Filter crew\" field. Typing narrows the list by name, ignoring case.\n- **List:** It shows the five people with their roles.\n- **Actions:** Each row has an icon button labelled \"Actions for <name>\". It opens a menu with Edit, Reassign and Remove.\n- **Remove:** Choosing Remove takes that person off the list. Edit and Reassign do nothing yet, because you didn't say what they should do.\n- **Empty state:** When nobody matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field and brings everyone back.\n- **Brand and size:** Colours come from the theme classes, so the page sh"
   }
 }

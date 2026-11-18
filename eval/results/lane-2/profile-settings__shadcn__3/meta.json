@@ -2,7 +2,7 @@
   "scenario": "profile-settings",
   "condition": "shadcn",
   "rep": 3,
-  "wallMs": 17696,
+  "wallMs": 24813,
   "exit": 0,
   "limited": false,
   "timedOut": false,
@@ -14,16 +14,16 @@
   "run": {
     "is_error": false,
     "subtype": "success",
-    "num_turns": 6,
-    "duration_ms": 17097,
-    "total_cost_usd": 0.0555075,
+    "num_turns": 10,
+    "duration_ms": 24215,
+    "total_cost_usd": 0.09111699999999999,
     "usage": {
-      "input_tokens": 8,
-      "cache_creation_input_tokens": 7511,
-      "cache_read_input_tokens": 28675,
-      "output_tokens": 2258,
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 14247,
+      "cache_read_input_tokens": 41990,
+      "output_tokens": 2991,
       "output_tokens_details": {
-        "thinking_tokens": 31
+        "thinking_tokens": 189
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 7511,
+        "ephemeral_1h_input_tokens": 14247,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 416,
-          "cache_read_input_tokens": 11359,
-          "cache_creation_input_tokens": 1433,
+          "output_tokens": 387,
+          "cache_read_input_tokens": 17853,
+          "cache_creation_input_tokens": 1675,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 1433
+            "ephemeral_1h_input_tokens": 1675
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested. I also didn't open `input.tsx` or `label.tsx`. I assumed they follow the usual shadcn pattern.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\" under it. The hint is linked to the field for screen readers.\n- **Time zone:** a select with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\". It starts off.\n- **Save button:** \"Save profile\" is the primary button and submits the form.\n- **Status text:** \"Profile saved.\" appears under the button after saving. It disappears if the user edits any field afterwards, so it never describes unsaved changes.\n\nI used only the shadcn components, with theme colours li"
+    "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it hasn't been rendered or tested.\n\n- **Fields:** All four match your spec: \"Display name\" with its hint, \"Time zone\" (UTC, Berlin, Tokyo) with the placeholder, the \"Email me about new orbits\" switch, and the \"Save profile\" button. The hint is linked to the input so screen readers read it with the field.\n- **Saving:** Submitting shows \"Profile saved.\" in a status line that screen readers announce. It disappears again if the user changes any field. Nothing is sent anywhere, since you didn't specify a destination.\n- **Brands:** I used only the shadcn components and the Tailwind colour classes that map to `brand.css`, so the page should follow orrery light, orrery dark and solar. I didn't import the CSS files.\n- **To"
   }
 }

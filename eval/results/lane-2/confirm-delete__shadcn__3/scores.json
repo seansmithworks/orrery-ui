@@ -15,16 +15,9 @@
     "details": []
   },
   "hit-target": {
-    "score": 0,
-    "pass": false,
-    "details": [
-      "1280px page: \"Delete project\" is 125x36, its hit area is under 44x44",
-      "1280px overlay: \"Keep project\" is 118x36, its hit area is under 44x44",
-      "1280px overlay: \"Delete\" is 75x36, its hit area is under 44x44",
-      "375px page: \"Delete project\" is 125x36, its hit area is under 44x44",
-      "375px overlay: \"Keep project\" is 293x36, its hit area is under 44x44",
-      "375px overlay: \"Delete\" is 293x36, its hit area is under 44x44"
-    ],
+    "score": 1,
+    "pass": true,
+    "details": [],
     "total": 6
   },
   "brand": {
@@ -34,9 +27,9 @@
     "literals": 0,
     "ratios": {
       "lightDark": 0.9999970703125,
-      "darkSolar": 0.99611328125
+      "darkSolar": 0.99513671875
     }
   },
   "notes": [],
-  "total": 0.8
+  "total": 1
 }

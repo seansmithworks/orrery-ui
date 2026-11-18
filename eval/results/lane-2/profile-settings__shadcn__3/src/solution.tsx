@@ -1,5 +1,4 @@
 import * as React from "react";
-
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -13,9 +12,6 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 export default function ProfileSettings() {
-  const [displayName, setDisplayName] = React.useState("");
-  const [timeZone, setTimeZone] = React.useState("");
-  const [emailOrbits, setEmailOrbits] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
@@ -23,17 +19,16 @@ export default function ProfileSettings() {
     setSaved(true);
   }
 
-  // Any edit after saving clears the status.
-  function touch<T>(setter: (v: T) => void) {
-    return (v: T) => {
-      setSaved(false);
-      setter(v);
-    };
-  }
+  // Any edit after saving clears the confirmation.
+  const clear = () => setSaved(false);
 
   return (
-    <main className="bg-background text-foreground min-h-screen p-6 sm:p-10">
-      <form onSubmit={onSubmit} className="mx-auto flex w-full max-w-md flex-col gap-6">
+    <main className="bg-background text-foreground min-h-screen p-4 sm:p-8">
+      <form
+        onSubmit={onSubmit}
+        onChange={clear}
+        className="mx-auto flex w-full max-w-md flex-col gap-6"
+      >
         <h1 className="text-2xl font-semibold">Profile settings</h1>
 
         <div className="flex flex-col gap-2">
@@ -41,9 +36,9 @@ export default function ProfileSettings() {
           <Input
             id="display-name"
             name="displayName"
-            value={displayName}
-            onChange={(e) => touch(setDisplayName)(e.target.value)}
+            autoComplete="nickname"
             aria-describedby="display-name-hint"
+            className="h-[var(--hit-target-min)]"
           />
           <p id="display-name-hint" className="text-muted-foreground text-sm">
             Shown to your crew.
@@ -52,35 +47,53 @@ export default function ProfileSettings() {
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="time-zone">Time zone</Label>
-          <Select
-            name="timeZone"
-            value={timeZone}
-            onValueChange={touch(setTimeZone)}
-          >
-            <SelectTrigger id="time-zone" className="w-full">
+          <Select name="timeZone" onValueChange={clear}>
+            <SelectTrigger
+              id="time-zone"
+              className="h-[var(--hit-target-min)] w-full"
+            >
               <SelectValue placeholder="Choose a time zone" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="utc">UTC</SelectItem>
-              <SelectItem value="berlin">Berlin</SelectItem>
-              <SelectItem value="tokyo">Tokyo</SelectItem>
+              <SelectItem className="min-h-[var(--hit-target-min)]" value="utc">
+                UTC
+              </SelectItem>
+              <SelectItem
+                className="min-h-[var(--hit-target-min)]"
+                value="berlin"
+              >
+                Berlin
+              </SelectItem>
+              <SelectItem
+                className="min-h-[var(--hit-target-min)]"
+                value="tokyo"
+              >
+                Tokyo
+              </SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <Label htmlFor="email-orbits">Email me about new orbits</Label>
+        <div className="flex min-h-[var(--hit-target-min)] items-center justify-between gap-4">
+          <Label htmlFor="orbit-emails" className="flex-1 cursor-pointer py-3">
+            Email me about new orbits
+          </Label>
           <Switch
-            id="email-orbits"
-            name="emailOrbits"
-            checked={emailOrbits}
-            onCheckedChange={touch(setEmailOrbits)}
+            id="orbit-emails"
+            name="orbitEmails"
+            onCheckedChange={clear}
+            className="h-6 w-11 data-[state=unchecked]:bg-muted-foreground [&>span]:size-5"
           />
         </div>
 
-        <div className="flex flex-col items-start gap-3">
-          <Button type="submit">Save profile</Button>
-          <p role="status" className="text-muted-foreground text-sm min-h-5">
+        <div className="flex flex-col gap-3">
+          <Button
+            type="submit"
+            className="h-[var(--hit-target-min)] w-full sm:w-auto sm:self-start"
+          >
+            Save profile
+          </Button>
+          <p role="status" aria-live="polite" className="min-h-6 text-sm">
             {saved ? "Profile saved." : ""}
           </p>
         </div>

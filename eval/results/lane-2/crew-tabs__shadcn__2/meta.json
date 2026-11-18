@@ -2,7 +2,7 @@
   "scenario": "crew-tabs",
   "condition": "shadcn",
   "rep": 2,
-  "wallMs": 18342,
+  "wallMs": 19565,
   "exit": 0,
   "limited": false,
   "timedOut": false,
@@ -14,16 +14,16 @@
   "run": {
     "is_error": false,
     "subtype": "success",
-    "num_turns": 7,
-    "duration_ms": 17286,
-    "total_cost_usd": 0.047142800000000006,
+    "num_turns": 8,
+    "duration_ms": 19030,
+    "total_cost_usd": 0.07144629999999999,
     "usage": {
       "input_tokens": 10,
-      "cache_creation_input_tokens": 5872,
-      "cache_read_input_tokens": 37848,
-      "output_tokens": 1985,
+      "cache_creation_input_tokens": 11173,
+      "cache_read_input_tokens": 47043,
+      "output_tokens": 2203,
       "output_tokens_details": {
-        "thinking_tokens": 73
+        "thinking_tokens": 220
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 5872,
+        "ephemeral_1h_input_tokens": 11173,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 336,
-          "cache_read_input_tokens": 10716,
-          "cache_creation_input_tokens": 453,
+          "output_tokens": 355,
+          "cache_read_input_tokens": 15307,
+          "cache_creation_input_tokens": 1163,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 453
+            "ephemeral_1h_input_tokens": 1163
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the crew card to `./solution.tsx`. I haven't run or rendered it, so it's untested.\n\n- **Header:** \"Ada Okafor\" is the card title, marked as a level-1 heading. \"Flight engineer, Orbit 7\" sits below it as the description.\n- **Tabs:** Overview, Passes and History, with Overview selected first. Each tab shows the text you gave.\n- **Footer:** \"Remove from crew\" is a ghost (quiet) button, and \"Save changes\" is the default primary button. They sit at opposite ends of the footer.\n- **Brand:** the page only uses the theme colour classes, such as `bg-background` and `text-foreground`. It should follow whichever of the three brands is active. I added a full-height `<main>` with its own background and padding, because the host page doesn't provide any.\n\nI read `WORKSPACE.md` and the tabs, card"
+    "result": "I wrote the crew card to `./solution.tsx`. I couldn't run it, so I haven't checked how it renders.\n\n- **Header and tabs:** \"Ada Okafor\" is the heading, with \"Flight engineer, Orbit 7\" below it. The three tabs are Overview, Passes and History, with Overview selected first. Each tab shows the text you gave.\n- **Footer:** \"Remove from crew\" is a quiet (ghost) button. \"Save changes\" is the primary button.\n- **Brand:** I used only the workspace's shadcn components and the brand-mapped Tailwind colours. The card should follow orrery light, orrery dark and solar without any brand-specific code.\n- **Touch targets:** The tabs and both buttons have a minimum height of `--hit-target-min` (44px).\n- **Tab list:** I gave the tab list a border. Its muted background is the same colour as the card, so with"
   }
 }

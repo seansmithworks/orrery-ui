@@ -2,7 +2,7 @@
   "scenario": "crew-roster",
   "condition": "shadcn",
   "rep": 3,
-  "wallMs": 18225,
+  "wallMs": 18461,
   "exit": 0,
   "limited": false,
   "timedOut": false,
@@ -15,15 +15,15 @@
     "is_error": false,
     "subtype": "success",
     "num_turns": 5,
-    "duration_ms": 17212,
-    "total_cost_usd": 0.0461646,
+    "duration_ms": 17924,
+    "total_cost_usd": 0.043768,
     "usage": {
       "input_tokens": 8,
-      "cache_creation_input_tokens": 5422,
-      "cache_read_input_tokens": 26906,
-      "output_tokens": 2177,
+      "cache_creation_input_tokens": 4198,
+      "cache_read_input_tokens": 25600,
+      "output_tokens": 2440,
       "output_tokens_details": {
-        "thinking_tokens": 33
+        "thinking_tokens": 109
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 5422,
+        "ephemeral_1h_input_tokens": 4198,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 323,
-          "cache_read_input_tokens": 9260,
-          "cache_creation_input_tokens": 1554,
+          "output_tokens": 433,
+          "cache_read_input_tokens": 7934,
+          "cache_creation_input_tokens": 1656,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 1554
+            "ephemeral_1h_input_tokens": 1656
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the crew roster to `./solution.tsx`. I couldn't run code here, so it hasn't been run or tested.\n\n- **Heading and filter:** The page has a \"Crew\" heading and a search field labelled \"Filter crew\". The list narrows by name as you type, ignoring case.\n- **List:** It shows the five people with their roles. Each row has a compact icon button labelled \"Actions for <name>\" that opens Edit, Reassign and Remove.\n- **Remove:** Choosing Remove takes that person off the list. Edit and Reassign are in the menu but don't do anything yet, because you didn't say what they should do.\n- **Empty state:** When nothing matches, it shows \"No crew match your filter.\" and a \"Clear filter\" button that empties the field and brings everyone back.\n- **Brands:** It uses the shadcn components and theme colours "
+    "result": "I wrote the crew roster to `solution.tsx`. I haven't run it, since I can't run code here. I also didn't open the `dropdown-menu`, `input` or `label` components. I assumed they export the standard shadcn names.\n\n- **Layout:** The page has a \"Crew\" heading and a \"Filter crew\" search field. The five people are listed with their names and roles.\n- **Filtering:** The list narrows by name as you type. The match ignores case and surrounding spaces.\n- **Actions:** Each row has an icon button labelled \"Actions for <name>\". It opens a menu with Edit, Reassign and Remove. Remove takes that person off the list. Edit and Reassign don't do anything yet, because you didn't say what they should do.\n- **Empty state:** When nobody matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" but"
   }
 }

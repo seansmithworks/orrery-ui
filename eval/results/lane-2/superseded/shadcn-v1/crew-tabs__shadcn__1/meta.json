@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "shadcn",
+  "rep": 1,
+  "wallMs": 15426,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 13442,
+    "total_cost_usd": 0.0402055,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 5369,
+      "cache_read_input_tokens": 27135,
+      "output_tokens": 1600,
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 5369,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 304,
+          "cache_read_input_tokens": 9777,
+          "cache_creation_input_tokens": 889,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 889
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the card to `./solution.tsx`. I haven't run it, since I can't run code here, and I didn't check it in any of the three brands.\n\n- **Header:** \"Ada Okafor\" is the heading, with \"Flight engineer, Orbit 7\" below it.\n- **Tabs:** Overview, Passes and History each show their text. Overview is selected first.\n- **Footer:** \"Remove from crew\" is a quiet (ghost) button and \"Save changes\" is the primary button.\n\nIt uses the workspace's shadcn `Card`, `Tabs` and `Button` components with theme classes like `bg-background` and `text-foreground`. That should let it follow whichever brand is active. I didn't read `brand.css` or `app.css`, so I haven't confirmed the theme variables behave as `WORKSPACE.md` describes.\n\nI also centred the card on the page with a `max-w-md` width, which you didn't as"
+  }
+}

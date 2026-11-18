@@ -15,17 +15,13 @@
     "details": []
   },
   "hit-target": {
-    "score": 0,
+    "score": 0.5,
     "pass": false,
     "details": [
-      "1280px page: \"Display name\" is 448x36, its hit area is under 44x44",
       "1280px page: \"Time zone\" is 448x36, its hit area is under 44x44",
-      "1280px page: \"Email me about new orbits\" is 32x18, its hit area is under 44x44",
-      "1280px page: \"Save profile\" is 110x36, its hit area is under 44x44",
-      "375px page: \"Display name\" is 327x36, its hit area is under 44x44",
-      "375px page: \"Time zone\" is 327x36, its hit area is under 44x44",
-      "375px page: \"Email me about new orbits\" is 32x18, its hit area is under 44x44",
-      "375px page: \"Save profile\" is 110x36, its hit area is under 44x44"
+      "1280px page: \"Email me about new orbits\" is 44x24, its hit area is under 44x44",
+      "375px page: \"Time zone\" is 343x36, its hit area is under 44x44",
+      "375px page: \"Email me about new orbits\" is 44x24, its hit area is under 44x44"
     ],
     "total": 8
   },
@@ -40,5 +36,5 @@
     }
   },
   "notes": [],
-  "total": 0.8
+  "total": 0.9
 }

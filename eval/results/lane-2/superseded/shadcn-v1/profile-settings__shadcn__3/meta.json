@@ -1,0 +1,56 @@
+{
+  "scenario": "profile-settings",
+  "condition": "shadcn",
+  "rep": 3,
+  "wallMs": 17696,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 17097,
+    "total_cost_usd": 0.0555075,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 7511,
+      "cache_read_input_tokens": 28675,
+      "output_tokens": 2258,
+      "output_tokens_details": {
+        "thinking_tokens": 31
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 7511,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 416,
+          "cache_read_input_tokens": 11359,
+          "cache_creation_input_tokens": 1433,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1433
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested. I also didn't open `input.tsx` or `label.tsx`. I assumed they follow the usual shadcn pattern.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\" under it. The hint is linked to the field for screen readers.\n- **Time zone:** a select with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\". It starts off.\n- **Save button:** \"Save profile\" is the primary button and submits the form.\n- **Status text:** \"Profile saved.\" appears under the button after saving. It disappears if the user edits any field afterwards, so it never describes unsaved changes.\n\nI used only the shadcn components, with theme colours li"
+  }
+}

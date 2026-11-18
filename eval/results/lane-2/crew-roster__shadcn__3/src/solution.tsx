@@ -18,57 +18,57 @@ const INITIAL = [
   { id: 5, name: "Eli Hart", role: "Comms" },
 ];
 
-export default function CrewRoster() {
-  const [crew, setCrew] = useState(INITIAL);
-  const [filter, setFilter] = useState("");
+const hit = "min-h-[var(--hit-target-min)]";
 
-  const q = filter.trim().toLowerCase();
-  const visible = crew.filter((p) => p.name.toLowerCase().includes(q));
+export default function Crew() {
+  const [crew, setCrew] = useState(INITIAL);
+  const [query, setQuery] = useState("");
+
+  const q = query.trim().toLowerCase();
+  const shown = crew.filter((p) => p.name.toLowerCase().includes(q));
 
   return (
     <main className="min-h-screen bg-background text-foreground p-6">
-      <div className="mx-auto w-full max-w-xl space-y-4">
+      <div className="mx-auto max-w-xl space-y-4">
         <h1 className="text-2xl font-semibold">Crew</h1>
-
         <div className="space-y-2">
           <Label htmlFor="crew-filter">Filter crew</Label>
           <Input
             id="crew-filter"
             type="search"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            className={hit}
           />
         </div>
 
-        {visible.length > 0 ? (
-          <ul className="divide-y divide-border rounded-md border border-border bg-card text-card-foreground">
-            {visible.map((p) => (
+        {shown.length > 0 ? (
+          <ul className="divide-y divide-border rounded-lg border border-border bg-card text-card-foreground">
+            {shown.map((p) => (
               <li
                 key={p.id}
-                className="flex items-center justify-between gap-3 px-4 py-3"
+                className="flex items-center justify-between gap-3 px-4 py-2"
               >
                 <div className="min-w-0">
                   <div className="font-medium truncate">{p.name}</div>
-                  <div className="text-sm text-muted-foreground truncate">
-                    {p.role}
-                  </div>
+                  <div className="text-sm text-muted-foreground">{p.role}</div>
                 </div>
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="size-8"
                       aria-label={`Actions for ${p.name}`}
+                      className="min-h-[var(--hit-target-min)] min-w-[var(--hit-target-min)]"
                     >
-                      <MoreHorizontal />
+                      <MoreHorizontal aria-hidden="true" />
                     </Button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
-                    <DropdownMenuItem>Edit</DropdownMenuItem>
-                    <DropdownMenuItem>Reassign</DropdownMenuItem>
+                    <DropdownMenuItem className={hit}>Edit</DropdownMenuItem>
+                    <DropdownMenuItem className={hit}>Reassign</DropdownMenuItem>
                     <DropdownMenuItem
-                      variant="destructive"
+                      className={hit}
                       onSelect={() =>
                         setCrew((c) => c.filter((x) => x.id !== p.id))
                       }
@@ -81,12 +81,11 @@ export default function CrewRoster() {
             ))}
           </ul>
         ) : (
-          <div
-            role="status"
-            className="rounded-md border border-border bg-card p-6 text-center space-y-3"
-          >
-            <p className="text-muted-foreground">No crew match your filter.</p>
-            <Button variant="outline" onClick={() => setFilter("")}>
+          <div className="rounded-lg border border-border p-6 text-center space-y-3">
+            <p role="status" className="text-muted-foreground">
+              No crew match your filter.
+            </p>
+            <Button variant="outline" className={hit} onClick={() => setQuery("")}>
               Clear filter
             </Button>
           </div>

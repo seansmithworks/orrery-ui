@@ -15,16 +15,9 @@
     "details": []
   },
   "hit-target": {
-    "score": 0,
-    "pass": false,
-    "details": [
-      "1280px page: \"Full name\" is 398x36, its hit area is under 44x44",
-      "1280px page: \"Email\" is 398x36, its hit area is under 44x44",
-      "1280px page: \"Continue\" is 92x36, its hit area is under 44x44",
-      "375px page: \"Full name\" is 277x36, its hit area is under 44x44",
-      "375px page: \"Email\" is 277x36, its hit area is under 44x44",
-      "375px page: \"Continue\" is 92x36, its hit area is under 44x44"
-    ],
+    "score": 1,
+    "pass": true,
+    "details": [],
     "total": 6
   },
   "brand": {
@@ -33,10 +26,10 @@
     "details": [],
     "literals": 0,
     "ratios": {
-      "lightDark": 0.99998046875,
+      "lightDark": 0.9999814453125,
       "darkSolar": 0.9999970703125
     }
   },
   "notes": [],
-  "total": 0.8
+  "total": 1
 }

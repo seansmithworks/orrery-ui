@@ -2,7 +2,7 @@
   "scenario": "profile-settings",
   "condition": "shadcn",
   "rep": 2,
-  "wallMs": 16935,
+  "wallMs": 19080,
   "exit": 0,
   "limited": false,
   "timedOut": false,
@@ -15,15 +15,15 @@
     "is_error": false,
     "subtype": "success",
     "num_turns": 6,
-    "duration_ms": 16049,
-    "total_cost_usd": 0.0531861,
+    "duration_ms": 18511,
+    "total_cost_usd": 0.0717026,
     "usage": {
       "input_tokens": 8,
-      "cache_creation_input_tokens": 7371,
-      "cache_read_input_tokens": 28661,
-      "output_tokens": 2082,
+      "cache_creation_input_tokens": 11093,
+      "cache_read_input_tokens": 32146,
+      "output_tokens": 2410,
       "output_tokens_details": {
-        "thinking_tokens": 16
+        "thinking_tokens": 143
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 7371,
+        "ephemeral_1h_input_tokens": 11093,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 373,
-          "cache_read_input_tokens": 11351,
-          "cache_creation_input_tokens": 1301,
+          "output_tokens": 458,
+          "cache_read_input_tokens": 14810,
+          "cache_creation_input_tokens": 1564,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 1301
+            "ephemeral_1h_input_tokens": 1564
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested. I also didn't open `input.tsx` or `label.tsx`; I used them based on the component list in `WORKSPACE.md`.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\" under it. The hint is linked to the field with `aria-describedby`.\n- **Time zone:** a select with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\".\n- **Save button:** \"Save profile\" is the primary button and submits the form. On submit, \"Profile saved.\" appears next to it in a `role=\"status\"` line. The message disappears again if you change any field.\n\nThe page uses only the shadcn components and theme classes such as `bg-background`, `text-foreg"
+    "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested. I also didn't open `button.tsx`, `input.tsx` or `label.tsx` — I used them on the strength of `WORKSPACE.md`, so their props and styling are unchecked.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\" The hint is linked to the field with `aria-describedby`.\n- **Time zone:** a select with the placeholder \"Choose a time zone\" and the options UTC, Berlin and Tokyo.\n- **Email switch:** a switch labelled \"Email me about new orbits\". The label sits in the same row as the switch.\n- **Save button:** a primary \"Save profile\" button submits the form. After saving, \"Profile saved.\" appears in a status line. Changing any field clears that line until the next save.\n- **Branding:** the page us"
   }
 }

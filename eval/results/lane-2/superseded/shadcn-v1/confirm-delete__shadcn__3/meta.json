@@ -1,0 +1,56 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "shadcn",
+  "rep": 3,
+  "wallMs": 16148,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 15036,
+    "total_cost_usd": 0.0429787,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 5493,
+      "cache_read_input_tokens": 35967,
+      "output_tokens": 1739,
+      "output_tokens_details": {
+        "thinking_tokens": 42
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 5493,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 306,
+          "cache_read_input_tokens": 9807,
+          "cache_creation_input_tokens": 958,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 958
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `solution.tsx`. I couldn't run code here, so I haven't rendered or tested it.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal.\n- **Dialog:** it uses the workspace's `alert-dialog` component, which is built for destructive confirmations. The title is \"Delete this project?\", and the description reads \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" closes the dialog. The primary \"Delete\" button closes it and shows \"Project deleted.\" on the page.\n- **Status text:** it sits in a polite live region, so screen readers announce it.\n- **Brand:** the page sets its own `bg-background` and `text-foreground`, since the host adds no background. All colours come from the theme tokens, so it follows the three brands.\n\nI used"
+  }
+}

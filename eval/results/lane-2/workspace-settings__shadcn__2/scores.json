@@ -10,26 +10,22 @@
     "details": []
   },
   "keyboard": {
-    "score": 1,
-    "pass": true,
-    "details": []
-  },
-  "hit-target": {
-    "score": 0,
+    "score": 0.8,
     "pass": false,
     "details": [
-      "1280px page: \"General\" is 69x29, its hit area is under 44x44",
-      "1280px page: \"Notifications\" is 102x29, its hit area is under 44x44",
-      "1280px page: \"Danger zone\" is 102x29, its hit area is under 44x44",
-      "1280px page: \"Workspace name\" is 672x36, its hit area is under 44x44",
+      "overlay: focus did not return to \"Delete workspace\""
+    ]
+  },
+  "hit-target": {
+    "score": 0.7,
+    "pass": false,
+    "details": [
       "1280px page: \"Viewer\" is 16x16, its hit area is under 44x44",
       "1280px page: \"Editor\" is 16x16, its hit area is under 44x44",
       "1280px page: \"Admin\" is 16x16, its hit area is under 44x44",
-      "1280px page: \"Save changes\" is 123x36, its hit area is under 44x44",
-      "1280px overlay: \"Cancel\" is 79x36, its hit area is under 44x44",
-      "1280px overlay: \"Delete workspace\" is 150x36, its hit area is under 44x44",
-      "375px page: \"General\" is 69x29, its hit area is under 44x44",
-      "375px page: \"Notifications\" is 102x29, its hit area is under 44x44"
+      "375px page: \"Viewer\" is 16x16, its hit area is under 44x44",
+      "375px page: \"Editor\" is 16x16, its hit area is under 44x44",
+      "375px page: \"Admin\" is 16x16, its hit area is under 44x44"
     ],
     "total": 20
   },
@@ -39,10 +35,10 @@
     "details": [],
     "literals": 0,
     "ratios": {
-      "lightDark": 0.9999794921875,
+      "lightDark": 0.9999775390625,
       "darkSolar": 1
     }
   },
   "notes": [],
-  "total": 0.8
+  "total": 0.9
 }

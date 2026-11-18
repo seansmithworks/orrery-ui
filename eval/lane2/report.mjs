@@ -39,6 +39,21 @@ out.push(table(['condition', ...HEADLINE, 'total'], CONDITIONS.map((c) => {
   return [c, ...HEADLINE.map((h) => `${f2(mean(cs.map((x) => x.s[h].score)))} (${passes(cs, h)})`), f2(mean(cs.map((x) => x.s.total)))];
 })));
 
+// axe with and without aria-hidden-focus: Radix's modal menu sets aria-hidden on the app root while it traps focus in the
+// menu, so axe flags it; whether that harms users is not verified here. Shown both ways so the rule's weight is visible.
+const AHF = 'aria-hidden-focus';
+const axeWithout = (x) => {
+  if (x.s.axe.details.some((d) => /^load:|no solution/.test(d))) return x.s.axe.score;
+  const failing = new Set(x.s.axe.details.filter((d) => !d.includes(AHF)).map((d) => d.split(':')[0]));
+  return (3 - failing.size) / 3;
+};
+out.push('', `## axe with and without \`${AHF}\``, '', `Radix's modal dropdown menu sets \`aria-hidden\` on the app root while its buttons stay focusable; axe flags that as serious. Radix traps focus in the menu, so it may not affect users (unverified).`, '');
+out.push(table(['condition', 'axe (all rules)', `axe without ${AHF}`, 'total (all rules)', `total without ${AHF}`], CONDITIONS.map((c) => {
+  const cs = sel((x) => x.meta.condition === c);
+  const tw = cs.map((x) => x.s.total + (axeWithout(x) - x.s.axe.score) / HEADLINE.length);
+  return [c, `${f2(mean(cs.map((x) => x.s.axe.score)))} (${passes(cs, 'axe')})`, `${f2(mean(cs.map(axeWithout)))} (${cs.filter((x) => axeWithout(x) === 1).length}/${cs.length})`, f2(mean(cs.map((x) => x.s.total))), f2(mean(tw))];
+})));
+
 out.push('', '## Pass rate by scorer, scenario by condition', '');
 out.push(table(['scenario', 'scorer', ...CONDITIONS], scen.flatMap((s) => HEADLINE.map((h) => [s.id, h, ...CONDITIONS.map((c) => passes(sel((x) => x.meta.scenario === s.id && x.meta.condition === c), h))]))));
 

@@ -12,17 +12,21 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
 
+const hit = "min-h-[var(--hit-target-min)] min-w-[var(--hit-target-min)] px-5";
+
 export default function Page() {
   const [open, setOpen] = useState(false);
   const [deleted, setDeleted] = useState(false);
 
   return (
-    <main className="bg-background text-foreground flex min-h-screen flex-col items-start gap-4 p-8">
+    <main className="bg-background text-foreground flex min-h-screen flex-col items-start gap-4 p-6 sm:p-12">
       <AlertDialog open={open} onOpenChange={setOpen}>
         <AlertDialogTrigger asChild>
-          <Button variant="secondary">Delete project</Button>
+          <Button variant="secondary" className={`${hit} border border-input`}>
+            Delete project
+          </Button>
         </AlertDialogTrigger>
-        <AlertDialogContent>
+        <AlertDialogContent className="border-input">
           <AlertDialogHeader>
             <AlertDialogTitle>Delete this project?</AlertDialogTitle>
             <AlertDialogDescription>
@@ -30,13 +34,22 @@ export default function Page() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Keep project</AlertDialogCancel>
-            <AlertDialogAction onClick={() => setDeleted(true)}>
+            <AlertDialogCancel className={`${hit} border-input`}>
+              Keep project
+            </AlertDialogCancel>
+            <AlertDialogAction
+              className={hit}
+              onClick={() => {
+                setDeleted(true);
+                setOpen(false);
+              }}
+            >
               Delete
             </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
       <p role="status" className="text-sm">
         {deleted ? "Project deleted." : ""}
       </p>

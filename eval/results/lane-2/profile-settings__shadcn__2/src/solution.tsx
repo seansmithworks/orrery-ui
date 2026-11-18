@@ -14,11 +14,13 @@ import { Switch } from "@/components/ui/switch";
 export default function ProfileSettings() {
   const [name, setName] = React.useState("");
   const [zone, setZone] = React.useState("");
-  const [email, setEmail] = React.useState(false);
+  const [emailOrbits, setEmailOrbits] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
 
+  const touch = "min-h-[var(--hit-target-min)]";
+
   return (
-    <main className="bg-background text-foreground min-h-screen p-6 sm:p-10">
+    <main className="bg-background text-foreground min-h-screen p-6 sm:p-12">
       <form
         className="mx-auto flex w-full max-w-md flex-col gap-6"
         onSubmit={(e) => {
@@ -33,6 +35,7 @@ export default function ProfileSettings() {
           <Input
             id="display-name"
             name="displayName"
+            className={touch}
             value={name}
             aria-describedby="display-name-hint"
             onChange={(e) => {
@@ -55,32 +58,35 @@ export default function ProfileSettings() {
               setSaved(false);
             }}
           >
-            <SelectTrigger id="time-zone" className="w-full">
+            <SelectTrigger id="time-zone" className={`${touch} w-full`}>
               <SelectValue placeholder="Choose a time zone" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="utc">UTC</SelectItem>
-              <SelectItem value="berlin">Berlin</SelectItem>
-              <SelectItem value="tokyo">Tokyo</SelectItem>
+              <SelectItem value="utc" className={touch}>UTC</SelectItem>
+              <SelectItem value="berlin" className={touch}>Berlin</SelectItem>
+              <SelectItem value="tokyo" className={touch}>Tokyo</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className={`flex items-center justify-between gap-4 ${touch}`}>
+          <Label htmlFor="email-orbits">Email me about new orbits</Label>
           <Switch
             id="email-orbits"
-            checked={email}
+            name="emailOrbits"
+            checked={emailOrbits}
             onCheckedChange={(v) => {
-              setEmail(v);
+              setEmailOrbits(v);
               setSaved(false);
             }}
           />
-          <Label htmlFor="email-orbits">Email me about new orbits</Label>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button type="submit">Save profile</Button>
-          <p role="status" className="text-muted-foreground text-sm">
+        <div className="flex flex-col gap-3">
+          <Button type="submit" className={`${touch} w-full sm:w-fit`}>
+            Save profile
+          </Button>
+          <p role="status" className="text-muted-foreground min-h-5 text-sm">
             {saved ? "Profile saved." : ""}
           </p>
         </div>

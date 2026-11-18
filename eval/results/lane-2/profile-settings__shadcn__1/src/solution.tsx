@@ -12,36 +12,41 @@ import {
 import { Switch } from "@/components/ui/switch";
 
 export default function ProfileSettings() {
-  const [name, setName] = React.useState("");
+  const [displayName, setDisplayName] = React.useState("");
   const [timeZone, setTimeZone] = React.useState("");
   const [emailOrbits, setEmailOrbits] = React.useState(false);
   const [saved, setSaved] = React.useState(false);
+
+  const touch = "min-h-[var(--hit-target-min)]";
 
   function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setSaved(true);
   }
 
-  function touch<T>(set: (v: T) => void) {
-    return (v: T) => {
-      set(v);
-      setSaved(false);
-    };
-  }
+  // Any edit after saving clears the stale confirmation.
+  const edited = () => setSaved(false);
 
   return (
-    <main className="bg-background text-foreground flex min-h-screen items-start justify-center p-6 sm:p-12">
-      <form onSubmit={onSubmit} className="flex w-full max-w-md flex-col gap-6">
-        <h1 className="text-2xl font-semibold">Profile settings</h1>
+    <main className="bg-background text-foreground min-h-screen px-4 py-12">
+      <form
+        onSubmit={onSubmit}
+        className="mx-auto flex w-full max-w-md flex-col gap-6"
+      >
+        <h1 className="text-xl font-semibold">Profile settings</h1>
 
         <div className="flex flex-col gap-2">
           <Label htmlFor="display-name">Display name</Label>
           <Input
             id="display-name"
             name="displayName"
-            value={name}
-            onChange={(e) => touch(setName)(e.target.value)}
+            className={touch}
+            value={displayName}
             aria-describedby="display-name-hint"
+            onChange={(e) => {
+              setDisplayName(e.target.value);
+              edited();
+            }}
           />
           <p id="display-name-hint" className="text-muted-foreground text-sm">
             Shown to your crew.
@@ -53,32 +58,42 @@ export default function ProfileSettings() {
           <Select
             name="timeZone"
             value={timeZone}
-            onValueChange={touch(setTimeZone)}
+            onValueChange={(v) => {
+              setTimeZone(v);
+              edited();
+            }}
           >
-            <SelectTrigger id="time-zone" className="w-full">
+            <SelectTrigger id="time-zone" className={`${touch} w-full`}>
               <SelectValue placeholder="Choose a time zone" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="utc">UTC</SelectItem>
-              <SelectItem value="berlin">Berlin</SelectItem>
-              <SelectItem value="tokyo">Tokyo</SelectItem>
+              <SelectItem className={touch} value="utc">UTC</SelectItem>
+              <SelectItem className={touch} value="berlin">Berlin</SelectItem>
+              <SelectItem className={touch} value="tokyo">Tokyo</SelectItem>
             </SelectContent>
           </Select>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className={`${touch} flex items-center justify-between gap-4`}>
+          <Label htmlFor="email-orbits" className={`${touch} flex-1`}>
+            Email me about new orbits
+          </Label>
           <Switch
             id="email-orbits"
             name="emailOrbits"
             checked={emailOrbits}
-            onCheckedChange={touch(setEmailOrbits)}
+            onCheckedChange={(v) => {
+              setEmailOrbits(v);
+              edited();
+            }}
           />
-          <Label htmlFor="email-orbits">Email me about new orbits</Label>
         </div>
 
-        <div className="flex items-center gap-4">
-          <Button type="submit">Save profile</Button>
-          <p role="status" className="text-muted-foreground text-sm">
+        <div className="flex flex-col gap-3">
+          <Button type="submit" className={`${touch} w-full`}>
+            Save profile
+          </Button>
+          <p role="status" className="text-sm">
             {saved ? "Profile saved." : ""}
           </p>
         </div>

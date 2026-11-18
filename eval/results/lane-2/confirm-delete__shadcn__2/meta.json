@@ -2,7 +2,7 @@
   "scenario": "confirm-delete",
   "condition": "shadcn",
   "rep": 2,
-  "wallMs": 13274,
+  "wallMs": 17284,
   "exit": 0,
   "limited": false,
   "timedOut": false,
@@ -14,16 +14,16 @@
   "run": {
     "is_error": false,
     "subtype": "success",
-    "num_turns": 5,
-    "duration_ms": 12474,
-    "total_cost_usd": 0.040041900000000005,
+    "num_turns": 7,
+    "duration_ms": 16661,
+    "total_cost_usd": 0.0698715,
     "usage": {
-      "input_tokens": 8,
-      "cache_creation_input_tokens": 5419,
-      "cache_read_input_tokens": 26999,
-      "output_tokens": 1565,
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 11102,
+      "cache_read_input_tokens": 46835,
+      "output_tokens": 2076,
       "output_tokens_details": {
-        "thinking_tokens": 81
+        "thinking_tokens": 157
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 5419,
+        "ephemeral_1h_input_tokens": 11102,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 323,
-          "cache_read_input_tokens": 9717,
-          "cache_creation_input_tokens": 974,
+          "output_tokens": 393,
+          "cache_read_input_tokens": 15239,
+          "cache_creation_input_tokens": 1135,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 974
+            "ephemeral_1h_input_tokens": 1135
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the page to `./solution.tsx`. I haven't run it, since I can't run code here.\n\n- **Trigger:** a secondary \"Delete project\" button opens the dialog.\n- **Dialog:** it's the workspace's `AlertDialog`, titled \"Delete this project?\" with the description \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" closes the dialog. The primary \"Delete\" button closes it and sets the status text \"Project deleted.\" on the page.\n- **Status text:** it sits in a `role=\"status\"` paragraph, so screen readers announce it.\n- **Theming:** it uses only the brand theme classes (`bg-background`, `text-foreground` and the shadcn button variants), so it follows the orrery light, orrery dark and solar brands. The page sets its own background because the host doesn't provide o"
+    "result": "I wrote the page to `./solution.tsx`. I couldn't run it, so it hasn't been tried in a browser or checked in the three brands.\n\n- **Dialog:** It uses the workspace's `AlertDialog`, which is a modal that traps focus and closes on Escape. The title is \"Delete this project?\" and the description is \"Its files and history are removed. This cannot be undone.\"\n- **Buttons:** \"Delete project\" is a secondary button. \"Keep project\" is the cancel action and closes the dialog. \"Delete\" is the primary button. It closes the dialog and sets the status text.\n- **Status text:** \"Project deleted.\" appears in a `role=\"status\"` paragraph, so screen readers announce it. That paragraph is always on the page and empty until you delete.\n- **Brand:** Everything uses the theme's Tailwind colours, so it follows the a"
   }
 }

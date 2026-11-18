@@ -125,13 +125,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 5,
-    "wallMs": 15226,
-    "costUsd": 0.0391954
+    "total": 1,
+    "turns": 7,
+    "wallMs": 17688,
+    "costUsd": 0.0739109
   },
   {
     "run": "confirm-delete__shadcn__2",
@@ -142,13 +142,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 5,
-    "wallMs": 13274,
-    "costUsd": 0.040041900000000005
+    "total": 1,
+    "turns": 7,
+    "wallMs": 17284,
+    "costUsd": 0.0698715
   },
   {
     "run": "confirm-delete__shadcn__3",
@@ -159,13 +159,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 6,
-    "wallMs": 16148,
-    "costUsd": 0.0429787
+    "total": 1,
+    "turns": 7,
+    "wallMs": 17241,
+    "costUsd": 0.0681803
   },
   {
     "run": "crew-roster__bare__1",
@@ -293,13 +293,13 @@
       "build": 1,
       "axe": 0,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.6,
-    "turns": 6,
-    "wallMs": 20583,
-    "costUsd": 0.05169440000000001
+    "total": 0.8,
+    "turns": 8,
+    "wallMs": 22758,
+    "costUsd": 0.08120430000000001
   },
   {
     "run": "crew-roster__shadcn__2",
@@ -310,13 +310,13 @@
       "build": 1,
       "axe": 0,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.6,
-    "turns": 5,
-    "wallMs": 15968,
-    "costUsd": 0.0396585
+    "total": 0.8,
+    "turns": 6,
+    "wallMs": 18786,
+    "costUsd": 0.08141190000000001
   },
   {
     "run": "crew-roster__shadcn__3",
@@ -327,13 +327,13 @@
       "build": 1,
       "axe": 0,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.6,
+    "total": 0.8,
     "turns": 5,
-    "wallMs": 18225,
-    "costUsd": 0.0461646
+    "wallMs": 18461,
+    "costUsd": 0.043768
   },
   {
     "run": "crew-tabs__bare__1",
@@ -461,13 +461,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 0.4,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 6,
-    "wallMs": 15426,
-    "costUsd": 0.0402055
+    "total": 0.8800000000000001,
+    "turns": 9,
+    "wallMs": 22225,
+    "costUsd": 0.0785329
   },
   {
     "run": "crew-tabs__shadcn__2",
@@ -478,13 +478,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 7,
-    "wallMs": 18342,
-    "costUsd": 0.047142800000000006
+    "total": 1,
+    "turns": 8,
+    "wallMs": 19565,
+    "costUsd": 0.07144629999999999
   },
   {
     "run": "crew-tabs__shadcn__3",
@@ -495,13 +495,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 7,
-    "wallMs": 16921,
-    "costUsd": 0.0470546
+    "total": 1,
+    "turns": 8,
+    "wallMs": 19337,
+    "costUsd": 0.0711686
   },
   {
     "run": "onboarding__bare__1",
@@ -629,13 +629,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 4,
-    "wallMs": 19331,
-    "costUsd": 0.04520880000000001
+    "total": 1,
+    "turns": 8,
+    "wallMs": 27947,
+    "costUsd": 0.07940520000000001
   },
   {
     "run": "onboarding__shadcn__2",
@@ -646,13 +646,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 3,
-    "wallMs": 18642,
-    "costUsd": 0.0452339
+    "total": 1,
+    "turns": 6,
+    "wallMs": 23037,
+    "costUsd": 0.0588964
   },
   {
     "run": "onboarding__shadcn__3",
@@ -663,13 +663,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 3,
-    "wallMs": 18269,
-    "costUsd": 0.041561900000000006
+    "total": 1,
+    "turns": 7,
+    "wallMs": 23601,
+    "costUsd": 0.0632381
   },
   {
     "run": "profile-settings__bare__1",
@@ -797,13 +797,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 0.75,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 6,
-    "wallMs": 18348,
-    "costUsd": 0.054306099999999996
+    "total": 0.95,
+    "turns": 10,
+    "wallMs": 25149,
+    "costUsd": 0.0912702
   },
   {
     "run": "profile-settings__shadcn__2",
@@ -814,13 +814,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 0.75,
       "brand": 1
     },
-    "total": 0.8,
+    "total": 0.95,
     "turns": 6,
-    "wallMs": 16935,
-    "costUsd": 0.0531861
+    "wallMs": 19080,
+    "costUsd": 0.0717026
   },
   {
     "run": "profile-settings__shadcn__3",
@@ -831,13 +831,13 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 0.5,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 6,
-    "wallMs": 17696,
-    "costUsd": 0.0555075
+    "total": 0.9,
+    "turns": 10,
+    "wallMs": 24813,
+    "costUsd": 0.09111699999999999
   },
   {
     "run": "workspace-settings__bare__1",
@@ -963,15 +963,15 @@
     "rep": 1,
     "scores": {
       "build": 1,
-      "axe": 0.3333333333333333,
-      "keyboard": 0.8,
-      "hit-target": 0,
-      "brand": 0.75
+      "axe": 1,
+      "keyboard": 1,
+      "hit-target": 0.7,
+      "brand": 1
     },
-    "total": 0.5766666666666667,
-    "turns": 9,
-    "wallMs": 27130,
-    "costUsd": 0.0768257
+    "total": 0.9400000000000001,
+    "turns": 11,
+    "wallMs": 31643,
+    "costUsd": 0.1136491
   },
   {
     "run": "workspace-settings__shadcn__2",
@@ -981,14 +981,14 @@
     "scores": {
       "build": 1,
       "axe": 1,
-      "keyboard": 1,
-      "hit-target": 0,
+      "keyboard": 0.8,
+      "hit-target": 0.7,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 10,
-    "wallMs": 26126,
-    "costUsd": 0.08413670000000001
+    "total": 0.9,
+    "turns": 11,
+    "wallMs": 33395,
+    "costUsd": 0.1171565
   },
   {
     "run": "workspace-settings__shadcn__3",
@@ -999,12 +999,12 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0,
+      "hit-target": 0.7,
       "brand": 1
     },
-    "total": 0.8,
-    "turns": 10,
-    "wallMs": 26147,
-    "costUsd": 0.0827447
+    "total": 0.9400000000000001,
+    "turns": 11,
+    "wallMs": 31116,
+    "costUsd": 0.1130811
   }
 ]
