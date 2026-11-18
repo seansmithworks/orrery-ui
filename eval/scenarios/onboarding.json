@@ -1,0 +1,7 @@
+{
+  "id": "onboarding",
+  "title": "Three-step sign-up with validation",
+  "lane": 2,
+  "prompt": "Build a three-step sign-up flow for a mission planner. Each step shows where the user is: \"Step 1 of 3\", \"Step 2 of 3\", \"Step 3 of 3\". Step 1, \"Your details\": fields \"Full name\" and \"Email\", both required. A \"Continue\" button checks them: an empty name shows \"Enter your name.\" and an email without an @ shows \"Enter a valid email.\", each next to its field, and the flow does not advance until both are fixed. Step 2, \"Your team\": choose exactly one of \"Solo\", \"Small crew (2 to 10)\" and \"Large crew (11 or more)\", with \"Back\" and \"Continue\" buttons. Step 3, \"Confirm\": a summary of the name, email and team, a checkbox \"I agree to the terms\", and a primary button \"Create account\" that only works once the box is checked; then show \"Account created.\".",
+  "steps": [{ "role": "button", "name": "Continue" }]
+}

@@ -107,6 +107,9 @@
     "eval": "node eval/run.mjs",
     "eval:score": "node eval/score.mjs",
     "eval:report": "node eval/report.mjs",
-    "eval:selftest": "node eval/selftest.mjs"
+    "eval:selftest": "node eval/selftest.mjs",
+    "eval:lane2": "node eval/lane2/run.mjs",
+    "eval:lane2:score": "node eval/lane2/score.mjs",
+    "eval:lane2:report": "node eval/lane2/report.mjs"
   }
 }

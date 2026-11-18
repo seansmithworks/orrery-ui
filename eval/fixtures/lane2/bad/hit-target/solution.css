@@ -1,0 +1,18 @@
+.page {
+  min-height: 100vh;
+  padding: var(--space-32);
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.tiny {
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: var(--line-width) solid var(--line-strong);
+  background: var(--layer-1);
+  color: var(--text);
+}
+.tiny:focus-visible {
+  outline: var(--ring-width) solid var(--accent);
+}

@@ -1,0 +1,11 @@
+{
+  "name": "ui-workspace",
+  "private": true,
+  "type": "module",
+  "dependencies": {
+    "@ui-sdk/core": "0.1.0-beta.7",
+    "@ui-sdk/react": "0.1.0-beta.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
+  }
+}

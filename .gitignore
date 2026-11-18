@@ -8,3 +8,7 @@ test-results/
 eval/results/*
 !eval/results/lane-1.md
 !eval/results/lane-1.json
+# lane 2 keeps every run's sources, scores and thumbnails; scoring cells (.work-lane-2) stay local
+!eval/results/lane-2.md
+!eval/results/lane-2.json
+!eval/results/lane-2/
