@@ -146,6 +146,29 @@ export function ruleTests({ tmp, run }) {
       assert.deepEqual(hits('k.css', ok, 'font-family-token'), []);
     },
 
+    '[type-role-size] source rules: type-role-size fails a literal size, a calc() and a step no type role uses, and passes every step a role uses and a CSS-wide keyword'() {
+      const bad = ['.a {', '  font-size: 15px;', '  font-size: calc(var(--type-size-14) + 1px);', '  font-size: var(--type-size-20);', '  font-size: var(--type-size-96);', '}'].join('\n');
+      const found = hits('k.css', bad, 'type-role-size');
+      assert.deepEqual(found.map((s) => s.split(':')[0]), ['2 type-role-size font-size', '3 type-role-size font-size', '4 type-role-size font-size', '5 type-role-size font-size']);
+      assert.match(found[2], /no type role uses step 20; components use only the role steps \(11, 12-5, 13, 14, 16, 17, 22, 25, 30, 44\)$/);
+      const ok = ['11', '12-5', '13', '14', '16', '17', '22', '25', '30', '44'].map((s, i) => `.r${i} { font-size: var(--type-size-${s}); }`).concat('.k { font-size: inherit; }').join('\n');
+      assert.deepEqual(hits('k.css', ok, 'type-role-size'), []);
+    },
+
+    '[type-line-height-pair] source rules: type-line-height-pair fails a size with no line height, a mismatched step and a line height set by hand, and passes the matching pair in one rule'() {
+      const bad = ['.a { font-size: var(--type-size-14); }', '.b { font-size: var(--type-size-14); line-height: var(--type-line-height-16); }', '.c { line-height: 1.2; }', '.d { line-height: var(--type-line-height-13); }', '@media (any-pointer: coarse) {', '  .e { font-size: var(--type-size-16); }', '}'].join('\n');
+      assert.deepEqual(hits('k.css', bad, 'type-line-height-pair'), [
+        '1 type-line-height-pair font-size: var(--type-size-14) in .a has no line-height: var(--type-line-height-14) beside it in the same rule',
+        '2 type-line-height-pair font-size: var(--type-size-14) in .b has no line-height: var(--type-line-height-14) beside it in the same rule',
+        '2 type-line-height-pair line-height: var(--type-line-height-16) in .b has no font-size: var(--type-size-16) beside it in the same rule',
+        '3 type-line-height-pair line-height: 1.2 in .c is set by hand; use var(--type-line-height-<step>) beside the matching var(--type-size-<step>)',
+        '4 type-line-height-pair line-height: var(--type-line-height-13) in .d has no font-size: var(--type-size-13) beside it in the same rule',
+        '6 type-line-height-pair font-size: var(--type-size-16) in .e has no line-height: var(--type-line-height-16) beside it in the same rule',
+      ]);
+      const ok = ['.a { font-size: var(--type-size-14); line-height: var(--type-line-height-14); }', '@media (any-pointer: coarse) { .a { font-size: var(--type-size-16); line-height: var(--type-line-height-16); } }', '.b { line-height: inherit; }'].join('\n');
+      assert.deepEqual(hits('k.css', ok, 'type-line-height-pair'), []);
+    },
+
     'source rules: the CLI prints file:line rule-id message and exits 1, exits 0 when clean, and exits 2 on a missing path'() {
       const dir = path.join(tmp, 'cli');
       fs.mkdirSync(dir, { recursive: true });

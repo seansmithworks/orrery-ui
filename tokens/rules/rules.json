@@ -462,23 +462,23 @@
     "applies": [
       "source"
     ],
-    "check": null,
-    "reason": {
-      "kind": "not-built",
-      "text": "The source check is built in the Foundations type lane (step 5)."
+    "check": {
+      "kind": "source-check",
+      "ref": "type-role-size",
+      "test": "[type-role-size] source rules: type-role-size fails a literal size, a calc() and a step no type role uses, and passes every step a role uses and a CSS-wide keyword"
     }
   },
   {
     "id": "type-line-height-pair",
     "layer": "rule",
-    "statement": "In CSS files given to the source checker, a rule that sets font-size: var(--type-size-<step>) sets line-height: var(--type-line-height-<step>) for the same step, and a line-height is only ever that pair.",
+    "statement": "In CSS files given to the source checker, a rule that sets font-size: var(--type-size-<step>) also sets line-height: var(--type-line-height-<step>) for the same step, and a line-height other than a CSS-wide keyword is only ever that pair; a rule inside a media query is its own rule.",
     "applies": [
       "source"
     ],
-    "check": null,
-    "reason": {
-      "kind": "not-built",
-      "text": "The source check is built in the Foundations type lane (step 5)."
+    "check": {
+      "kind": "source-check",
+      "ref": "type-line-height-pair",
+      "test": "[type-line-height-pair] source rules: type-line-height-pair fails a size with no line height, a mismatched step and a line height set by hand, and passes the matching pair in one rule"
     }
   },
   {
