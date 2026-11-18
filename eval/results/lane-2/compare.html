@@ -1,0 +1,204 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Lane 2: blind comparison</title>
+<style>
+  :root { color-scheme: light; --ink: #1d1d1f; --muted: #6e6e73; --line: #e5e5ea; --fill: #f7f7f8; }
+  body { margin: 0; font: 14px/1.5 system-ui, -apple-system, sans-serif; color: var(--ink); background: #fff; }
+  header { position: sticky; top: 0; z-index: 2; background: #fff; border-bottom: 1px solid var(--line); padding: 12px 24px; display: flex; flex-wrap: wrap; gap: 16px; align-items: center; }
+  header h1 { font-size: 16px; margin: 0 16px 0 0; }
+  .group { display: flex; gap: 4px; align-items: center; }
+  .group span { color: var(--muted); margin-right: 4px; }
+  button { font: inherit; padding: 6px 12px; min-height: 32px; border: 1px solid var(--line); background: var(--fill); border-radius: 6px; cursor: pointer; color: var(--ink); }
+  button[aria-pressed="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+  main { padding: 8px 24px 64px; }
+  section { border-bottom: 1px solid var(--line); padding: 24px 0; }
+  h2 { font-size: 18px; margin: 0 0 4px; }
+  h2 small { color: var(--muted); font-weight: 400; font-size: 13px; }
+  .prompt { color: var(--muted); max-width: 70em; margin: 0 0 8px; }
+  .hint { font-size: 12px; color: var(--muted); margin: 0 0 12px; }
+  .row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; align-items: start; }
+  .col { margin: 0; }
+  figcaption { display: flex; gap: 8px; align-items: baseline; margin-bottom: 6px; }
+  figcaption b { font-size: 16px; }
+  .shot { display: block; border: 1px solid var(--line); border-radius: 6px; overflow: auto; max-height: 75vh; background: var(--fill); }
+  .shot img { display: block; width: 100%; height: auto; }
+  body[data-width="375"] .shot img { width: auto; max-width: 100%; margin: 0 auto; }
+  .reveal { display: none; color: var(--muted); }
+  body.revealed .reveal { display: inline; }
+  body.revealed p.reveal { display: block; }
+  section[data-start="false"] .hint { display: none; }
+</style>
+</head>
+<body data-brand="orrery-light" data-width="1280" data-state="final">
+<header>
+  <h1>Orrery vs no Orrery: blind comparison</h1>
+  <div class="group" role="group" aria-label="Brand"><span>Brand</span><button data-set="brand" data-value="orrery-light" aria-pressed="true">orrery-light</button><button data-set="brand" data-value="orrery-dark" aria-pressed="false">orrery-dark</button><button data-set="brand" data-value="solar" aria-pressed="false">solar</button></div>
+  <div class="group" role="group" aria-label="Width"><span>Width</span><button data-set="width" data-value="1280" aria-pressed="true">1280</button><button data-set="width" data-value="375" aria-pressed="false">375</button></div>
+  <div class="group" role="group" aria-label="State"><span>State</span><button data-set="state" data-value="final" aria-pressed="true">after steps</button><button data-set="state" data-value="start" aria-pressed="false">before</button></div>
+  <button id="reveal" aria-pressed="false">Reveal conditions</button>
+</header>
+<main>
+  <p class="prompt">One run per condition per scenario (rep 1). Labels are shuffled per scenario. Same prompt for all three; only the workspace differed. Scores and the full tables are in <a href="../lane-2.md">lane-2.md</a>.</p>
+  
+    <section data-start="true">
+      <h2>Confirm before deleting <small>confirm-delete</small></h2>
+      <p class="prompt">Build a destructive-action confirmation. A secondary button labelled &quot;Delete project&quot; opens a modal dialog titled &quot;Delete this project?&quot; with the description &quot;Its files and history are removed. This cannot be undone.&quot;. The dialog has two actions: &quot;Keep project&quot; (closes the dialog) and a primary &quot;Delete&quot; button (closes the dialog and shows the status text &quot;Project deleted.&quot; on the page).</p>
+      <p class="hint">Screenshots show the page after: “Delete project”. Switch “State” to see the page before.</p>
+      <div class="row">
+      <figure class="col">
+        <figcaption><b>A</b><span class="reveal">orrery · rep 1 · total 0.95<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 0.75</small></span></figcaption>
+        <a class="shot" data-cell="confirm-delete__orrery__1" href="./confirm-delete__orrery__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="confirm-delete__orrery__1" src="./confirm-delete__orrery__1/shots/final-orrery-light-1280.png" alt="Option A"></a>
+        <p class="src reveal"><a href="./confirm-delete__orrery__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>B</b><span class="reveal">shadcn · rep 1 · total 0.80<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 0.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="confirm-delete__shadcn__1" href="./confirm-delete__shadcn__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="confirm-delete__shadcn__1" src="./confirm-delete__shadcn__1/shots/final-orrery-light-1280.png" alt="Option B"></a>
+        <p class="src reveal"><a href="./confirm-delete__shadcn__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>C</b><span class="reveal">bare · rep 1 · total 0.95<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 0.75</small></span></figcaption>
+        <a class="shot" data-cell="confirm-delete__bare__1" href="./confirm-delete__bare__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="confirm-delete__bare__1" src="./confirm-delete__bare__1/shots/final-orrery-light-1280.png" alt="Option C"></a>
+        <p class="src reveal"><a href="./confirm-delete__bare__1/src/solution.tsx">source</a></p>
+      </figure></div>
+    </section>
+
+    <section data-start="true">
+      <h2>Filterable roster with row actions and an empty state <small>crew-roster · new, no golden twin</small></h2>
+      <p class="prompt">Build a crew roster. Heading: &quot;Crew&quot;. A search field labelled &quot;Filter crew&quot; narrows the list by name as the user types. The list shows five people, each with a name and a role: Ada Okafor (Flight engineer), Bo Lindqvist (Navigator), Chen Wei (Pilot), Dara Moss (Medic), Eli Hart (Comms). Each row has a compact actions button labelled &quot;Actions for &lt;name&gt;&quot; (for example &quot;Actions for Ada Okafor&quot;) that opens a short list of actions: &quot;Edit&quot;, &quot;Reassign&quot; and &quot;Remove&quot;. Choosing Remove takes that person off the list. When nobody matches the filter, show &quot;No crew match your filter.&quot; and a button &quot;Clear filter&quot; that empties the field and shows everyone again.</p>
+      <p class="hint">Screenshots show the page after: “Actions for Ada Okafor”. Switch “State” to see the page before.</p>
+      <div class="row">
+      <figure class="col">
+        <figcaption><b>A</b><span class="reveal">bare · rep 1 · total 1.00<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="crew-roster__bare__1" href="./crew-roster__bare__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="crew-roster__bare__1" src="./crew-roster__bare__1/shots/final-orrery-light-1280.png" alt="Option A"></a>
+        <p class="src reveal"><a href="./crew-roster__bare__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>B</b><span class="reveal">orrery · rep 1 · total 0.80<br><small>build 0.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="crew-roster__orrery__1" href="./crew-roster__orrery__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="crew-roster__orrery__1" src="./crew-roster__orrery__1/shots/final-orrery-light-1280.png" alt="Option B"></a>
+        <p class="src reveal"><a href="./crew-roster__orrery__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>C</b><span class="reveal">shadcn · rep 1 · total 0.60<br><small>build 1.00 · axe 0.00 · keyboard 1.00 · hit-target 0.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="crew-roster__shadcn__1" href="./crew-roster__shadcn__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="crew-roster__shadcn__1" src="./crew-roster__shadcn__1/shots/final-orrery-light-1280.png" alt="Option C"></a>
+        <p class="src reveal"><a href="./crew-roster__shadcn__1/src/solution.tsx">source</a></p>
+      </figure></div>
+    </section>
+
+    <section data-start="true">
+      <h2>Tabbed crew card <small>crew-tabs</small></h2>
+      <p class="prompt">Build a card for a crew member named &quot;Ada Okafor&quot; (heading), with the line &quot;Flight engineer, Orbit 7&quot; below it. Inside the card, show three tabs: &quot;Overview&quot; (text: &quot;Leads the docking checklist.&quot;), &quot;Passes&quot; (text: &quot;Next close pass in four days.&quot;) and &quot;History&quot; (text: &quot;Charted since March.&quot;). Overview is selected first. The card has a footer with a quiet button &quot;Remove from crew&quot; and a primary button &quot;Save changes&quot;.</p>
+      <p class="hint">Screenshots show the page after: “Passes”. Switch “State” to see the page before.</p>
+      <div class="row">
+      <figure class="col">
+        <figcaption><b>A</b><span class="reveal">bare · rep 1 · total 1.00<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="crew-tabs__bare__1" href="./crew-tabs__bare__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="crew-tabs__bare__1" src="./crew-tabs__bare__1/shots/final-orrery-light-1280.png" alt="Option A"></a>
+        <p class="src reveal"><a href="./crew-tabs__bare__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>B</b><span class="reveal">orrery · rep 1 · total 1.00<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="crew-tabs__orrery__1" href="./crew-tabs__orrery__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="crew-tabs__orrery__1" src="./crew-tabs__orrery__1/shots/final-orrery-light-1280.png" alt="Option B"></a>
+        <p class="src reveal"><a href="./crew-tabs__orrery__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>C</b><span class="reveal">shadcn · rep 1 · total 0.80<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 0.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="crew-tabs__shadcn__1" href="./crew-tabs__shadcn__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="crew-tabs__shadcn__1" src="./crew-tabs__shadcn__1/shots/final-orrery-light-1280.png" alt="Option C"></a>
+        <p class="src reveal"><a href="./crew-tabs__shadcn__1/src/solution.tsx">source</a></p>
+      </figure></div>
+    </section>
+
+    <section data-start="true">
+      <h2>Three-step sign-up with validation <small>onboarding · new, no golden twin</small></h2>
+      <p class="prompt">Build a three-step sign-up flow for a mission planner. Each step shows where the user is: &quot;Step 1 of 3&quot;, &quot;Step 2 of 3&quot;, &quot;Step 3 of 3&quot;. Step 1, &quot;Your details&quot;: fields &quot;Full name&quot; and &quot;Email&quot;, both required. A &quot;Continue&quot; button checks them: an empty name shows &quot;Enter your name.&quot; and an email without an @ shows &quot;Enter a valid email.&quot;, each next to its field, and the flow does not advance until both are fixed. Step 2, &quot;Your team&quot;: choose exactly one of &quot;Solo&quot;, &quot;Small crew (2 to 10)&quot; and &quot;Large crew (11 or more)&quot;, with &quot;Back&quot; and &quot;Continue&quot; buttons. Step 3, &quot;Confirm&quot;: a summary of the name, email and team, a checkbox &quot;I agree to the terms&quot;, and a primary button &quot;Create account&quot; that only works once the box is checked; then show &quot;Account created.&quot;.</p>
+      <p class="hint">Screenshots show the page after: “Continue”. Switch “State” to see the page before.</p>
+      <div class="row">
+      <figure class="col">
+        <figcaption><b>A</b><span class="reveal">orrery · rep 1 · total 0.80<br><small>build 0.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="onboarding__orrery__1" href="./onboarding__orrery__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="onboarding__orrery__1" src="./onboarding__orrery__1/shots/final-orrery-light-1280.png" alt="Option A"></a>
+        <p class="src reveal"><a href="./onboarding__orrery__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>B</b><span class="reveal">shadcn · rep 1 · total 0.80<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 0.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="onboarding__shadcn__1" href="./onboarding__shadcn__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="onboarding__shadcn__1" src="./onboarding__shadcn__1/shots/final-orrery-light-1280.png" alt="Option B"></a>
+        <p class="src reveal"><a href="./onboarding__shadcn__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>C</b><span class="reveal">bare · rep 1 · total 1.00<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="onboarding__bare__1" href="./onboarding__bare__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="onboarding__bare__1" src="./onboarding__bare__1/shots/final-orrery-light-1280.png" alt="Option C"></a>
+        <p class="src reveal"><a href="./onboarding__bare__1/src/solution.tsx">source</a></p>
+      </figure></div>
+    </section>
+
+    <section data-start="false">
+      <h2>Profile settings form <small>profile-settings</small></h2>
+      <p class="prompt">Build a profile settings form. It has: a text field labelled &quot;Display name&quot; with the hint &quot;Shown to your crew.&quot;; a select labelled &quot;Time zone&quot; with three options (UTC, Berlin, Tokyo) and the placeholder &quot;Choose a time zone&quot;; a switch labelled &quot;Email me about new orbits&quot;; and a primary button &quot;Save profile&quot; that submits the form. After saving, show the status text &quot;Profile saved.&quot;.</p>
+      
+      <div class="row">
+      <figure class="col">
+        <figcaption><b>A</b><span class="reveal">shadcn · rep 1 · total 0.80<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 0.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="profile-settings__shadcn__1" href="./profile-settings__shadcn__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="profile-settings__shadcn__1" src="./profile-settings__shadcn__1/shots/final-orrery-light-1280.png" alt="Option A"></a>
+        <p class="src reveal"><a href="./profile-settings__shadcn__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>B</b><span class="reveal">bare · rep 1 · total 1.00<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="profile-settings__bare__1" href="./profile-settings__bare__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="profile-settings__bare__1" src="./profile-settings__bare__1/shots/final-orrery-light-1280.png" alt="Option B"></a>
+        <p class="src reveal"><a href="./profile-settings__bare__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>C</b><span class="reveal">orrery · rep 1 · total 1.00<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 1.00 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="profile-settings__orrery__1" href="./profile-settings__orrery__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="profile-settings__orrery__1" src="./profile-settings__orrery__1/shots/final-orrery-light-1280.png" alt="Option C"></a>
+        <p class="src reveal"><a href="./profile-settings__orrery__1/src/solution.tsx">source</a></p>
+      </figure></div>
+    </section>
+
+    <section data-start="true">
+      <h2>Workspace settings with a danger zone <small>workspace-settings · new, no golden twin</small></h2>
+      <p class="prompt">Build the settings page for a workspace called &quot;Orbit Lab&quot;. Heading: &quot;Workspace settings&quot;. The settings are split into three sections the user switches between, one visible at a time: &quot;General&quot;, &quot;Notifications&quot; and &quot;Danger zone&quot; (General shows first). General: a text field &quot;Workspace name&quot; prefilled with &quot;Orbit Lab&quot;; a choice of &quot;Default role for new members&quot; between Viewer, Editor and Admin (Editor chosen); a primary button &quot;Save changes&quot; that shows the status text &quot;Settings saved.&quot;. Notifications: two on/off settings, &quot;Weekly summary email&quot; (on) and &quot;Mentions&quot; (off). Danger zone: one sentence explaining that deleting is permanent, and a button &quot;Delete workspace&quot;. That button asks for confirmation in a modal titled &quot;Delete Orbit Lab?&quot; with the text &quot;This removes all projects and members. It cannot be undone.&quot; and two actions, &quot;Cancel&quot; (closes it) and &quot;Delete workspace&quot; (closes it and shows the status text &quot;Workspace deleted.&quot; on the page).</p>
+      <p class="hint">Screenshots show the page after: “Danger zone”, “Delete workspace”. Switch “State” to see the page before.</p>
+      <div class="row">
+      <figure class="col">
+        <figcaption><b>A</b><span class="reveal">shadcn · rep 1 · total 0.58<br><small>build 1.00 · axe 0.33 · keyboard 0.80 · hit-target 0.00 · brand 0.75</small></span></figcaption>
+        <a class="shot" data-cell="workspace-settings__shadcn__1" href="./workspace-settings__shadcn__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="workspace-settings__shadcn__1" src="./workspace-settings__shadcn__1/shots/final-orrery-light-1280.png" alt="Option A"></a>
+        <p class="src reveal"><a href="./workspace-settings__shadcn__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>B</b><span class="reveal">bare · rep 1 · total 0.89<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 0.70 · brand 0.75</small></span></figcaption>
+        <a class="shot" data-cell="workspace-settings__bare__1" href="./workspace-settings__bare__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="workspace-settings__bare__1" src="./workspace-settings__bare__1/shots/final-orrery-light-1280.png" alt="Option B"></a>
+        <p class="src reveal"><a href="./workspace-settings__bare__1/src/solution.tsx">source</a></p>
+      </figure>
+      <figure class="col">
+        <figcaption><b>C</b><span class="reveal">orrery · rep 1 · total 0.96<br><small>build 1.00 · axe 1.00 · keyboard 1.00 · hit-target 0.80 · brand 1.00</small></span></figcaption>
+        <a class="shot" data-cell="workspace-settings__orrery__1" href="./workspace-settings__orrery__1/shots/final-orrery-light-1280.png"><img loading="lazy" data-cell="workspace-settings__orrery__1" src="./workspace-settings__orrery__1/shots/final-orrery-light-1280.png" alt="Option C"></a>
+        <p class="src reveal"><a href="./workspace-settings__orrery__1/src/solution.tsx">source</a></p>
+      </figure></div>
+    </section>
+</main>
+<script>
+  const body = document.body;
+  function update() {
+    const { brand, width, state } = body.dataset;
+    for (const img of document.querySelectorAll('img[data-cell]')) {
+      const section = img.closest('section');
+      const st = state === 'start' && section.dataset.start === 'true' && width === '1280' ? 'start' : 'final';
+      const src = './' + img.dataset.cell + '/shots/' + st + '-' + brand + '-' + width + '.png';
+      img.src = src;
+      img.parentElement.href = src;
+    }
+  }
+  for (const b of document.querySelectorAll('button[data-set]')) {
+    b.addEventListener('click', () => {
+      body.dataset[b.dataset.set] = b.dataset.value;
+      for (const o of document.querySelectorAll('button[data-set="' + b.dataset.set + '"]')) o.setAttribute('aria-pressed', String(o === b));
+      update();
+    });
+  }
+  document.getElementById('reveal').addEventListener('click', (e) => {
+    const on = body.classList.toggle('revealed');
+    e.currentTarget.setAttribute('aria-pressed', String(on));
+    e.currentTarget.textContent = on ? 'Hide conditions' : 'Reveal conditions';
+  });
+</script>
+</body>
+</html>

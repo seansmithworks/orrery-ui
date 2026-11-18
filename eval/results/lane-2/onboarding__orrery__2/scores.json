@@ -1,0 +1,55 @@
+{
+  "build": {
+    "score": 0,
+    "pass": false,
+    "details": [
+      "solution.tsx(136,19): error TS2322: Type '(v: string) => void' is not assignable to type '(value: string | null, details: ChangeDetails<RadioGroupValueChangeReason>) => void'.",
+      "solution.tsx(190,21): error TS2322: Type '(c: boolean) => void' is not assignable to type '(checked: CheckedState, details: ChangeDetails<CheckboxCheckedChangeReason>) => void'."
+    ]
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 6
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999921875,
+      "darkSolar": 0.9961376953125
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 0.8
+}

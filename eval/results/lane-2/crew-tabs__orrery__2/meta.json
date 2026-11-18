@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "orrery",
+  "rep": 2,
+  "wallMs": 20763,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 9,
+    "duration_ms": 20079,
+    "total_cost_usd": 0.17677079999999998,
+    "usage": {
+      "input_tokens": 12,
+      "cache_creation_input_tokens": 35721,
+      "cache_read_input_tokens": 131828,
+      "output_tokens": 2068,
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 35721,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 317,
+          "cache_read_input_tokens": 40148,
+          "cache_creation_input_tokens": 870,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 870
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew card to `./solution.tsx`. I haven't run or rendered it, so it's untested.\n\n- **Card:** it's an `<article>` named by its heading, \"Ada Okafor\". \"Flight engineer, Orbit 7\" sits under the heading in muted text.\n- **Tabs:** Overview, Passes and History each show the text you gave. Overview is selected first. The tab list is named by the heading.\n- **Footer:** \"Remove from crew\" is a quiet button and \"Save changes\" is the primary button.\n\nI built it from the kit's `Card`, `Tabs` and `Button`, following the kit's own card and tabs examples. I added no custom CSS, so it takes its colours and spacing from whichever brand is active. I didn't open the kit's tab and card stylesheets, and I didn't check the design rules in `tokens/rules/`. The kit catalog covers the components, but I "
+  }
+}

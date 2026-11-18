@@ -1,0 +1,57 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "bare",
+  "rep": 2,
+  "wallMs": 17946,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 17373,
+    "total_cost_usd": 0.055588200000000004,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 7405,
+      "cache_read_input_tokens": 27822,
+      "output_tokens": 2317,
+      "output_tokens_details": {
+        "thinking_tokens": 121
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 7405,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 388,
+          "cache_read_input_tokens": 10713,
+          "cache_creation_input_tokens": 1964,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1964
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `solution.tsx` and `solution.css`. I couldn't run any code here, so none of it has been tested or viewed in a browser.\n\n- **Dialog:** the \"Delete project\" button opens a native `<dialog>` as a modal. The dialog is titled \"Delete this project?\" and has the description \"Its files and history are removed. This cannot be undone.\". The native element should trap focus, close on Esc, and return focus to the \"Delete project\" button. The title and description are linked to the dialog for screen readers.\n- **Actions:** \"Keep project\" closes the dialog and gets initial focus, so Enter doesn't delete by accident. \"Delete\" is the primary button. It closes the dialog and shows \"Project deleted.\" in a `role=\"status\"` line on the page.\n- **Brand:** all colours, spacing, radii, type si"
+  }
+}

@@ -1,0 +1,44 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 0,
+    "pass": false,
+    "details": [
+      "1280px page: \"Display name\" is 448x36, its hit area is under 44x44",
+      "1280px page: \"Time zone\" is 448x36, its hit area is under 44x44",
+      "1280px page: \"Email me about new orbits\" is 32x18, its hit area is under 44x44",
+      "1280px page: \"Save profile\" is 110x36, its hit area is under 44x44",
+      "375px page: \"Display name\" is 327x36, its hit area is under 44x44",
+      "375px page: \"Time zone\" is 327x36, its hit area is under 44x44",
+      "375px page: \"Email me about new orbits\" is 32x18, its hit area is under 44x44",
+      "375px page: \"Save profile\" is 110x36, its hit area is under 44x44"
+    ],
+    "total": 8
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999443359375,
+      "darkSolar": 0.9999697265625
+    }
+  },
+  "notes": [],
+  "total": 0.8
+}

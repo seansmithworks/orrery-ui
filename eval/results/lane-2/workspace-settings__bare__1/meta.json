@@ -1,0 +1,57 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "bare",
+  "rep": 1,
+  "wallMs": 39041,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 38310,
+    "total_cost_usd": 0.1152974,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 11631,
+      "cache_read_input_tokens": 29074,
+      "output_tokens": 6585,
+      "output_tokens_details": {
+        "thinking_tokens": 164
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 11631,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 508,
+          "cache_read_input_tokens": 11138,
+          "cache_creation_input_tokens": 5967,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 5967
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `solution.tsx`, with its styles in `solution.css`. I couldn't run code here, so none of it has been run or checked in a browser.\n\n- **Sections:** \"General\", \"Notifications\" and \"Danger zone\" work as tabs, with General showing first. Only one section is visible at a time, and the arrow keys move between tabs.\n- **General:** The \"Workspace name\" field starts as \"Orbit Lab\", and Editor is the chosen default role. \"Save changes\" shows \"Settings saved.\" The message clears if you edit the name or role afterwards.\n- **Notifications:** \"Weekly summary email\" starts on and \"Mentions\" starts off.\n- **Danger zone:** One sentence says deleting is permanent, followed by the \"Delete workspace\" button.\n- **Modal:** It is titled \"Delete Orbit Lab?\" with the text you gave. \"Can"
+  }
+}

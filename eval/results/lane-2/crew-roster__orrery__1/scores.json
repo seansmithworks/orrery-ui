@@ -1,0 +1,54 @@
+{
+  "build": {
+    "score": 0,
+    "pass": false,
+    "details": [
+      "solution.tsx(109,45): error TS2322: Type 'RefObject<HTMLHeadingElement | null>' is not assignable to type 'PopupFocusTarget | undefined'."
+    ]
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 18
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999599609375,
+      "darkSolar": 0.5374892578125
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 0.8
+}

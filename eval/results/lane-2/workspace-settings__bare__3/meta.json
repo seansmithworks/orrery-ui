@@ -1,0 +1,57 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "bare",
+  "rep": 3,
+  "wallMs": 37534,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 36184,
+    "total_cost_usd": 0.11171139999999999,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 11372,
+      "cache_read_input_tokens": 29074,
+      "output_tokens": 6330,
+      "output_tokens_details": {
+        "thinking_tokens": 246
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 11372,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 512,
+          "cache_read_input_tokens": 11138,
+          "cache_creation_input_tokens": 5708,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 5708
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `solution.tsx`, with its styles in `solution.css`. I couldn't run code here, so none of it has been rendered or tested.\n\n- **Sections:** \"General\", \"Notifications\" and \"Danger zone\" are tabs, with one panel visible at a time and General first. The arrow keys, Home and End move between tabs.\n- **General:**\n  - The \"Workspace name\" field starts as \"Orbit Lab\".\n  - The \"Default role for new members\" choice is a radio group with Editor selected.\n  - \"Save changes\" shows \"Settings saved.\" After you edit either field, the message clears until you save again.\n- **Notifications:** \"Weekly summary email\" is on and \"Mentions\" is off, each as an on/off switch.\n- **Danger zone:** one sentence says deletion is permanent, followed by the \"Delete workspace\" button. It opens a"
+  }
+}

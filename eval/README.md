@@ -13,3 +13,13 @@ Ablations: `full`, `-design` (no `DESIGN.md`), `-catalog` (no `kit/catalog.json`
 Scenarios: `eval/scenarios/<id>.json` (prompt plus render steps) and `<id>/reference.tsx`. Solutions import the kit from `./kit`; scoring symlinks `kit` into each cell.
 
 Results go to `eval/results/<runId>/` (gitignored); `eval/results/lane-1.md|json` are the committed summaries.
+
+## Lane 2: with Orrery vs without
+
+Lane 1 always had the kit installed, so it never measured "no Orrery". Lane 2 does, in `eval/lane2/`.
+
+- Conditions (`eval/lane2/workspace.mjs`, fixtures in `eval/fixtures/conditions/`), one prompt for all: `orrery` (lane 1 `full`), `bare` (React + plain CSS + `brand.css`), `shadcn` (shadcn/ui on Radix + Tailwind v4, `brand.css` as the theme). `brand.css` is the generated token CSS of both brands, scoped by `data-brand`/`data-theme` (`node eval/lane2/build-brand.mjs` after `tokens:build`). The shadcn fixture's packages are installed once (`npm ci --legacy-peer-deps` in `eval/fixtures/conditions/shadcn`, no React of its own) and only used at scoring; no workspace holds `node_modules`.
+- Host page (`eval/lane2/render/`): the same for every condition. Sets the brand attributes, loads `brand.css` and the condition's stylesheet, and mounts the solution as the whole page with no wrapper or background.
+- `npm run eval:lane2 -- [--reps 3]` runs the grid (resumable); `--workspaces` builds, lists and deletes one workspace per condition (isolation evidence). `npm run eval:lane2:score` scores (thumbnails to `<run>/shots/`, full size to `L2_FULL`), `npm run eval:lane2:report` writes `eval/results/lane-2.md|json`, `node eval/lane2/compare.mjs` writes the blind `eval/results/lane-2/compare.html`.
+- Headline scorers, fair to all conditions: `build`, `axe` (serious/critical, three brands, before and after the steps), `keyboard`, `hit-target`, `brand`. Lane 1's `kit-only`, `literals`, `catalog` are secondary columns for `orrery` only. `eval:selftest` also proves one positive control per condition at 1.00 and one bad fixture per new scorer (`eval/fixtures/lane2/`).
+- Every run's source, scores and thumbnails are committed under `eval/results/lane-2/<run>/`.

@@ -1,0 +1,57 @@
+{
+  "scenario": "onboarding",
+  "condition": "bare",
+  "rep": 2,
+  "wallMs": 31176,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 30131,
+    "total_cost_usd": 0.0931666,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 10009,
+      "cache_read_input_tokens": 28446,
+      "output_tokens": 5027,
+      "output_tokens_details": {
+        "thinking_tokens": 264
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10009,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 502,
+          "cache_read_input_tokens": 10875,
+          "cache_creation_input_tokens": 4557,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4557
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the three-step sign-up flow to `solution.tsx`, with its styles in `solution.css`. I couldn't run or render anything here, so none of it has been tested.\n\n- **Step 1, \"Your details\":** \"Full name\" and \"Email\" are both required. \"Continue\" shows \"Enter your name.\" for an empty name and \"Enter a valid email.\" for an email with no @. Each message appears under its field, and the flow stays on step 1 until both are fixed.\n- **Step 2, \"Your team\":** three radio options (Solo, Small crew (2 to 10), Large crew (11 or more)), with \"Back\" and \"Continue\".\n- **Step 3, \"Confirm\":** a summary of name, email and team, plus an \"I agree to the terms\" checkbox. \"Create account\" stays disabled until the box is ticked, then the page shows \"Account created.\"\n- **Step indicator:** every step shows \"Step"
+  }
+}

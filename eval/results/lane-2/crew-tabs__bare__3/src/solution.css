@@ -1,0 +1,95 @@
+.crew-page {
+  min-height: 100vh;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-24);
+  background: var(--page);
+  color: var(--text);
+  font-family: var(--font-sans);
+}
+.crew-card {
+  width: 100%;
+  max-width: 440px;
+  box-sizing: border-box;
+  background: var(--elevation-1-fill);
+  border: var(--elevation-1-border);
+  box-shadow: var(--shadow-lift);
+  border-radius: var(--radius-panel);
+  padding: var(--space-24);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-20);
+}
+.crew-name {
+  margin: 0;
+  font-size: var(--type-size-24);
+  line-height: var(--type-line-height-24);
+}
+.crew-role {
+  margin: var(--space-8) 0 0;
+  color: var(--text-muted);
+  font-size: var(--type-size-14);
+  line-height: var(--type-line-height-14);
+}
+.crew-tabs {
+  display: flex;
+  gap: var(--space-4);
+  border-bottom: var(--line-width) solid var(--line);
+}
+.crew-tab {
+  min-height: var(--hit-target-min);
+  padding: 0 var(--space-16);
+  background: none;
+  border: 0;
+  border-bottom: var(--ring-width) solid transparent;
+  margin-bottom: calc(var(--line-width) * -1);
+  color: var(--text-muted);
+  font: inherit;
+  font-size: var(--type-size-14);
+  cursor: pointer;
+}
+.crew-tab:hover { color: var(--text); }
+.crew-tab[aria-selected="true"] {
+  color: var(--text);
+  border-bottom-color: var(--accent);
+  font-weight: 600;
+}
+.crew-panel {
+  margin: 0;
+  font-size: var(--type-size-14);
+  line-height: var(--type-line-height-14);
+}
+.crew-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--space-12);
+  padding-top: var(--space-16);
+  border-top: var(--line-width) solid var(--line);
+}
+.crew-btn {
+  min-height: var(--hit-target-min);
+  padding: 0 var(--space-16);
+  border-radius: var(--radius-control);
+  font: inherit;
+  font-size: var(--type-size-14);
+  cursor: pointer;
+  border: var(--line-width) solid transparent;
+}
+.crew-btn--quiet {
+  background: transparent;
+  color: var(--text-muted);
+}
+.crew-btn--quiet:hover { color: var(--text); background: var(--layer-2); }
+.crew-btn--primary {
+  background: var(--accent);
+  color: var(--on-accent);
+  font-weight: 600;
+}
+.crew-btn--primary:hover { opacity: 0.9; }
+.crew-page :focus-visible {
+  outline: var(--ring-width) solid var(--accent);
+  outline-offset: 2px;
+}

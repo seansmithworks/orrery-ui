@@ -1,0 +1,57 @@
+{
+  "scenario": "profile-settings",
+  "condition": "bare",
+  "rep": 3,
+  "wallMs": 23022,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 22425,
+    "total_cost_usd": 0.0692124,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 8434,
+      "cache_read_input_tokens": 28004,
+      "output_tokens": 3266,
+      "output_tokens_details": {
+        "thinking_tokens": 68
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 8434,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 398,
+          "cache_read_input_tokens": 10858,
+          "cache_creation_input_tokens": 2857,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2857
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the profile settings form to `solution.tsx`, with its styles in `solution.css`. I haven't run or rendered either file, so none of it has been tested.\n\n- **Fields:** the form has a \"Display name\" text field with the hint \"Shown to your crew.\" and a \"Time zone\" select with the placeholder \"Choose a time zone\" and the options UTC, Berlin and Tokyo. It also has an \"Email me about new orbits\" switch and a primary \"Save profile\" submit button.\n- **Status text:** \"Profile saved.\" appears after you submit. It clears as soon as you change a field.\n- **Brand:** all colours, spacing, radii, type sizes and the 44px minimum touch target come from the `brand.css` variables, so it should follow orrery light, orrery dark and solar. The page sets its own background from `--page`, because the host a"
+  }
+}

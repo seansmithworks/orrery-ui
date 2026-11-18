@@ -1,0 +1,57 @@
+{
+  "scenario": "crew-roster",
+  "condition": "bare",
+  "rep": 1,
+  "wallMs": 27531,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 25328,
+    "total_cost_usd": 0.0871985,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 10805,
+      "cache_read_input_tokens": 26725,
+      "output_tokens": 4129,
+      "output_tokens_details": {
+        "thinking_tokens": 157
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10805,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 387,
+          "cache_read_input_tokens": 10838,
+          "cache_creation_input_tokens": 3774,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 3774
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew roster to `solution.tsx` and `solution.css`. I couldn't run code here, so none of it has been run or checked in a browser.\n\n- **Layout and filter:** There's a \"Crew\" heading and a \"Filter crew\" search field that narrows the list by name as you type. The list shows the five people with their roles.\n- **Actions:** Each row has a compact \"⋯\" button labelled \"Actions for <name>\". It opens a short list with Edit, Reassign and Remove. Escape or a click outside closes the list.\n- **Remove:** Choosing Remove takes that person off the list.\n- **Empty state:** When nobody matches, the page shows \"No crew match your filter.\" and a \"Clear filter\" button. The button empties the field and shows everyone again.\n- **Edit and Reassign:** These two only close the list and show a short statu"
+  }
+}

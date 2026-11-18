@@ -1,0 +1,57 @@
+{
+  "scenario": "onboarding",
+  "condition": "bare",
+  "rep": 3,
+  "wallMs": 30730,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 30081,
+    "total_cost_usd": 0.09362219999999999,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 10110,
+      "cache_read_input_tokens": 28662,
+      "output_tokens": 5030,
+      "output_tokens_details": {
+        "thinking_tokens": 314
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 10110,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 481,
+          "cache_read_input_tokens": 11093,
+          "cache_creation_input_tokens": 4440,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 4440
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the three-step sign-up flow to `solution.tsx`, with its styles in `solution.css`. I couldn't run it here, so none of it has been tested.\n\n- **Step indicator:** each step shows \"Step N of 3\", a progress bar and a heading. The heading takes focus when the step changes.\n- **Step 1, \"Your details\":**\n  - \"Full name\" and \"Email\" are both required.\n  - \"Continue\" shows \"Enter your name.\" or \"Enter a valid email.\" next to the field and blocks advancing until both are fixed.\n  - Focus moves to the first field with an error.\n- **Step 2, \"Your team\":**\n  - The three options are radio buttons, so exactly one can be chosen.\n  - \"Back\" and \"Continue\" are there.\n  - I added an error, \"Choose one option.\", if nothing is chosen. You didn't ask for that.\n- **Step 3, \"Confirm\":**\n  - It shows the na"
+  }
+}

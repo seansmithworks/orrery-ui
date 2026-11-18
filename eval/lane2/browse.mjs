@@ -65,6 +65,7 @@ async function shot(page, width, full) {
 // radios, menu items, options) are hit targets but not Tab stops; a native radio group counts as one Tab stop.
 const TAG_CANDIDATES = (scopeSel) => {
   const COMPOSITE = new Set(['tab', 'radio', 'menuitem', 'menuitemcheckbox', 'menuitemradio', 'option', 'treeitem', 'gridcell']);
+  const CONTROL_ROLES = new Set([...COMPOSITE, 'button', 'link', 'switch', 'checkbox', 'combobox', 'slider', 'spinbutton', 'textbox', 'searchbox']);
   const SEL = 'a[href],button,input:not([type=hidden]),select,textarea,summary,[tabindex],[contenteditable=true],[role=button],[role=link],[role=tab],[role=switch],[role=checkbox],[role=radio],[role=menuitem],[role=menuitemcheckbox],[role=menuitemradio],[role=option],[role=combobox],[role=slider],[role=spinbutton]';
   const roots = scopeSel ? [...document.querySelectorAll(scopeSel)] : [document];
   const els = [...new Set(roots.flatMap((r) => [...r.querySelectorAll(SEL)]))];
@@ -79,7 +80,9 @@ const TAG_CANDIDATES = (scopeSel) => {
     const role = el.getAttribute('role') ?? '';
     const ti = el.getAttribute('tabindex');
     const native = el.matches('a[href],button,input,select,textarea,summary');
-    const interactive = native || (role && role !== 'dialog' && role !== 'alertdialog' && role !== 'tabpanel' && role !== 'menu' && role !== 'listbox' && role !== 'group');
+    // Controls only. Containers such as a tablist or radiogroup can hold tabindex=0 and pass focus straight to their
+    // active item (Radix's roving focus); the item is the control, the container is not.
+    const interactive = native || CONTROL_ROLES.has(role) || el.isContentEditable;
     if (!interactive) continue;
     const roving = ti === '-1' && COMPOSITE.has(role);
     // Every other control should be a Tab stop, including a role="button" div that forgot its tabindex.
@@ -87,7 +90,7 @@ const TAG_CANDIDATES = (scopeSel) => {
     if (!el.dataset.l2) el.dataset.l2 = String(n++);
     // Tiny controls (a visually hidden input) show focus on their label or parent: measure that box instead.
     const box = r.width < 4 || r.height < 4 ? (el.closest('label') ?? el.parentElement).getBoundingClientRect() : r;
-    const name = (el.getAttribute('aria-label') || el.textContent || el.getAttribute('placeholder') || el.tagName).trim().slice(0, 40);
+    const name = (el.getAttribute('aria-label') || el.labels?.[0]?.textContent || el.textContent || el.closest('label')?.textContent || el.getAttribute('placeholder') || el.tagName).trim().slice(0, 40);
     out.push({
       id: el.dataset.l2, name, tabStop, tiny: r.width < 4 || r.height < 4, opacity: Number(st.opacity),
       group: el.matches('input[type=radio][name]') ? `radio:${el.name}` : el.dataset.l2,
@@ -177,8 +180,9 @@ const HIT_TEST = ([ids, min]) => ids.map((id) => {
   if (!el) return { id, ok: true, skipped: true };
   el.scrollIntoView({ block: 'center', inline: 'center' });
   const r = el.getBoundingClientRect();
-  const cx = r.left + r.width / 2, cy = r.top + r.height / 2, h = min / 2 - 1;
-  const pts = [[0, 0], [-h, -h], [0, -h], [h, -h], [-h, 0], [h, 0], [-h, h], [0, h], [h, h]];
+  // Edge midpoints 1px inside the square; corners 7px inside, so a rounded control (up to a full 44px circle) still passes.
+  const cx = r.left + r.width / 2, cy = r.top + r.height / 2, h = min / 2 - 1, k = min / 2 - 7;
+  const pts = [[0, 0], [-k, -k], [0, -h], [k, -k], [-h, 0], [h, 0], [-k, k], [0, h], [k, k]];
   const owns = (t) => t && (el === t || el.contains(t) || (t.closest('label') && (t.closest('label').control === el || t.closest('label').contains(el))));
   const miss = pts.filter(([dx, dy]) => !owns(document.elementFromPoint(cx + dx, cy + dy))).length;
   return { id, ok: miss === 0, w: Math.round(r.width), h: Math.round(r.height) };

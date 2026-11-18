@@ -20,6 +20,8 @@
   --color-muted-foreground: var(--text-muted);
   --color-accent: var(--layer-2);
   --color-accent-foreground: var(--text);
+  /* The brands have no danger hue, so destructive is the accent; the destructive button and badge pair it with
+     primary-foreground (stock shadcn pairs it with white, which fails contrast wherever the accent is light). */
   --color-destructive: var(--accent);
   --color-border: var(--line);
   --color-input: var(--line-strong);

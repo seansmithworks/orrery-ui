@@ -1,0 +1,57 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "bare",
+  "rep": 3,
+  "wallMs": 18886,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 5,
+    "duration_ms": 17997,
+    "total_cost_usd": 0.057607000000000005,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 7572,
+      "cache_read_input_tokens": 27830,
+      "output_tokens": 2452,
+      "output_tokens_details": {
+        "thinking_tokens": 190
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 7572,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 361,
+          "cache_read_input_tokens": 10718,
+          "cache_creation_input_tokens": 2126,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2126
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `solution.tsx`, with its styles in `solution.css`. I couldn't run any code, so none of it has been tested.\n\n- **Trigger:** a secondary \"Delete project\" button opens a native modal `<dialog>` titled \"Delete this project?\" with your description text.\n- **Actions:** \"Keep project\" closes the dialog. The primary \"Delete\" button closes it and shows \"Project deleted.\" in a `role=\"status\"` line on the page.\n- **Behaviour I added:** focus starts on \"Keep project\", the safe choice. Esc or a click on the backdrop also closes the dialog. Reopening the dialog clears the status text.\n- **Brand:** the colours, spacing, radii, type sizes and 44px minimum touch target all come from the `brand.css` variables, so it follows orrery light, orrery dark and solar. I set the page background a"
+  }
+}

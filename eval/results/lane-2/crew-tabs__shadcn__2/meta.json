@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "shadcn",
+  "rep": 2,
+  "wallMs": 18342,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 24,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 7,
+    "duration_ms": 17286,
+    "total_cost_usd": 0.047142800000000006,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 5872,
+      "cache_read_input_tokens": 37848,
+      "output_tokens": 1985,
+      "output_tokens_details": {
+        "thinking_tokens": 73
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 5872,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 336,
+          "cache_read_input_tokens": 10716,
+          "cache_creation_input_tokens": 453,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 453
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew card to `./solution.tsx`. I haven't run or rendered it, so it's untested.\n\n- **Header:** \"Ada Okafor\" is the card title, marked as a level-1 heading. \"Flight engineer, Orbit 7\" sits below it as the description.\n- **Tabs:** Overview, Passes and History, with Overview selected first. Each tab shows the text you gave.\n- **Footer:** \"Remove from crew\" is a ghost (quiet) button, and \"Save changes\" is the default primary button. They sit at opposite ends of the footer.\n- **Brand:** the page only uses the theme colour classes, such as `bg-background` and `text-foreground`. It should follow whichever of the three brands is active. I added a full-height `<main>` with its own background and padding, because the host page doesn't provide any.\n\nI read `WORKSPACE.md` and the tabs, card"
+  }
+}

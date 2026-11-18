@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "orrery",
+  "rep": 1,
+  "wallMs": 18854,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 8,
+    "duration_ms": 17841,
+    "total_cost_usd": 0.1760157,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 36977,
+      "cache_read_input_tokens": 95777,
+      "output_tokens": 1851,
+      "output_tokens_details": {
+        "thinking_tokens": 44
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 36977,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 250,
+          "cache_read_input_tokens": 40857,
+          "cache_creation_input_tokens": 913,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 913
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the card to `./solution.tsx`. I haven't run or rendered it, since I can't run code here.\n\n- **Card:** the card is an `<article>` named by its heading, \"Ada Okafor\". The line \"Flight engineer, Orbit 7\" sits under the heading in muted text.\n- **Tabs:** Overview, Passes and History sit in the card body. Overview is selected first, and each tab shows the text you gave it. The tab list is named by the heading.\n- **Footer:** the quiet \"Remove from crew\" button and the primary \"Save changes\" button sit in the card footer.\n- **Brands:** it uses only kit components and colour variables, so it should follow whichever brand is active.\n\nI based the layout on the kit's own Card and Tabs examples."
+  }
+}

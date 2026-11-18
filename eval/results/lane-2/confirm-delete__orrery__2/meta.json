@@ -1,0 +1,56 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "orrery",
+  "rep": 2,
+  "wallMs": 15087,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 14289,
+    "total_cost_usd": 0.15703840000000002,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 33745,
+      "cache_read_input_tokens": 55324,
+      "output_tokens": 1651,
+      "output_tokens_details": {
+        "thinking_tokens": 95
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 33745,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 380,
+          "cache_read_input_tokens": 38150,
+          "cache_creation_input_tokens": 867,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 867
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal.\n- **Dialog:** it's titled \"Delete this project?\" and has the description you gave.\n- **Actions:** \"Keep project\" is a secondary button that closes the dialog. \"Delete\" is the primary button; it closes the dialog and sets the status text \"Project deleted.\" on the page.\n- **Status text:** it sits in a `role=\"status\"` element beside the trigger, so screen readers announce it.\n- **Kit and brands:** the dialog is built from the kit's `Dialog` parts, so focus trapping, Escape to close and returning focus to the trigger come from the kit. Spacing and colours use token variables (`--space-*`, `--page`, `--text`), so the page follows the active brand.\n\nI on"
+  }
+}

@@ -1,0 +1,57 @@
+{
+  "scenario": "profile-settings",
+  "condition": "bare",
+  "rep": 1,
+  "wallMs": 23054,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 4,
+  "written": [
+    "solution.css",
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 6,
+    "duration_ms": 22184,
+    "total_cost_usd": 0.07057739999999998,
+    "usage": {
+      "input_tokens": 8,
+      "cache_creation_input_tokens": 8528,
+      "cache_read_input_tokens": 28094,
+      "output_tokens": 3364,
+      "output_tokens_details": {
+        "thinking_tokens": 64
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 8528,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 397,
+          "cache_read_input_tokens": 10951,
+          "cache_creation_input_tokens": 2858,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2858
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the profile settings form to `solution.tsx`, with its styles in `solution.css` next to it. I couldn't run it, so it hasn't been rendered or tested in any of the three brands.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\" linked to it for screen readers.\n- **Time zone:** a native select with the placeholder \"Choose a time zone\" and the options UTC, Berlin and Tokyo. The select is required, so the browser won't submit the form until you pick a time zone.\n- **Email me about new orbits:** a switch with the label wired to it.\n- **Save profile:** a primary submit button. On submit, \"Profile saved.\" appears in a status area. The message clears as soon as you change any field.\n- **Saving:** nothing is sent anywhere. Submitting only shows the status text, and the for"
+  }
+}
