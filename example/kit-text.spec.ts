@@ -381,6 +381,8 @@ test.describe("detectors", () => {
 for (const target of TARGETS) {
   for (const width of WIDTHS) {
     test.describe(`${target.name} at ${width}`, () => {
+      // The specimen's hit-area pass probes about 400 elements; it takes 13s on a Mac and passed 30s on CI's runner.
+      test.describe.configure({ timeout: 120_000 });
       test.use({ viewport: { width, height: 900 } });
       test.beforeEach(({ page }) => target.open(page));
 
