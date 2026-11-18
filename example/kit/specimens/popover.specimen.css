@@ -1,0 +1,30 @@
+/* Popover block layout only. Tokens, never literals. */
+
+.spec-popover-wide {
+  grid-column: 1 / -1;
+}
+
+/* The open state's frame (../held-open-frame.tsx). Its document is the popup's viewport, so the
+   held-open panel sits under its trigger inside the frame. The frame's padding is the padding of
+   the frame document's body. */
+.spec-popover-frame {
+  min-height: calc(var(--space-72) * 4);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+.spec-popover-frame__body {
+  padding: var(--space-16);
+}
+
+/* UI SDK places a popup against its document's viewport and writes top and left from the text-sized
+   boxes it measures. The picture pins only the placement: the panel's box starts the kit's offset
+   under the trigger (the frame's padding, the trigger, the offset), at the frame's padding. The
+   panel's drawing, width and contents all come from the kit's rules. popover.kit.spec.ts checks the
+   real placement and offset on the live panel. */
+.spec-popover-frame__body .orr-popover {
+  top: calc(
+    var(--space-16) + var(--hit-target-min) + var(--orr-popover-offset)
+  ) !important;
+  left: var(--space-16) !important;
+}

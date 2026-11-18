@@ -54,6 +54,14 @@
   }
 }
 
+/* kit/popover/popover.css */
+@layer orrery.kit {
+  .orr-popover[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}
+
 /* kit/checkbox/checkbox.css */
 @layer orrery.kit {
   @media (hover: hover) {
@@ -62,6 +70,19 @@
     }
   }
   .orr-checkbox[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}
+
+/* kit/radio/radio.css */
+@layer orrery.kit {
+  @media (hover: hover) {
+    .orr-radio:not([data-disabled])[data-preview~="hover"] {
+      border-color: var(--text);
+    }
+  }
+  .orr-radio[data-preview~="focus"] {
     outline: var(--ring-width) solid var(--accent);
     outline-offset: var(--ring-width);
   }

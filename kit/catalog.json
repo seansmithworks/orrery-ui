@@ -1120,6 +1120,334 @@
         "code": "// Golden example: the actions on a star chart. The trigger's text names the menu. Plain items run\n// through the Root's onAction (the status line reads the last one); the checkbox items and the radio\n// group stay open so several settings change in one visit, and report through their own change\n// handlers. Zoom is a submenu. Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Menu } from \"../index\";\n\nexport default function ChartMenu() {\n  const [last, setLast] = useState(\"Nothing yet.\");\n  const [grid, setGrid] = useState(true);\n  const [labels, setLabels] = useState(false);\n  const [projection, setProjection] = useState(\"polar\");\n\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        alignItems: \"center\",\n        gap: \"var(--space-12)\",\n      }}\n    >\n      <Menu.Root onAction={(value) => setLast(`Ran ${value}.`)}>\n        <Menu.Trigger>Chart</Menu.Trigger>\n        <Menu.Popup>\n          <Menu.Item value=\"rename\">Rename</Menu.Item>\n          <Menu.Item value=\"duplicate\" shortcut=\"mod+d\">\n            Duplicate\n          </Menu.Item>\n          <Menu.Item value=\"export\" disabled>\n            Export as image\n          </Menu.Item>\n          <Menu.Separator />\n          <Menu.Group>\n            <Menu.GroupLabel>Show</Menu.GroupLabel>\n            <Menu.CheckboxItem\n              value=\"grid\"\n              checked={grid}\n              onCheckedChange={setGrid}\n            >\n              Grid\n            </Menu.CheckboxItem>\n            <Menu.CheckboxItem\n              value=\"labels\"\n              checked={labels}\n              onCheckedChange={setLabels}\n            >\n              Body labels\n            </Menu.CheckboxItem>\n          </Menu.Group>\n          <Menu.Separator />\n          <Menu.RadioGroup\n            value={projection}\n            onValueChange={setProjection}\n            aria-label=\"Projection\"\n          >\n            <Menu.GroupLabel>Projection</Menu.GroupLabel>\n            <Menu.RadioItem value=\"polar\">Polar</Menu.RadioItem>\n            <Menu.RadioItem value=\"flat\">Flat</Menu.RadioItem>\n          </Menu.RadioGroup>\n          <Menu.Separator />\n          <Menu.Sub>\n            <Menu.SubTrigger>Zoom</Menu.SubTrigger>\n            <Menu.SubPopup>\n              <Menu.Item value=\"zoom-in\">Zoom in</Menu.Item>\n              <Menu.Item value=\"zoom-out\">Zoom out</Menu.Item>\n            </Menu.SubPopup>\n          </Menu.Sub>\n        </Menu.Popup>\n      </Menu.Root>\n      <span role=\"status\">\n        {last} Grid {grid ? \"on\" : \"off\"}, labels {labels ? \"on\" : \"off\"},{\" \"}\n        {projection}.\n      </span>\n    </div>\n  );\n}\n"
       }
     },
+    "Popover": {
+      "description": "A popover on UI SDK: a small panel beside its trigger; Escape and an outside press close it, and focus returns to the trigger.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@ui-sdk/react/popover#Popover",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "open": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "defaultOpen": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Opens the popover on first render when the state is not controlled."
+              },
+              "onOpenChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the next open state whenever the popover asks to open or close."
+              },
+              "modal": {
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "trap-focus"
+                    ]
+                  }
+                ],
+                "x-from": "ui-sdk",
+                "description": "false: the page stays usable. true: focus is trapped, scroll locked and the page inert. Default false."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The button that opens the popover; it renders a kit Button.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/popover#PopoverTrigger",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "quiet"
+                ],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": [
+                  "s",
+                  "m"
+                ],
+                "description": "The Button size; unset, it is the Button default, m."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "The panel, in the browser's top layer while open; it opens below the trigger and flips when there is no room.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/popover#PopoverContent",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the panel mounts into instead of in place. It still opens in the top layer."
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "top",
+                  "bottom",
+                  "left",
+                  "right",
+                  "start",
+                  "end"
+                ],
+                "description": "The trigger's side the panel opens on; unset, bottom. It flips when there is no room."
+              },
+              "align": {
+                "type": "string",
+                "enum": [
+                  "start",
+                  "center",
+                  "end"
+                ],
+                "description": "The panel's alignment along that side; unset, center."
+              },
+              "sideOffset": {
+                "type": "number",
+                "description": "Extra px on top of the kit's CSS offset between the trigger and the panel."
+              },
+              "collisionPadding": {
+                "type": "number",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the panel keeps from the window's edges, the Dialog's gutter."
+              }
+            },
+            "required": []
+          }
+        },
+        "Title": {
+          "description": "The heading that names the popover; UI SDK points the panel's aria-labelledby at it.",
+          "inside": "Popup",
+          "passthrough": "@ui-sdk/react/popover#PopoverTitle",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Description": {
+          "description": "The supporting text; UI SDK points the panel's aria-describedby at it.",
+          "inside": "Popup",
+          "passthrough": "@ui-sdk/react/popover#PopoverDescription",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {},
+            "required": []
+          }
+        },
+        "Close": {
+          "description": "A button that closes the popover; it renders a kit Button unless render gives another element.",
+          "inside": "Popup",
+          "passthrough": "@ui-sdk/react/popover#PopoverClose",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "quiet"
+                ],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": [
+                  "s",
+                  "m"
+                ],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "render": {
+                "x-type": "element",
+                "x-from": "ui-sdk",
+                "description": "Another element to close with, in place of the kit Button."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root",
+        "Trigger",
+        "Popup",
+        "Title"
+      ],
+      "useWhen": [
+        "A small task or a few details beside the control that opens them: edit a note, share, set a filter.",
+        "The page behind should stay usable while it is open."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The person must answer before going on.",
+          "instead": "Dialog"
+        },
+        {
+          "text": "A short label that names or hints at a control; it holds nothing to press.",
+          "instead": "Tooltip"
+        },
+        {
+          "text": "A list of options to choose one from.",
+          "instead": "Select"
+        }
+      ],
+      "a11y": [
+        "Give every Popover.Popup a Popover.Title; it is the panel's accessible name.",
+        "Offer a visible way out: a Popover.Close inside the panel.",
+        "The Trigger needs a visible name or an aria-label; the panel does not name it."
+      ],
+      "example": {
+        "file": "kit/popover/Popover.example.tsx",
+        "code": "// Golden example: share a chart. The panel holds one short task beside its trigger: a title that names it,\n// a line of context and a way out. Focus moves into the panel on open and returns to Share on close.\n// Spacing is token variables only.\nimport { Popover } from \"../index\";\n\nexport default function ShareChart() {\n  return (\n    <div\n      style={{\n        display: \"flex\",\n        alignItems: \"center\",\n        gap: \"var(--space-12)\",\n      }}\n    >\n      <span>Orbit of Kepler</span>\n      <Popover.Root>\n        <Popover.Trigger variant=\"secondary\">Share</Popover.Trigger>\n        <Popover.Popup>\n          <Popover.Title>Share this chart</Popover.Title>\n          <Popover.Description>\n            Anyone with the link can view it. They cannot edit it.\n          </Popover.Description>\n          <Popover.Close variant=\"primary\">Done</Popover.Close>\n        </Popover.Popup>\n      </Popover.Root>\n    </div>\n  );\n}\n"
+      }
+    },
+    "Radio": {
+      "description": "Radio on UI SDK: a group of single-choice options, moved through with the arrow keys, one tab stop for the group.",
+      "parts": {
+        "Group": {
+          "description": "Holds the chosen value and groups the options, in one column, named by its Field.Root label.",
+          "passthrough": "@ui-sdk/react/radio#RadioGroup",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The chosen option's value, when you control it; pair with onValueChange. Use defaultValue otherwise."
+              },
+              "defaultValue": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The option chosen first, when it manages its own state. Unset, none is chosen and Tab enters on the first option."
+              },
+              "onValueChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the newly chosen option's value."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Blocks every option, removes them from the tab order and submits nothing."
+              },
+              "required": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "A form submit with nothing chosen is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
+              },
+              "name": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The name the chosen value is submitted under. Without it the group submits nothing."
+              }
+            },
+            "required": []
+          }
+        },
+        "Item": {
+          "description": "One option: a ring that holds a dot while it is chosen, with its text as the label, so a press on the text chooses it.",
+          "inside": "Group",
+          "passthrough": "@ui-sdk/react/radio#Radio",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "Names the option; the group's value is the chosen option's value."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Blocks choosing this option and skips it in the arrow keys, and mutes its label."
+              }
+            },
+            "required": [
+              "value"
+            ]
+          }
+        }
+      },
+      "requiredParts": [
+        "Group",
+        "Item"
+      ],
+      "useWhen": [
+        "Exactly one of two to five options must be picked, and all of them are worth seeing at once: alert channel, plan.",
+        "A choice that takes effect when the form is sent, not the moment it is pressed."
+      ],
+      "avoidWhen": [
+        {
+          "text": "Several options may be picked.",
+          "instead": "Checkbox"
+        },
+        {
+          "text": "The list is long, or space is tight.",
+          "instead": "Select"
+        },
+        {
+          "text": "The choice switches a view and shows its content.",
+          "instead": "Tabs"
+        }
+      ],
+      "a11y": [
+        "Wrap the group in a Field.Root with a Field.Label that names it; without one, give Radio.Group an aria-label.",
+        "Put each option's text in the Radio.Item, as its children: it names the radio and a press on it chooses.",
+        "For a required choice, set required and name on Radio.Group, with Field.Error match=\"valueMissing\" beside it."
+      ],
+      "example": {
+        "file": "kit/radio/Radio.example.tsx",
+        "code": "// Golden example: choose how an orbit's alerts arrive. One required choice among three, the group named by its\n// label and described by its hint. The form checks itself on submit (reportValidity): UI SDK's Field turns a\n// missing choice into the valueMissing error under the group, and the submit goes no further. Spacing is token\n// variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Radio } from \"../index\";\n\nexport default function ChooseAlertChannel() {\n  const [saved, setSaved] = useState(\"\");\n\n  function submit(event: FormEvent<HTMLFormElement>) {\n    event.preventDefault();\n    if (!event.currentTarget.reportValidity()) return;\n    const channel = new FormData(event.currentTarget).get(\"channel\");\n    setSaved(`Alerts by ${channel}.`);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>Alerts for Orbit 7</Field.Label>\n        <Field.Description>\n          Close passes and eclipses are always included.\n        </Field.Description>\n        <Radio.Group name=\"channel\" required>\n          <Radio.Item value=\"email\">Email</Radio.Item>\n          <Radio.Item value=\"sms\">Text message</Radio.Item>\n          <Radio.Item value=\"none\">Do not alert me</Radio.Item>\n        </Radio.Group>\n        <Field.Error match=\"valueMissing\">\n          Choose how to receive alerts.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Save alerts\n        </Button>\n        <span role=\"status\">{saved}</span>\n      </div>\n    </form>\n  );\n}\n"
+      }
+    },
     "Select": {
       "description": "A select on UI SDK: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
       "parts": {
@@ -1611,6 +1939,175 @@
       "example": {
         "file": "kit/textarea/Textarea.example.tsx",
         "code": "// Golden example: a note on a support request. The note explains what helps up front and says what to fix\n// in words when it is empty. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Textarea } from \"../index\";\n\nexport default function SupportNote() {\n  const [note, setNote] = useState(\"\");\n  const [error, setError] = useState<string | null>(null);\n  const [sent, setSent] = useState(false);\n\n  function submit(event: FormEvent) {\n    event.preventDefault();\n    const problem = note.trim()\n      ? null\n      : \"Write a few words about what went wrong.\";\n    setError(problem);\n    setSent(!problem);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"note\" invalid={error !== null}>\n        <Field.Label>What happened</Field.Label>\n        <Textarea\n          rows={4}\n          value={note}\n          onValueChange={(value) => {\n            setNote(value);\n            setSent(false);\n          }}\n        />\n        <Field.Description>\n          Say what you clicked and what you expected. We read every note.\n        </Field.Description>\n        <Field.Error match={error !== null}>{error}</Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Send note\n        </Button>\n        <span role=\"status\">{sent ? \"Note sent.\" : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
+      }
+    },
+    "Tooltip": {
+      "description": "A tooltip on UI SDK: a short label on hover or focus; it names or describes its trigger, and Escape closes it.",
+      "parts": {
+        "Root": {
+          "description": "Holds the open state and the delays; it renders no element of its own.",
+          "className": false,
+          "passthrough": "@ui-sdk/react/tooltip#Tooltip",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "enum": [
+                  "label",
+                  "description"
+                ],
+                "description": "label: the tooltip names its trigger. description: it adds a hint. Unset, it names a trigger with no name of its own."
+              },
+              "delay": {
+                "type": "number",
+                "x-from": "ui-sdk",
+                "description": "Milliseconds the pointer rests on the trigger before the tooltip opens; UI SDK's default is 600."
+              },
+              "closeDelay": {
+                "type": "number",
+                "x-from": "ui-sdk",
+                "description": "Milliseconds before it closes once the pointer leaves; UI SDK's default is 0."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Stops the tooltip from opening; the trigger keeps working."
+              },
+              "open": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Controls the open state; pair it with onOpenChange."
+              },
+              "onOpenChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the next open state whenever the tooltip asks to open or close."
+              }
+            },
+            "required": []
+          }
+        },
+        "Trigger": {
+          "description": "The element the tooltip names or describes; it renders a kit Button unless render gives another element.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/tooltip#TooltipTrigger",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "variant": {
+                "type": "string",
+                "enum": [
+                  "primary",
+                  "secondary",
+                  "quiet"
+                ],
+                "description": "The Button variant; unset, it is the Button default, secondary."
+              },
+              "size": {
+                "type": "string",
+                "enum": [
+                  "s",
+                  "m"
+                ],
+                "description": "The Button size; unset, it is the Button default, m."
+              },
+              "render": {
+                "x-type": "element",
+                "x-from": "ui-sdk",
+                "description": "Another element to trigger with, in place of the kit Button, such as an IconButton."
+              }
+            },
+            "required": []
+          }
+        },
+        "Popup": {
+          "description": "The label, in the browser's top layer while open; it opens above the trigger and flips when there is no room.",
+          "inside": "Root",
+          "passthrough": "@ui-sdk/react/tooltip#TooltipContent",
+          "slots": [
+            "default"
+          ],
+          "props": {
+            "type": "object",
+            "properties": {
+              "container": {
+                "x-type": "object",
+                "description": "The element, or a ref to it, the label mounts into instead of in place. It still opens in the top layer."
+              },
+              "side": {
+                "type": "string",
+                "enum": [
+                  "top",
+                  "bottom",
+                  "left",
+                  "right",
+                  "start",
+                  "end"
+                ],
+                "description": "The trigger's side the label opens on; unset, top. It flips when there is no room."
+              },
+              "align": {
+                "type": "string",
+                "enum": [
+                  "start",
+                  "center",
+                  "end"
+                ],
+                "description": "The label's alignment along that side; unset, center."
+              },
+              "sideOffset": {
+                "type": "number",
+                "description": "Extra px on top of the kit's CSS offset between the trigger and the label."
+              },
+              "collisionPadding": {
+                "type": "number",
+                "default": 8,
+                "description": "Kit-set: the 8px gap the label keeps from the window's edges, the Dialog's gutter."
+              },
+              "children": {
+                "type": "string",
+                "description": "The label: short plain text. Never a link or a button; the label cannot take focus."
+              }
+            },
+            "required": []
+          }
+        }
+      },
+      "requiredParts": [
+        "Root",
+        "Trigger",
+        "Popup"
+      ],
+      "useWhen": [
+        "A short label for a control that shows only an icon.",
+        "A one-line hint on a control that has a visible name."
+      ],
+      "avoidWhen": [
+        {
+          "text": "The content has a link, a button or more than a sentence.",
+          "instead": "Popover"
+        },
+        {
+          "text": "The message matters on touch screens, which have no hover.",
+          "instead": "p"
+        }
+      ],
+      "a11y": [
+        "Keep the label to plain text; a tooltip cannot take focus.",
+        "Put nothing in a tooltip that a touch user needs: a plain tap only presses the trigger.",
+        "On an icon-only trigger, set the Root's type to label so the tooltip is its name."
+      ],
+      "example": {
+        "file": "kit/tooltip/Tooltip.example.tsx",
+        "code": "// Golden example: a chart toolbar. The icon button has no visible text, so its tooltip is its name\n// (type=\"label\"); the Export button has text, so its tooltip only adds a hint. Spacing is token variables only.\nimport { IconButton, Tooltip } from \"../index\";\n\nfunction SaveGlyph() {\n  return (\n    <svg\n      viewBox=\"0 0 20 20\"\n      width=\"20\"\n      height=\"20\"\n      fill=\"none\"\n      stroke=\"currentColor\"\n      strokeWidth={1.5}\n      strokeLinecap=\"round\"\n      strokeLinejoin=\"round\"\n      aria-hidden=\"true\"\n    >\n      <path d=\"M4 4h9l3 3v9H4zM7 4v4h5V4M7 16v-5h6v5\" />\n    </svg>\n  );\n}\n\nexport default function ChartToolbar() {\n  return (\n    <div\n      role=\"toolbar\"\n      aria-label=\"Chart\"\n      style={{\n        display: \"flex\",\n        alignItems: \"center\",\n        gap: \"var(--space-12)\",\n      }}\n    >\n      <Tooltip.Root type=\"label\">\n        <Tooltip.Trigger\n          render={\n            <IconButton aria-label=\"Save chart\" variant=\"quiet\">\n              <SaveGlyph />\n            </IconButton>\n          }\n        />\n        <Tooltip.Popup>Save chart</Tooltip.Popup>\n      </Tooltip.Root>\n      <Tooltip.Root>\n        <Tooltip.Trigger variant=\"secondary\">Export</Tooltip.Trigger>\n        <Tooltip.Popup>Downloads the chart as an SVG file.</Tooltip.Popup>\n      </Tooltip.Root>\n    </div>\n  );\n}\n"
       }
     }
   }
