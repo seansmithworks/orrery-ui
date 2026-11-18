@@ -53,6 +53,7 @@
   @media (any-pointer: coarse) {
     .orr-input {
       font-size: var(--type-size-16);
+      line-height: var(--type-line-height-16);
     }
   }
   .orr-input::placeholder {

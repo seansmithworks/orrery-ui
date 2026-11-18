@@ -16,9 +16,9 @@
 
 @layer orrery.kit {
   .orr-control {
-    /* The selected colours. Pending Sean's decision on the selected colour; the accent stays reserved for focus
-       rings (DESIGN.md, Visual Theme). Declared on the control, not :root, so var(--text) and var(--page) resolve
-       in the brand scope the control sits in. */
+    /* The selected colours: text with a page-colour mark. The accent marks only the focus ring and the primary
+       button fill (DESIGN.md, Foundations, Colour). Declared on the control, not :root, so var(--text) and
+       var(--page) resolve in the brand scope the control sits in. */
     --orr-selected-fill: var(--text);
     --orr-selected-mark: var(--page);
   }

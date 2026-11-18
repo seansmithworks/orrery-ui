@@ -1,0 +1,36 @@
+/* Kit text defaults (DESIGN.md, Foundations, Type). Every selector sits inside :where(), so it has zero
+   specificity, and the file sits in @layer orrery.kit, so any rule of an app wins, a bare element selector
+   included. No global measure: a page caps its own prose at --layout-measure.
+
+   The wrap styles are the longhand text-wrap-style, never the text-wrap shorthand: the shorthand also resets
+   text-wrap-mode to wrap, which would undo a nowrap the element inherits.
+
+   A Field.Label that holds a control (a checkbox or switch row) is option text, not a field label: it wraps,
+   with the control centred on its first line (control.css), so it is left out of the one-line rule. */
+
+@layer orrery.kit {
+  /* Headings and dialog titles: balanced lines, so no line holds a lone word. Card titles are the heading
+     element a Card.Header holds. */
+  :where(h1, h2, h3, h4, h5, h6, .orr-dialog__title) {
+    text-wrap-style: balance;
+  }
+
+  /* Paragraphs and list items: no lone word on the last line. */
+  :where(p, li) {
+    text-wrap-style: pretty;
+  }
+
+  /* Labels are one line: tab labels, field labels and select values never wrap. */
+  :where(
+    .orr-tabs__tab,
+    .orr-field__label:not(:has(> .orr-control)),
+    .orr-select__value
+  ) {
+    white-space: nowrap;
+  }
+
+  /* Numbers that line up. */
+  :where(table, time, data) {
+    font-variant-numeric: tabular-nums;
+  }
+}

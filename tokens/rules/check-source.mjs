@@ -314,6 +314,73 @@ function controlMinSize(file, text) {
   return out;
 }
 
+// ---- Type. DESIGN.md, Foundations, Type: two font tokens, sizes a type role uses, each with its own line height.
+const CSS_WIDE = new Set(['inherit', 'initial', 'unset', 'revert', 'revert-layer']);
+const isCssWide = (v) => CSS_WIDE.has(v.trim().toLowerCase());
+// Font token names (font-sans, font-mono), read from the committed token output so this rule never keeps its own copy.
+const fontTokens = () => new Set([...fs.readFileSync(path.join(REPO, 'tokens/generated/css/orrery.css'), 'utf8').matchAll(/^\s*--(font-[\w-]+):/gm)].map((m) => m[1]));
+// The type steps the roles use (title 44, lead 25, ... data 12-5), read from each role's fontSize in the token source.
+function roleSteps() {
+  const doc = JSON.parse(fs.readFileSync(path.join(REPO, 'tokens/base/roles.tokens.json'), 'utf8'));
+  const steps = new Set();
+  for (const [g, group] of Object.entries(doc.type ?? {})) {
+    if (g.startsWith('$')) continue;
+    for (const [k, role] of Object.entries(group)) {
+      const m = !k.startsWith('$') && /^\{type\.size\.([\w-]+)\}$/.exec(role?.$value?.fontSize ?? '');
+      if (m) steps.add(m[1]);
+    }
+  }
+  return steps;
+}
+const SIZE_VAR = /^var\(\s*--type-size-([\w-]+)\s*\)$/;
+const LINE_VAR = /^var\(\s*--type-line-height-([\w-]+)\s*\)$/;
+
+function fontFamilyToken(file, text) {
+  const fonts = fontTokens(), out = [];
+  const tokens = [...fonts].map((f) => `var(--${f})`).join(' or ');
+  for (const d of cssDecls(text)) {
+    const v = d.value.trim();
+    if (d.prop === 'font' && !isCssWide(v)) out.push({ line: d.line, message: `font: ${v}: the font shorthand sets a family and a size by hand; use font-family: ${tokens} and a type size with its line height` });
+    if (d.prop !== 'font-family' || isCssWide(v)) continue;
+    const m = /^var\(\s*--([\w-]+)\s*\)$/.exec(v);
+    if (m && fonts.has(m[1])) continue;
+    out.push({ line: d.line, message: m ? `font-family: ${v}: --${m[1]} is not a font token; use ${tokens}` : `font-family: ${v}: use ${tokens}, never a named face, a generic family, a literal stack or a fallback` });
+  }
+  return out;
+}
+
+function typeRoleSize(file, text) {
+  const steps = roleSteps(), out = [];
+  const list = [...steps].sort((a, b) => parseFloat(a.replace('-', '.')) - parseFloat(b.replace('-', '.'))).join(', ');
+  for (const d of cssDecls(text)) {
+    const v = d.value.trim();
+    if (d.prop !== 'font-size' || isCssWide(v)) continue;
+    const m = SIZE_VAR.exec(v);
+    if (!m) out.push({ line: d.line, message: `font-size: ${v}: pick a type role's size, var(--type-size-<step>) for a step a role uses (${list})` });
+    else if (!steps.has(m[1])) out.push({ line: d.line, message: `font-size: ${v}: no type role uses step ${m[1]}; components use only the role steps (${list})` });
+  }
+  return out;
+}
+
+function typeLineHeightPair(file, text) {
+  const out = [];
+  for (const rule of parseCss(text)) {
+    const sizes = rule.decls.filter((d) => d.prop === 'font-size' && !isCssWide(d.value));
+    const lines = rule.decls.filter((d) => d.prop === 'line-height' && !isCssWide(d.value));
+    const sizeSteps = sizes.map((d) => SIZE_VAR.exec(d.value.trim())?.[1]).filter(Boolean);
+    for (const d of sizes) {
+      const step = SIZE_VAR.exec(d.value.trim())?.[1];
+      if (step && !lines.some((l) => LINE_VAR.exec(l.value.trim())?.[1] === step)) out.push({ line: d.line, message: `font-size: var(--type-size-${step}) in ${rule.selector} has no line-height: var(--type-line-height-${step}) beside it in the same rule` });
+    }
+    for (const d of lines) {
+      const step = LINE_VAR.exec(d.value.trim())?.[1];
+      if (!step) out.push({ line: d.line, message: `line-height: ${d.value.trim()} in ${rule.selector} is set by hand; use var(--type-line-height-<step>) beside the matching var(--type-size-<step>)` });
+      else if (!sizeSteps.includes(step)) out.push({ line: d.line, message: `line-height: var(--type-line-height-${step}) in ${rule.selector} has no font-size: var(--type-size-${step}) beside it in the same rule` });
+    }
+  }
+  return out;
+}
+
 // Em dash, U+2014. The Artifact checker has no em dash rule in code (artifact/SKILL.md lists none either), so this is the only definition:
 // the character, its HTML entities and its escapes, anywhere outside a comment.
 const EM_DASH = /—|&mdash;|&#0*8212;|&#x0*2014;|\\u\{?0*2014\}?|\\0*2014(?![0-9a-fA-F])/gi;
@@ -370,6 +437,9 @@ export const CHECKS = {
   'control-min-size': { exts: CSS_EXT, run: controlMinSize },
   'inline-style-literal': { exts: ['.tsx', '.jsx'], run: inlineStyle },
   'em-dash': { exts: [...CSS_EXT, ...JS_EXT, ...HTML_EXT], run: emDash },
+  'font-family-token': { exts: CSS_EXT, run: fontFamilyToken },
+  'type-role-size': { exts: CSS_EXT, run: typeRoleSize },
+  'type-line-height-pair': { exts: CSS_EXT, run: typeLineHeightPair },
 };
 
 /**

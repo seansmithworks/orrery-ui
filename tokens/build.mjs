@@ -9,7 +9,7 @@ import { REPO, TOKENS, loadBrand, brandOverlay } from './lib/source.mjs';
 import { contract, css, swift } from './lib/emit.mjs';
 import { resolve } from './lib/resolve.mjs';
 import { colorGate } from './lib/gates.mjs';
-import { systemGate, systemCss, systemSwift, motionModule } from './lib/system.mjs';
+import { systemGate, neutralGate, systemCss, systemSwift, motionModule } from './lib/system.mjs';
 import { checker } from './lib/checks.mjs';
 import { irisBridgeGate, irisBridgeCss } from './lib/bridge.mjs';
 
@@ -69,6 +69,8 @@ async function build(brand, overlay) {
     m.tokens = await resolve(brand, m);
     bad.push(...colorGate(m.tokens, `brand ${b.name}, mode ${m.id}`), ...checks.contrast(b, m));
     bad.push(...systemGate(m.tokens, m.doc, `brand ${b.name}, mode ${m.id}`));
+    // Brand orrery itself, not a client brand layered on it (overlay) and not another brand folder.
+    if (!overlay && brand === 'orrery') bad.push(...neutralGate(m.tokens, `brand ${b.name}, mode ${m.id}`));
   }
   if (bad.length) {
     console.error(bad.join('\n'));

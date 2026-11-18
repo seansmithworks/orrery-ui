@@ -4,7 +4,7 @@
    A value marked UN-DIALLED is a token chosen here without a decision behind it.
    States: rest, hover, focus, open, placeholder, invalid, disabled; item highlighted, selected, disabled.
 
-   One rule per state. No accent except the focus ring: the selected item is a check in the text colour. */
+   One rule per state. Select spends the accent on its focus ring only (it has no primary fill): the selected item is a check in the text colour. */
 
 @layer orrery.kit {
   /* Kit-local, on the popup only (never the shared :root). */
@@ -41,6 +41,7 @@
   @media (any-pointer: coarse) {
     .orr-select {
       font-size: var(--type-size-16);
+      line-height: var(--type-line-height-16);
     }
   }
   .orr-select__value {

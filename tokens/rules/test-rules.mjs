@@ -57,6 +57,18 @@ export function ruleTests({ tmp, run }) {
       assert.equal(fs.existsSync(out), false);
     },
 
+    '[brand-orrery-neutral] neutralGate: a cream light page or a warm dark layer in brand orrery fails the build, naming the role, brand, mode and chroma, and writes nothing'() {
+      const cream = seeded('brands/orrery/modes/light.tokens.json', (d) => { d.color.page.$value = { colorSpace: 'srgb', components: [0.9608, 0.9412, 0.9098], hex: '#f5f0e8' }; });
+      assert.equal(cream.r.status, 1, cream.r.stderr);
+      assert.match(cream.r.stderr, /^not neutral: color\.page \(brand orrery, mode light\) is #f5f0e8, OKLCH chroma 0\.0119; brand orrery's page, layer and text roles stay under 0\.01\. Hue enters only through a brand file\.$/m);
+      assert.doesNotMatch(cream.r.stderr, /not neutral: .*mode dark/);
+      assert.equal(fs.existsSync(cream.out), false);
+      const warm = seeded('brands/orrery/modes/dark.tokens.json', (d) => { d.color['layer-1'].$value = { colorSpace: 'srgb', components: [0.1647, 0.1255, 0.0863], hex: '#2a2016' }; });
+      assert.equal(warm.r.status, 1, warm.r.stderr);
+      assert.match(warm.r.stderr, /^not neutral: color\.layer-1 \(brand orrery, mode dark\) is #2a2016, OKLCH chroma 0\.0235;/m);
+      assert.doesNotMatch(warm.r.stderr, /not neutral: .*mode light/);
+    },
+
     '[generated-matches-source] driftGate: drift: a generated file that differs, is missing or is stale fails, naming the file'() {
       const committed = path.join(tmp, 'drift-committed'), fresh = path.join(tmp, 'drift-fresh');
       for (const dir of [committed, fresh]) fs.mkdirSync(path.join(dir, 'css'), { recursive: true });
@@ -129,6 +141,44 @@ export function ruleTests({ tmp, run }) {
       const ok = [`// a note ${dash} fine`, `/* ${dash} */`, 'const a = "plain, text";'].join('\n');
       assert.deepEqual(hits('k.tsx', ok, 'em-dash'), []);
       assert.equal(hits('k.css', `.a::after { content: "${dash}"; }`, 'em-dash').length, 1);
+    },
+
+    '[font-family-token] source rules: font-family-token fails a named face, a generic family, a literal stack, a fallback, an unknown token and the font shorthand, naming the line, and passes the font tokens and a CSS-wide keyword'() {
+      const bad = ['.a {', '  font-family: Georgia;', '  font-family: serif;', '  font-family: "Inter", system-ui, sans-serif;', '  font-family: var(--font-sans, Inter);', '  font-family: var(--font-serif);', '  font: 14px/1.5 Inter;', '}'].join('\n');
+      assert.deepEqual(hits('k.css', bad, 'font-family-token').map((s) => s.split(':')[0] + ':' + s.split(':')[1]), [
+        '2 font-family-token font-family: Georgia',
+        '3 font-family-token font-family: serif',
+        '4 font-family-token font-family: "Inter", system-ui, sans-serif',
+        '5 font-family-token font-family: var(--font-sans, Inter)',
+        '6 font-family-token font-family: var(--font-serif)',
+        '7 font-family-token font: 14px/1.5 Inter',
+      ]);
+      assert.match(hits('k.css', bad, 'font-family-token')[4], /--font-serif is not a font token; use var\(--font-sans\) or var\(--font-mono\)$/);
+      const ok = ['.a { font-family: var(--font-sans); }', '.b { font-family: var(--font-mono); }', '.c { font-family: inherit; font: inherit; }'].join('\n');
+      assert.deepEqual(hits('k.css', ok, 'font-family-token'), []);
+    },
+
+    '[type-role-size] source rules: type-role-size fails a literal size, a calc() and a step no type role uses, and passes every step a role uses and a CSS-wide keyword'() {
+      const bad = ['.a {', '  font-size: 15px;', '  font-size: calc(var(--type-size-14) + 1px);', '  font-size: var(--type-size-20);', '  font-size: var(--type-size-96);', '}'].join('\n');
+      const found = hits('k.css', bad, 'type-role-size');
+      assert.deepEqual(found.map((s) => s.split(':')[0]), ['2 type-role-size font-size', '3 type-role-size font-size', '4 type-role-size font-size', '5 type-role-size font-size']);
+      assert.match(found[2], /no type role uses step 20; components use only the role steps \(11, 12-5, 13, 14, 16, 17, 22, 25, 30, 44\)$/);
+      const ok = ['11', '12-5', '13', '14', '16', '17', '22', '25', '30', '44'].map((s, i) => `.r${i} { font-size: var(--type-size-${s}); }`).concat('.k { font-size: inherit; }').join('\n');
+      assert.deepEqual(hits('k.css', ok, 'type-role-size'), []);
+    },
+
+    '[type-line-height-pair] source rules: type-line-height-pair fails a size with no line height, a mismatched step and a line height set by hand, and passes the matching pair in one rule'() {
+      const bad = ['.a { font-size: var(--type-size-14); }', '.b { font-size: var(--type-size-14); line-height: var(--type-line-height-16); }', '.c { line-height: 1.2; }', '.d { line-height: var(--type-line-height-13); }', '@media (any-pointer: coarse) {', '  .e { font-size: var(--type-size-16); }', '}'].join('\n');
+      assert.deepEqual(hits('k.css', bad, 'type-line-height-pair'), [
+        '1 type-line-height-pair font-size: var(--type-size-14) in .a has no line-height: var(--type-line-height-14) beside it in the same rule',
+        '2 type-line-height-pair font-size: var(--type-size-14) in .b has no line-height: var(--type-line-height-14) beside it in the same rule',
+        '2 type-line-height-pair line-height: var(--type-line-height-16) in .b has no font-size: var(--type-size-16) beside it in the same rule',
+        '3 type-line-height-pair line-height: 1.2 in .c is set by hand; use var(--type-line-height-<step>) beside the matching var(--type-size-<step>)',
+        '4 type-line-height-pair line-height: var(--type-line-height-13) in .d has no font-size: var(--type-size-13) beside it in the same rule',
+        '6 type-line-height-pair font-size: var(--type-size-16) in .e has no line-height: var(--type-line-height-16) beside it in the same rule',
+      ]);
+      const ok = ['.a { font-size: var(--type-size-14); line-height: var(--type-line-height-14); }', '@media (any-pointer: coarse) { .a { font-size: var(--type-size-16); line-height: var(--type-line-height-16); } }', '.b { line-height: inherit; }'].join('\n');
+      assert.deepEqual(hits('k.css', ok, 'type-line-height-pair'), []);
     },
 
     'source rules: the CLI prints file:line rule-id message and exits 1, exits 0 when clean, and exits 2 on a missing path'() {

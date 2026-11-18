@@ -62,7 +62,9 @@ jobs:
   # is recorded. The full npm run test:geometry is not run here yet.
   roles:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    # 20, not 15: main's run takes about 12 minutes before the kit-text step, and a slow runner took 13 on the
+    # kit specs alone (PR #52's first run was cancelled at 15 with no test failed).
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -93,3 +95,7 @@ jobs:
           if-no-files-found: ignore
       # The opt-in Iris bridge (example/role-bridge.spec.ts): light and bridge-alone equal bare, dark is its own baseline.
       - run: npm run test:bridge
+      # DESIGN.md Foundations, rendered (example/kit-text.spec.ts): every kit golden example and the specimen at 375
+      # and 1280 wide. No lone last word, no one-word heading line, labels on one whole line, every tab stop draws
+      # the ring, every hit area meets --hit-target-min. Last, so a failure here skips none of the gates above.
+      - run: npx playwright test -c example/playwright.config.ts kit-text --project=chromium
