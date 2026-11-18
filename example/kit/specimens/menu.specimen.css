@@ -40,3 +40,10 @@
     var(--orr-menu-max-height) + var(--orr-menu-offset)
   ) !important;
 }
+
+/* A held-open popup is as wide as its text and its trigger, both of which differ between macOS and
+   Linux, so the picture fixes the width: the baseline records the same box on every platform. */
+.spec-menu-frame__body .orr-menu__popup {
+  width: calc(var(--space-72) * 3);
+  min-width: 0;
+}
