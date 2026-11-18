@@ -7,7 +7,8 @@ import ts from 'typescript';
 import { REPO, prepareCell, readJson } from './common.mjs';
 
 const RAW_CONTROLS = new Set(['button', 'input', 'textarea', 'select', 'option', 'dialog']);
-const ALLOWED_IMPORTS = new Set(['react', 'react/jsx-runtime', 'react-dom', './kit']);
+// ./kit/kit.css is the kit's own stylesheet, which the catalog's conventions tell a consumer to import once.
+const ALLOWED_IMPORTS = new Set(['react', 'react/jsx-runtime', 'react-dom', './kit', './kit/kit.css']);
 
 function parse(file) {
   const text = fs.readFileSync(file, 'utf8');
