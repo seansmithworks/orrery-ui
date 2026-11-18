@@ -12,8 +12,13 @@ export { Dialog } from "./dialog/Dialog";
 export type { DialogPopupProps } from "./dialog/Dialog";
 export { Card } from "./card/Card";
 export type { CardProps } from "./card/Card";
-export { Select, type SelectPopupProps, type SelectTriggerProps } from "./select/Select";
+export {
+  Select,
+  type SelectPopupProps,
+  type SelectTriggerProps,
+} from "./select/Select";
 export { Checkbox, type CheckboxProps } from "./checkbox/Checkbox";
+export { Radio } from "./radio/Radio";
 export { Switch, type SwitchProps } from "./switch/Switch";
 export { Tabs } from "./tabs/Tabs";
 export { Textarea } from "./textarea/Textarea";
