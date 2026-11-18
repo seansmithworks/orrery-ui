@@ -1,0 +1,97 @@
+{
+  "example": "Radio.example.tsx",
+  "components": {
+    "Radio": {
+      "description": "Radio on UI SDK: a group of single-choice options, moved through with the arrow keys, one tab stop for the group.",
+      "parts": {
+        "Group": {
+          "description": "Holds the chosen value and groups the options, in one column, named by its Field.Root label.",
+          "passthrough": "@ui-sdk/react/radio#RadioGroup",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The chosen option's value, when you control it; pair with onValueChange. Use defaultValue otherwise."
+              },
+              "defaultValue": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The option chosen first, when it manages its own state. Unset, none is chosen and Tab enters on the first option."
+              },
+              "onValueChange": {
+                "x-type": "function",
+                "x-from": "ui-sdk",
+                "description": "Called with the newly chosen option's value."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Blocks every option, removes them from the tab order and submits nothing."
+              },
+              "required": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "A form submit with nothing chosen is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
+              },
+              "name": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "The name the chosen value is submitted under. Without it the group submits nothing."
+              }
+            },
+            "required": []
+          }
+        },
+        "Item": {
+          "description": "One option: a ring that holds a dot while it is chosen, with its text as the label, so a press on the text chooses it.",
+          "inside": "Group",
+          "passthrough": "@ui-sdk/react/radio#Radio",
+          "slots": ["default"],
+          "props": {
+            "type": "object",
+            "properties": {
+              "value": {
+                "type": "string",
+                "x-from": "ui-sdk",
+                "description": "Names the option; the group's value is the chosen option's value."
+              },
+              "disabled": {
+                "type": "boolean",
+                "x-from": "ui-sdk",
+                "description": "Blocks choosing this option and skips it in the arrow keys, and mutes its label."
+              }
+            },
+            "required": ["value"]
+          }
+        }
+      },
+      "requiredParts": ["Group", "Item"],
+      "useWhen": [
+        "Exactly one of two to five options must be picked, and all of them are worth seeing at once: alert channel, plan.",
+        "A choice that takes effect when the form is sent, not the moment it is pressed."
+      ],
+      "avoidWhen": [
+        {
+          "text": "Several options may be picked.",
+          "instead": "Checkbox"
+        },
+        {
+          "text": "The list is long, or space is tight.",
+          "instead": "Select"
+        },
+        {
+          "text": "The choice switches a view and shows its content.",
+          "instead": "Tabs"
+        }
+      ],
+      "a11y": [
+        "Wrap the group in a Field.Root with a Field.Label that names it; without one, give Radio.Group an aria-label.",
+        "Put each option's text in the Radio.Item, as its children: it names the radio and a press on it chooses.",
+        "For a required choice, set required and name on Radio.Group, with Field.Error match=\"valueMissing\" beside it."
+      ]
+    }
+  }
+}
