@@ -16,6 +16,7 @@
 @import "./card/card.css";
 @import "./select/select.css";
 @import "./checkbox/checkbox.css";
+@import "./radio/radio.css";
 @import "./switch/switch.css";
 @import "./tabs/tabs.css";
 @import "./textarea/textarea.css";
