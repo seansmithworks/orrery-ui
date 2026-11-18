@@ -43,9 +43,10 @@ const CELLS: Cell[] = [
 ];
 
 /**
- * Base UI highlights the selected item when the list opens. To show "highlighted" and "selected" on two
- * items in one held-open picture, the specimen moves the attribute the kit's highlight rule reads,
- * data-highlighted, the way data-preview forces hover and focus elsewhere on the page.
+ * A held-open list has no keyboard or pointer on it, so UI SDK highlights nothing. Each picture sets
+ * the attribute the kit's highlight rule reads, data-highlighted, the way data-preview forces hover
+ * and focus elsewhere on the page: on another item than the selected one, to show both states, or on
+ * the selected one, as the list looks when the keyboard opens it.
  */
 function OrbitItems({ highlight }: { highlight?: string }) {
   return (
@@ -66,13 +67,17 @@ function OrbitItems({ highlight }: { highlight?: string }) {
   );
 }
 
-function BodyItems() {
+function BodyItems({ highlight }: { highlight: string }) {
   return (
     <>
       <Select.Group>
         <Select.GroupLabel>Inner planets</Select.GroupLabel>
         {Object.entries(INNER).map(([value, label]) => (
-          <Select.Item key={value} value={value}>
+          <Select.Item
+            key={value}
+            value={value}
+            data-highlighted={value === highlight ? "" : undefined}
+          >
             {label}
           </Select.Item>
         ))}
@@ -81,7 +86,11 @@ function BodyItems() {
       <Select.Group>
         <Select.GroupLabel>Outer planets</Select.GroupLabel>
         {Object.entries(OUTER).map(([value, label]) => (
-          <Select.Item key={value} value={value}>
+          <Select.Item
+            key={value}
+            value={value}
+            data-highlighted={value === highlight ? "" : undefined}
+          >
             {label}
           </Select.Item>
         ))}
@@ -234,7 +243,7 @@ export default function SelectSpecimen(_: SpecimenProps) {
         <OrbitItems highlight="pallas" />
       </OpenCell>
       <OpenCell name="groups" label="Body" items={BODIES} value="mars">
-        <BodyItems />
+        <BodyItems highlight="mars" />
       </OpenCell>
     </div>
   );

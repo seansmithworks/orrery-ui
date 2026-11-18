@@ -8,6 +8,7 @@ import {
   focusRing,
   expectRing,
 } from "./kit-test";
+import { patternProblems, transitionsOff } from "./check-pattern";
 
 /**
  * select.kit.spec.ts: the Select block on the specimen page, once per brand panel.
@@ -356,11 +357,59 @@ for (const id of PANELS) {
       expect(ring).toBeGreaterThanOrEqual(3);
       await page.keyboard.press("Enter");
       await expect(list).toBeVisible();
-      await expect(highlighted(list)).toHaveText("Pallas");
+      // UI SDK clears the highlight on Enter, Base UI kept it on the item.
+      // Either way it never moves to another item.
+      const stillHighlighted = highlighted(list);
+      await expect
+        .poll(async () => {
+          const n = await stillHighlighted.count();
+          return (
+            n === 0 || (await stillHighlighted.textContent())?.trim() === "Pallas"
+          );
+        })
+        .toBe(true);
       await expect(
         list.getByRole("option", { name: "Pallas" }),
       ).toHaveAttribute("aria-selected", "false");
       await expect(trigger).toHaveText("Kepler");
+    });
+
+    test("closed trigger typeahead: typing a letter selects the matching enabled option", async ({
+      page,
+    }) => {
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await expect(trigger).toHaveText("Kepler");
+      await page.keyboard.type("v");
+      await expect(trigger).toHaveText("Vesta");
+      await trigger.press("ArrowDown");
+      await settledOpen(list);
+      await expect(
+        list.getByRole("option", { name: "Vesta" }),
+      ).toHaveAttribute("aria-selected", "true");
+    });
+
+    test("closed trigger typeahead never chooses a disabled option", async ({
+      page,
+    }) => {
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await expect(trigger).toHaveText("Kepler");
+      // "p" is the first letter of the disabled Pallas, and of no enabled option.
+      await page.keyboard.type("p");
+      // Typeahead is applied synchronously; give any wrongly committed value a frame to render.
+      await page.evaluate(
+        () => new Promise((r) => requestAnimationFrame(() => r(null))),
+      );
+      await expect(trigger).toHaveText("Kepler");
+      await trigger.press("ArrowDown");
+      await settledOpen(list);
+      await expect(
+        list.getByRole("option", { name: "Pallas" }),
+      ).toHaveAttribute("aria-selected", "false");
+      await expect(
+        list.getByRole("option", { name: "Kepler" }),
+      ).toHaveAttribute("aria-selected", "true");
     });
 
     test("placement: opens below the trigger at the kit's offset; a long list is clamped to the kit's max height and scrolls", async ({
@@ -486,4 +535,28 @@ test.describe("golden example (fixtures/kit-examples.html)", () => {
     await expect(error).toBeHidden();
     await expect(trigger).not.toHaveAttribute("aria-invalid", "true");
   });
+});
+
+test.describe("WAI-ARIA pattern (UI SDK checkPattern)", () => {
+  for (const id of PANELS) {
+    // UI SDK's select moves DOM focus into its list (aria-activedescendant is only for a search
+    // field), so the open list is checked as a listbox, not the trigger as a combobox.
+    test(`${id}: the open list of the live select passes checkPattern "listbox"`, async ({
+      page,
+    }) => {
+      // Transitions off, so the check reads the settled DOM after each key it presses.
+      await transitionsOff(page);
+      const { trigger, list } = live(page, id);
+      await trigger.focus();
+      await page.keyboard.press("ArrowDown");
+      await expect(list).toBeVisible();
+      expect(
+        await patternProblems(
+          page,
+          `[data-panel="${id}"] [data-block="Select"] [data-cell="rest"] [role="listbox"]`,
+          "listbox",
+        ),
+      ).toBe("");
+    });
+  }
 });

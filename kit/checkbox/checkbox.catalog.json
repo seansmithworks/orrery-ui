@@ -2,44 +2,43 @@
   "example": "Checkbox.example.tsx",
   "components": {
     "Checkbox": {
-      "description": "A checkbox on Base UI; inside Field.Root it takes the field's label, description, error and state, and shows a dash when mixed.",
-      "passthrough": "@base-ui/react/checkbox#Checkbox.Root.Props",
+      "description": "A checkbox on UI SDK; inside Field.Root it takes the field's label, description, error and state, and shows a dash when mixed.",
+      "passthrough": "@ui-sdk/react/checkbox#Checkbox",
       "props": {
         "type": "object",
         "properties": {
           "checked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it is ticked, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
           },
           "defaultChecked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it starts ticked, when it manages its own state."
           },
           "onCheckedChange": {
             "x-type": "function",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Called with the new checked value when the person ticks or unticks it."
           },
           "indeterminate": {
             "type": "boolean",
-            "x-from": "base-ui",
             "description": "Shows a dash and announces mixed, for a box that sums up a group that is partly ticked. It wins over checked."
           },
           "disabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
           },
           "required": {
             "type": "boolean",
-            "x-from": "base-ui",
-            "description": "Inside a Base UI Form, a submit without the tick is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
+            "x-from": "ui-sdk",
+            "description": "A form submit without the tick is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
           },
           "name": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The name submitted with the form. Inside Field.Root, the field's name wins."
           }
         },
@@ -61,7 +60,7 @@
       ],
       "a11y": [
         "Wrap the Checkbox and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
-        "For a required tick, set required and name, inside a Base UI Form, with Field.Error match=\"valueMissing\".",
+        "For a required tick, set required and name, with Field.Error match=\"valueMissing\"; the form checks it on submit.",
         "Use indeterminate only on a box that sums up a group of boxes, and keep it in step with them."
       ]
     }

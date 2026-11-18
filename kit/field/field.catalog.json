@@ -2,28 +2,28 @@
   "example": "Field.example.tsx",
   "components": {
     "Field": {
-      "description": "A labelled form field on Base UI that wires its label, description and error to the control inside it.",
+      "description": "A labelled form field on UI SDK that wires its label, description and error to the control inside it.",
       "parts": {
         "Root": {
           "description": "Groups one control with its label, description and error, and holds the field's invalid and disabled state.",
-          "passthrough": "@base-ui/react/field#Field.Root.Props",
+          "passthrough": "@ui-sdk/react/field#Field",
           "slots": ["default"],
           "props": {
             "type": "object",
             "properties": {
               "invalid": {
                 "type": "boolean",
-                "x-from": "base-ui",
-                "description": "Marks the control aria-invalid and data-invalid (the heavy outline). It does not show Field.Error; that needs match."
+                "x-from": "ui-sdk",
+                "description": "Marks the control aria-invalid and data-invalid (the heavy outline), and shows a Field.Error that has no match at once."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Disables the control and mutes the label."
               },
               "name": {
                 "type": "string",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The control's name when the form is submitted."
               }
             },
@@ -31,23 +31,23 @@
           }
         },
         "Label": {
-          "description": "The visible label; it is the control's accessible name through a for/id pair set by Base UI.",
+          "description": "The visible label; it is the control's accessible name through a for/id pair set by UI SDK.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/field#Field.Label.Props",
+          "passthrough": "@ui-sdk/react/field#FieldLabel",
           "slots": ["default"],
           "props": { "type": "object", "properties": {}, "required": [] }
         },
         "Description": {
           "description": "A hint below the control, joined to its aria-describedby.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/field#Field.Description.Props",
+          "passthrough": "@ui-sdk/react/field#FieldDescription",
           "slots": ["default"],
           "props": { "type": "object", "properties": {}, "required": [] }
         },
         "Error": {
-          "description": "The error message, joined to aria-describedby; it renders only on match, a failed native check or a form error.",
+          "description": "The error message, joined to aria-describedby; it renders on match, or while the field is invalid (its prop, or a failed submit).",
           "inside": "Root",
-          "passthrough": "@base-ui/react/field#Field.Error.Props",
+          "passthrough": "@ui-sdk/react/field#FieldError",
           "slots": ["default"],
           "props": {
             "type": "object",
@@ -67,13 +67,12 @@
                       "tooLong",
                       "tooShort",
                       "typeMismatch",
-                      "valid",
                       "valueMissing"
                     ]
                   }
                 ],
-                "x-from": "base-ui",
-                "description": "true renders it, even when disabled; a ValidityState key renders it while that native check fails. Use match={!!error}."
+                "x-from": "ui-sdk",
+                "description": "true renders it, even when disabled; false never. A ValidityState key renders it for that native check once a submit fails it."
               }
             },
             "required": []
@@ -98,23 +97,23 @@
     },
     "Input": {
       "description": "A text input; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
-      "passthrough": "@base-ui/react/input#Input.Props",
+      "passthrough": "@ui-sdk/react/input#Input",
       "props": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The native input type: text, email, password, search, tel, url, number."
           },
           "readOnly": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
           },
           "autoComplete": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The autofill hint, such as email, name or current-password."
           }
         },

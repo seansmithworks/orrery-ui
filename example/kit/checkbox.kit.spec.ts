@@ -7,6 +7,7 @@ import {
   focusRing,
   expectRing,
 } from "./kit-test";
+import { patternProblems, transitionsOff } from "./check-pattern";
 
 /**
  * checkbox.kit.spec.ts: the Checkbox block on the specimen page, once per brand panel.
@@ -273,4 +274,34 @@ test.describe("golden example (fixtures/kit-examples.html)", () => {
       ["understood", "on"],
     ]);
   });
+});
+
+test.describe("WAI-ARIA pattern (UI SDK checkPattern)", () => {
+  for (const id of PANELS) {
+    // Every cell but "indeterminate": its box is held mixed by the indeterminate prop, a controlled
+    // value with no handler, so no press can change it, and the check presses Space expecting one.
+    for (const name of [
+      "unchecked",
+      "checked",
+      "hover",
+      "focus",
+      "disabled",
+      "disabled checked",
+      "invalid",
+    ]) {
+      test(`${id}: the "${name}" checkbox passes checkPattern "checkbox"`, async ({
+        page,
+      }) => {
+        // Transitions off, so the check reads the settled DOM after each key it presses.
+        await transitionsOff(page);
+        expect(
+          await patternProblems(
+            page,
+            `[data-panel="${id}"] [data-block="Checkbox"] [data-cell="${name}"]`,
+            "checkbox",
+          ),
+        ).toBe("");
+      });
+    }
+  }
 });

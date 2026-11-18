@@ -3,7 +3,7 @@
   "components": {
     "Textarea": {
       "description": "Multi-line text; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
-      "passthrough": "@base-ui/react/field#Field.Control.Props",
+      "passthrough": "@ui-sdk/react/textarea#Textarea",
       "props": {
         "type": "object",
         "properties": {
@@ -14,17 +14,17 @@
           },
           "readOnly": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
           },
           "placeholder": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "A hint shown while empty. It does not replace the label."
           },
           "onValueChange": {
             "x-type": "function",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Called with the new text on each edit. Use it to control the value."
           }
         },

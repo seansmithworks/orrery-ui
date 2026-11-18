@@ -7,6 +7,7 @@ import {
   focusRing,
   expectRing,
 } from "./kit-test";
+import { patternProblems, transitionsOff } from "./check-pattern";
 
 /**
  * switch.kit.spec.ts: the Switch block on the specimen page, once per brand panel.
@@ -390,4 +391,22 @@ test.describe("golden example (fixtures/kit-examples.html)", () => {
     await submit.click();
     expect(await lastSubmit()).toEqual([["orbitEmails", "on"]]);
   });
+});
+
+test.describe("WAI-ARIA pattern (UI SDK checkPattern)", () => {
+  for (const id of PANELS) {
+    test(`${id}: the Switch block passes checkPattern "switch"`, async ({
+      page,
+    }) => {
+      // Transitions off, so the check reads the settled DOM after each key it presses.
+      await transitionsOff(page);
+      expect(
+        await patternProblems(
+          page,
+          `[data-panel="${id}"] [data-block="Switch"]`,
+          "switch",
+        ),
+      ).toBe("");
+    });
+  }
 });

@@ -235,44 +235,43 @@
       }
     },
     "Checkbox": {
-      "description": "A checkbox on Base UI; inside Field.Root it takes the field's label, description, error and state, and shows a dash when mixed.",
-      "passthrough": "@base-ui/react/checkbox#Checkbox.Root.Props",
+      "description": "A checkbox on UI SDK; inside Field.Root it takes the field's label, description, error and state, and shows a dash when mixed.",
+      "passthrough": "@ui-sdk/react/checkbox#Checkbox",
       "props": {
         "type": "object",
         "properties": {
           "checked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it is ticked, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
           },
           "defaultChecked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it starts ticked, when it manages its own state."
           },
           "onCheckedChange": {
             "x-type": "function",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Called with the new checked value when the person ticks or unticks it."
           },
           "indeterminate": {
             "type": "boolean",
-            "x-from": "base-ui",
             "description": "Shows a dash and announces mixed, for a box that sums up a group that is partly ticked. It wins over checked."
           },
           "disabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
           },
           "required": {
             "type": "boolean",
-            "x-from": "base-ui",
-            "description": "Inside a Base UI Form, a submit without the tick is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
+            "x-from": "ui-sdk",
+            "description": "A form submit without the tick is blocked and shows Field.Error match=\"valueMissing\". Sets aria-required."
           },
           "name": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The name submitted with the form. Inside Field.Root, the field's name wins."
           }
         },
@@ -294,12 +293,12 @@
       ],
       "a11y": [
         "Wrap the Checkbox and its text in Field.Label inside Field.Root, so the text names it and a click on it toggles.",
-        "For a required tick, set required and name, inside a Base UI Form, with Field.Error match=\"valueMissing\".",
+        "For a required tick, set required and name, with Field.Error match=\"valueMissing\"; the form checks it on submit.",
         "Use indeterminate only on a box that sums up a group of boxes, and keep it in step with them."
       ],
       "example": {
         "file": "kit/checkbox/Checkbox.example.tsx",
-        "code": "// Golden example: confirm deleting an orbit. One optional choice with a hint, and one required tick. Base UI's Form\n// validates on submit: a missing tick blocks the submit, focuses the box and shows the valueMissing error.\n// Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Checkbox, Field } from \"../index\";\n\nexport default function ConfirmDeleteOrbit() {\n  const [deleted, setDeleted] = useState(false);\n\n  return (\n    <Form\n      onFormSubmit={() => setDeleted(true)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Checkbox name=\"deleteCharts\" defaultChecked />\n          Also delete its 12 charts\n        </Field.Label>\n        <Field.Description>\n          Charts that other dashboards use are kept.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Checkbox name=\"understood\" required />I understand this cannot be\n          undone\n        </Field.Label>\n        <Field.Error match=\"valueMissing\">\n          Tick this box to confirm. Orbit 7 cannot be restored.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Delete orbit\n        </Button>\n        <span role=\"status\">{deleted ? \"Orbit 7 deleted.\" : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+        "code": "// Golden example: confirm deleting an orbit. One optional choice with a hint, and one required tick. The form\n// checks itself on submit (reportValidity): UI SDK's Field turns a missing tick into the valueMissing error in\n// the page and focuses the box, and the submit goes no further. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Checkbox, Field } from \"../index\";\n\nexport default function ConfirmDeleteOrbit() {\n  const [deleted, setDeleted] = useState(false);\n\n  function submit(event: FormEvent<HTMLFormElement>) {\n    event.preventDefault();\n    if (event.currentTarget.reportValidity()) setDeleted(true);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Checkbox name=\"deleteCharts\" defaultChecked />\n          Also delete its 12 charts\n        </Field.Label>\n        <Field.Description>\n          Charts that other dashboards use are kept.\n        </Field.Description>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Checkbox name=\"understood\" required />I understand this cannot be\n          undone\n        </Field.Label>\n        <Field.Error match=\"valueMissing\">\n          Tick this box to confirm. Orbit 7 cannot be restored.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Delete orbit\n        </Button>\n        <span role=\"status\">{deleted ? \"Orbit 7 deleted.\" : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     },
     "Dialog": {
@@ -535,11 +534,11 @@
       }
     },
     "Field": {
-      "description": "A labelled form field on Base UI that wires its label, description and error to the control inside it.",
+      "description": "A labelled form field on UI SDK that wires its label, description and error to the control inside it.",
       "parts": {
         "Root": {
           "description": "Groups one control with its label, description and error, and holds the field's invalid and disabled state.",
-          "passthrough": "@base-ui/react/field#Field.Root.Props",
+          "passthrough": "@ui-sdk/react/field#Field",
           "slots": [
             "default"
           ],
@@ -548,17 +547,17 @@
             "properties": {
               "invalid": {
                 "type": "boolean",
-                "x-from": "base-ui",
-                "description": "Marks the control aria-invalid and data-invalid (the heavy outline). It does not show Field.Error; that needs match."
+                "x-from": "ui-sdk",
+                "description": "Marks the control aria-invalid and data-invalid (the heavy outline), and shows a Field.Error that has no match at once."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Disables the control and mutes the label."
               },
               "name": {
                 "type": "string",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The control's name when the form is submitted."
               }
             },
@@ -566,9 +565,9 @@
           }
         },
         "Label": {
-          "description": "The visible label; it is the control's accessible name through a for/id pair set by Base UI.",
+          "description": "The visible label; it is the control's accessible name through a for/id pair set by UI SDK.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/field#Field.Label.Props",
+          "passthrough": "@ui-sdk/react/field#FieldLabel",
           "slots": [
             "default"
           ],
@@ -581,7 +580,7 @@
         "Description": {
           "description": "A hint below the control, joined to its aria-describedby.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/field#Field.Description.Props",
+          "passthrough": "@ui-sdk/react/field#FieldDescription",
           "slots": [
             "default"
           ],
@@ -592,9 +591,9 @@
           }
         },
         "Error": {
-          "description": "The error message, joined to aria-describedby; it renders only on match, a failed native check or a form error.",
+          "description": "The error message, joined to aria-describedby; it renders on match, or while the field is invalid (its prop, or a failed submit).",
           "inside": "Root",
-          "passthrough": "@base-ui/react/field#Field.Error.Props",
+          "passthrough": "@ui-sdk/react/field#FieldError",
           "slots": [
             "default"
           ],
@@ -618,13 +617,12 @@
                       "tooLong",
                       "tooShort",
                       "typeMismatch",
-                      "valid",
                       "valueMissing"
                     ]
                   }
                 ],
-                "x-from": "base-ui",
-                "description": "true renders it, even when disabled; a ValidityState key renders it while that native check fails. Use match={!!error}."
+                "x-from": "ui-sdk",
+                "description": "true renders it, even when disabled; false never. A ValidityState key renders it for that native check once a submit fails it."
               }
             },
             "required": []
@@ -656,23 +654,23 @@
     },
     "Input": {
       "description": "A text input; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
-      "passthrough": "@base-ui/react/input#Input.Props",
+      "passthrough": "@ui-sdk/react/input#Input",
       "props": {
         "type": "object",
         "properties": {
           "type": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The native input type: text, email, password, search, tel, url, number."
           },
           "readOnly": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
           },
           "autoComplete": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The autofill hint, such as email, name or current-password."
           }
         },
@@ -701,12 +699,12 @@
       }
     },
     "Select": {
-      "description": "A select on Base UI: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
+      "description": "A select on UI SDK: arrow keys and typing move the highlight, Enter picks, Escape closes, focus returns to the trigger.",
       "parts": {
         "Root": {
           "description": "Holds the value and the open state; it renders no element of its own.",
           "className": false,
-          "passthrough": "@base-ui/react/select#Select.Root.Props<unknown>",
+          "passthrough": "@ui-sdk/react/select#Select",
           "slots": [
             "default"
           ],
@@ -715,48 +713,57 @@
             "properties": {
               "items": {
                 "x-type": "object",
-                "x-from": "base-ui",
-                "description": "Maps each value to its label, so the trigger shows the label and not the raw value."
+                "description": "Maps each value to its label (or UI SDK list data), so the trigger shows the label and not the raw value."
               },
               "value": {
                 "x-type": "object",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The selected value when controlled; pair it with onValueChange. null shows the placeholder."
               },
               "defaultValue": {
                 "x-type": "object",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The value selected on first render when the value is not controlled."
               },
               "onValueChange": {
                 "x-type": "function",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Called with the next value whenever an item is picked."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Stops the select from opening or changing; inside Field.Root, Field.Root's disabled does the same."
               },
               "name": {
                 "type": "string",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The value's name when the form is submitted, if Field.Root does not give one."
               },
               "required": {
                 "type": "boolean",
-                "x-from": "base-ui",
-                "description": "A value must be chosen; inside Base UI's Form, submitting empty fails with valueMissing for Field.Error."
+                "x-from": "ui-sdk",
+                "description": "A value must be chosen: a form submit with none is blocked and fails with valueMissing for Field.Error."
               },
               "open": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Controls the open state; pair it with onOpenChange."
               },
               "modal": {
-                "type": "boolean",
-                "x-from": "base-ui",
-                "description": "Unset, true: while open, page scroll locks and outside presses only close. false leaves the page usable."
+                "anyOf": [
+                  {
+                    "type": "boolean"
+                  },
+                  {
+                    "type": "string",
+                    "enum": [
+                      "pointer"
+                    ]
+                  }
+                ],
+                "x-from": "ui-sdk",
+                "description": "true: while open, page scroll locks and the page is inert. pointer: outside presses only close. false: the page stays usable."
               }
             },
             "required": []
@@ -765,12 +772,12 @@
         "Trigger": {
           "description": "The button that opens the list; it shows the selected label or the placeholder, with the Input's look.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/select#Select.Trigger.Props",
+          "passthrough": "@ui-sdk/react/select#SelectTrigger",
           "props": {
             "type": "object",
             "properties": {
               "placeholder": {
-                "x-type": "node",
+                "type": "string",
                 "description": "Shown, muted, while nothing is selected. It is not a label; Field.Label still names the select."
               }
             },
@@ -778,9 +785,9 @@
           }
         },
         "Popup": {
-          "description": "Portal, positioner, popup and list in one part; it opens below the trigger, at least as wide, on document.body.",
+          "description": "Positioner, popup and list in one part; it opens below the trigger, at least as wide, in the browser's top layer.",
           "inside": "Root",
-          "passthrough": "@base-ui/react/select#Select.Popup.Props",
+          "passthrough": "@ui-sdk/react/select#SelectContent",
           "slots": [
             "default"
           ],
@@ -789,7 +796,7 @@
             "properties": {
               "container": {
                 "x-type": "object",
-                "description": "The element, or a ref to it, the portal mounts into instead of document.body."
+                "description": "The element, or a ref to it, the popup mounts into instead of in place. It still opens in the top layer."
               },
               "side": {
                 "type": "string",
@@ -798,10 +805,10 @@
                   "bottom",
                   "left",
                   "right",
-                  "inline-end",
-                  "inline-start"
+                  "start",
+                  "end"
                 ],
-                "description": "The trigger's side the popup opens on; unset, Base UI's bottom. It flips when there is no room."
+                "description": "The trigger's side the popup opens on; unset, bottom. It flips when there is no room."
               },
               "align": {
                 "type": "string",
@@ -810,7 +817,7 @@
                   "center",
                   "end"
                 ],
-                "description": "The popup's alignment along that side; unset, Base UI's center."
+                "description": "The popup's alignment along that side; unset, center."
               },
               "sideOffset": {
                 "description": "Extra px on top of the kit's CSS offset. Neither applies when alignItemWithTrigger lays the popup over the trigger.",
@@ -819,17 +826,12 @@
               "collisionPadding": {
                 "type": "number",
                 "default": 8,
-                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter. Base UI's is 5."
+                "description": "Kit-set: the 8px gap the popup keeps from the window's edges, the Dialog's gutter."
               },
               "alignItemWithTrigger": {
                 "type": "boolean",
                 "default": false,
                 "description": "Kit-set off: the popup opens below the trigger. On, it covers the trigger with the selected item over the value."
-              },
-              "finalFocus": {
-                "x-type": "object",
-                "x-from": "base-ui",
-                "description": "What takes focus on close: a ref, a function returning an element, or false. Default: the trigger."
               }
             },
             "required": []
@@ -841,7 +843,7 @@
             "Popup",
             "Group"
           ],
-          "passthrough": "@base-ui/react/select#Select.Item.Props",
+          "passthrough": "@ui-sdk/react/select#SelectItem",
           "slots": [
             "default"
           ],
@@ -849,28 +851,30 @@
             "type": "object",
             "properties": {
               "value": {
-                "x-type": "object",
-                "x-from": "base-ui",
+                "type": "string",
+                "x-from": "ui-sdk",
                 "description": "The value this item stands for; one of the keys of Root's items."
               },
               "disabled": {
                 "type": "boolean",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "Shows the item muted and stops it from being picked."
               },
               "label": {
                 "type": "string",
-                "x-from": "base-ui",
+                "x-from": "ui-sdk",
                 "description": "The text typeahead matches, when it should differ from the item's visible text."
               }
             },
-            "required": []
+            "required": [
+              "value"
+            ]
           }
         },
         "Group": {
           "description": "Groups related items under a GroupLabel.",
           "inside": "Popup",
-          "passthrough": "@base-ui/react/select#Select.Group.Props",
+          "passthrough": "@ui-sdk/react/select#SelectGroup",
           "slots": [
             "default"
           ],
@@ -881,9 +885,9 @@
           }
         },
         "GroupLabel": {
-          "description": "The muted heading of a group; Base UI points the group's aria-labelledby at it.",
+          "description": "The muted heading of a group; UI SDK points the group's aria-labelledby at it.",
           "inside": "Group",
-          "passthrough": "@base-ui/react/select#Select.GroupLabel.Props",
+          "passthrough": "@ui-sdk/react/select#SelectGroupLabel",
           "slots": [
             "default"
           ],
@@ -896,7 +900,7 @@
         "Separator": {
           "description": "A hairline between groups.",
           "inside": "Popup",
-          "passthrough": "@base-ui/react/select#Select.Separator.Props",
+          "passthrough": "@ui-sdk/react/select#SelectSeparator",
           "props": {
             "type": "object",
             "properties": {},
@@ -935,43 +939,42 @@
       ],
       "example": {
         "file": "kit/select/Select.example.tsx",
-        "code": "// Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a\n// placeholder. Validation is Base UI's own: Form runs each field's check on submit, blocks the submit,\n// focuses the first invalid control, and Field.Error match=\"valueMissing\" says what to fix. Root gets\n// `items` so the trigger shows the label, not the raw value. Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Field, Select } from \"../index\";\n\nconst INNER = { mercury: \"Mercury\", venus: \"Venus\", mars: \"Mars\" };\nconst OUTER = { jupiter: \"Jupiter\", saturn: \"Saturn\", neptune: \"Neptune\" };\nconst ITEMS: Record<string, string> = { ...INNER, ...OUTER };\n\nexport default function NewChart() {\n  const [made, setMade] = useState<string | null>(null);\n\n  return (\n    <Form\n      onFormSubmit={(values) => setMade(ITEMS[String(values.body)] ?? null)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"body\">\n        <Field.Label>Body</Field.Label>\n        <Select.Root items={ITEMS} required onValueChange={() => setMade(null)}>\n          <Select.Trigger placeholder=\"Choose a body\" />\n          <Select.Popup>\n            <Select.Group>\n              <Select.GroupLabel>Inner planets</Select.GroupLabel>\n              {Object.entries(INNER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n            <Select.Separator />\n            <Select.Group>\n              <Select.GroupLabel>Outer planets</Select.GroupLabel>\n              {Object.entries(OUTER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n          </Select.Popup>\n        </Select.Root>\n        <Field.Description>\n          The chart centres on this body and follows its orbit.\n        </Field.Description>\n        <Field.Error match=\"valueMissing\">\n          Choose a body for the chart to follow.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Make chart\n        </Button>\n        <span role=\"status\">{made ? `Chart made for ${made}.` : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+        "code": "// Golden example: pick the body a new chart follows. Nothing is chosen at first, so the trigger shows a\n// placeholder. The form checks itself on submit (reportValidity): UI SDK's Field blocks the submit,\n// focuses the first invalid control, and Field.Error match=\"valueMissing\" says what to fix. Root gets\n// `items` so the trigger shows the label, not the raw value. Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Select } from \"../index\";\n\nconst INNER = { mercury: \"Mercury\", venus: \"Venus\", mars: \"Mars\" };\nconst OUTER = { jupiter: \"Jupiter\", saturn: \"Saturn\", neptune: \"Neptune\" };\nconst ITEMS: Record<string, string> = { ...INNER, ...OUTER };\n\nexport default function NewChart() {\n  const [made, setMade] = useState<string | null>(null);\n\n  function submit(event: FormEvent<HTMLFormElement>) {\n    event.preventDefault();\n    const form = event.currentTarget;\n    if (!form.reportValidity()) return;\n    setMade(ITEMS[String(new FormData(form).get(\"body\"))] ?? null);\n  }\n\n  return (\n    <form\n      noValidate\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root name=\"body\">\n        <Field.Label>Body</Field.Label>\n        <Select.Root items={ITEMS} required onValueChange={() => setMade(null)}>\n          <Select.Trigger placeholder=\"Choose a body\" />\n          <Select.Popup>\n            <Select.Group>\n              <Select.GroupLabel>Inner planets</Select.GroupLabel>\n              {Object.entries(INNER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n            <Select.Separator />\n            <Select.Group>\n              <Select.GroupLabel>Outer planets</Select.GroupLabel>\n              {Object.entries(OUTER).map(([value, label]) => (\n                <Select.Item key={value} value={value}>\n                  {label}\n                </Select.Item>\n              ))}\n            </Select.Group>\n          </Select.Popup>\n        </Select.Root>\n        <Field.Description>\n          The chart centres on this body and follows its orbit.\n        </Field.Description>\n        <Field.Error match=\"valueMissing\">\n          Choose a body for the chart to follow.\n        </Field.Error>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Make chart\n        </Button>\n        <span role=\"status\">{made ? `Chart made for ${made}.` : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     },
     "Switch": {
-      "description": "A switch on Base UI whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
-      "passthrough": "@base-ui/react/switch#Switch.Root.Props",
+      "description": "A switch on UI SDK whose thumb slides to on; inside Field.Root it takes the field's label, description, error and state.",
+      "passthrough": "@ui-sdk/react/switch#Switch",
       "props": {
         "type": "object",
         "properties": {
           "checked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it is on, when you control it; pair with onCheckedChange. Use defaultChecked otherwise."
           },
           "defaultChecked": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Whether it starts on, when it manages its own state."
           },
           "onCheckedChange": {
             "x-type": "function",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Called with the new value when the person turns it on or off."
           },
           "disabled": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Blocks toggling and removes it from the tab order. Field.Root disabled does the same and mutes the label."
           },
           "name": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "The name submitted with the form, with the value \"on\" when on and nothing when off. Inside Field.Root, the field's name wins."
           },
           "uncheckedValue": {
             "type": "string",
-            "x-from": "base-ui",
             "description": "The value submitted when it is off. Without it, an off switch submits nothing, as a native checkbox does."
           }
         },
@@ -1001,7 +1004,7 @@
       ],
       "example": {
         "file": "kit/switch/Switch.example.tsx",
-        "code": "// Golden example: chart settings. Two settings that stay on or off, each named for what turns on, saved with the\n// form. An on switch submits its name with the value \"on\"; an off switch submits nothing, as a native checkbox.\n// Spacing is token variables only.\nimport { useState } from \"react\";\nimport { Form } from \"@base-ui/react/form\";\nimport { Button, Field, Switch } from \"../index\";\n\nexport default function ChartSettings() {\n  const [saved, setSaved] = useState(false);\n\n  return (\n    <Form\n      onFormSubmit={() => setSaved(true)}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"gridLines\" defaultChecked />\n          Show grid lines\n        </Field.Label>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"orbitEmails\" />\n          Email me when an orbit changes\n        </Field.Label>\n        <Field.Description>At most one email a day.</Field.Description>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Save settings\n        </Button>\n        <span role=\"status\">{saved ? \"Settings saved.\" : \"\"}</span>\n      </div>\n    </Form>\n  );\n}\n"
+        "code": "// Golden example: chart settings. Two settings that stay on or off, each named for what turns on, saved with the\n// form. An on switch submits its name with the value \"on\"; an off switch submits nothing, as a native checkbox.\n// Spacing is token variables only.\nimport { useState, type FormEvent } from \"react\";\nimport { Button, Field, Switch } from \"../index\";\n\nexport default function ChartSettings() {\n  const [saved, setSaved] = useState(false);\n\n  function submit(event: FormEvent<HTMLFormElement>) {\n    event.preventDefault();\n    setSaved(true);\n  }\n\n  return (\n    <form\n      onSubmit={submit}\n      style={{\n        display: \"flex\",\n        flexDirection: \"column\",\n        gap: \"var(--space-20)\",\n      }}\n    >\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"gridLines\" defaultChecked />\n          Show grid lines\n        </Field.Label>\n      </Field.Root>\n      <Field.Root>\n        <Field.Label>\n          <Switch name=\"orbitEmails\" />\n          Email me when an orbit changes\n        </Field.Label>\n        <Field.Description>At most one email a day.</Field.Description>\n      </Field.Root>\n      <div\n        style={{\n          display: \"flex\",\n          alignItems: \"center\",\n          gap: \"var(--space-12)\",\n        }}\n      >\n        <Button variant=\"primary\" type=\"submit\">\n          Save settings\n        </Button>\n        <span role=\"status\">{saved ? \"Settings saved.\" : \"\"}</span>\n      </div>\n    </form>\n  );\n}\n"
       }
     },
     "Tabs": {
@@ -1143,7 +1146,7 @@
     },
     "Textarea": {
       "description": "Multi-line text; inside Field.Root it takes the field's label, description, error and invalid and disabled state.",
-      "passthrough": "@base-ui/react/field#Field.Control.Props",
+      "passthrough": "@ui-sdk/react/textarea#Textarea",
       "props": {
         "type": "object",
         "properties": {
@@ -1154,17 +1157,17 @@
           },
           "readOnly": {
             "type": "boolean",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Shows a value that cannot be edited on a layer fill; it stays focusable and is still submitted."
           },
           "placeholder": {
             "type": "string",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "A hint shown while empty. It does not replace the label."
           },
           "onValueChange": {
             "x-type": "function",
-            "x-from": "base-ui",
+            "x-from": "ui-sdk",
             "description": "Called with the new text on each edit. Use it to control the value."
           }
         },
