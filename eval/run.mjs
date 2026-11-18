@@ -44,7 +44,10 @@ function buildWorkspace(ablation, tmpRoot) {
 const listFiles = (dir, base = dir) => fs.readdirSync(dir, { withFileTypes: true }).flatMap((e) => e.isDirectory() ? listFiles(path.join(dir, e.name), base) : [path.relative(base, path.join(dir, e.name))]);
 const prompt = (s) => `${s.prompt}\n\nWrite the result to ./solution.tsx in the current directory: one file whose default export is a React component. Import UI from "./kit". You cannot run code; read what you need in this workspace, then write the file. Work only inside this directory.`;
 
-// The isolation flags are verified against `claude --help` and the smoke run; see eval/README.md.
+// Isolation, verified against `claude --help` and by probe: --safe-mode drops CLAUDE.md, hooks, plugins, skills and MCP;
+// --restricted removes Bash and confines the file tools to the workspace (a Read of /etc/hosts and a Write to ../ were
+// both denied); --tools leaves only the five file tools. Auth stays the subscription login (no --bare, no API key).
+// The CLI has no --max-turns; the real cap is TIMEOUT_MS, --max-budget-usd is advisory under subscription.
 const CLAUDE_FLAGS = [
   '--model', 'sonnet',
   '--output-format', 'json',
@@ -52,6 +55,7 @@ const CLAUDE_FLAGS = [
   '--tools', 'Read,Glob,Grep,Write,Edit',
   '--permission-mode', 'acceptEdits',
   '--safe-mode',
+  '--restricted',
   '--strict-mcp-config',
   '--max-budget-usd', '3',
 ];
