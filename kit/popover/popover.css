@@ -1,0 +1,76 @@
+/* Popover. Every value is a token, a kit-local property from kit.css, or one of the UN-DIALLED
+   properties below. The panel's fill, border, radius and shadow are the floating level's drawing:
+   the .orr-floating class in kit/floating.css, which Popover.tsx adds to the popup.
+   STRAWMAN (Sean's call): the panel is the Dialog's drawing at a smaller width; no arrow. */
+
+@layer orrery.kit {
+  /* Kit-local, on the positioner only (never the shared :root). */
+  .orr-popover__positioner {
+    /* UN-DIALLED: the gap between the trigger and the panel. */
+    --orr-popover-offset: var(--space-4);
+    /* UN-DIALLED: the panel's width: no width token fits, so four 72px steps. */
+    --orr-popover-width: calc(var(--space-72) * 4);
+    display: contents;
+  }
+
+  /* The panel sits in the browser's top layer, so it needs no z-index. UI SDK places its border
+     box, so the gap to the trigger is Popover.tsx's sideOffset, never a margin. The kit undoes the
+     browser's popover padding and scrolling itself, as UI SDK's own reset does not reach a popup
+     in another document. */
+  .orr-popover {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-8);
+    width: min(var(--orr-popover-width), calc(100% - 2 * var(--space-8)));
+    max-height: calc(var(--available-height) - var(--orr-popover-offset));
+    overflow: auto;
+    padding: var(--space-16); /* UN-DIALLED */
+    color: var(--text);
+    font-family: var(--font-sans);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+    transform-origin: var(--transform-origin);
+  }
+  /* A closed popup UI SDK keeps in the page carries hidden. The display above outranks the
+     browser's own [hidden] rule and UI SDK's (which ranks under the kit), so the kit hides it. */
+  .orr-popover[hidden] {
+    display: none;
+  }
+  .orr-popover:focus-visible {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+
+  .orr-popover__title {
+    margin: 0;
+    font-size: var(--type-size-17);
+    line-height: var(--type-line-height-17);
+    font-weight: 600; /* UN-DIALLED */
+  }
+  .orr-popover__description {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: var(--type-size-14);
+    line-height: var(--type-line-height-14);
+  }
+
+  /* Motion, the Select popup's pattern: enter and exit fade; with motion allowed the panel also
+     grows from --orr-enter-scale toward the trigger. Reduced motion is opacity only. */
+  .orr-popover {
+    transition: opacity var(--orr-dur) var(--orr-ease);
+  }
+  .orr-popover:is([data-starting-style], [data-ending-style]) {
+    opacity: 0;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .orr-popover {
+      transition:
+        opacity var(--orr-dur) var(--orr-ease),
+        transform var(--orr-dur) var(--orr-ease);
+    }
+    .orr-popover:is([data-starting-style], [data-ending-style]) {
+      transform: scale(var(--orr-enter-scale));
+    }
+  }
+}

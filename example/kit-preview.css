@@ -54,6 +54,14 @@
   }
 }
 
+/* kit/popover/popover.css */
+@layer orrery.kit {
+  .orr-popover[data-preview~="focus"] {
+    outline: var(--ring-width) solid var(--accent);
+    outline-offset: var(--ring-width);
+  }
+}
+
 /* kit/checkbox/checkbox.css */
 @layer orrery.kit {
   @media (hover: hover) {

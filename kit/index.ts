@@ -23,3 +23,8 @@ export { Switch, type SwitchProps } from "./switch/Switch";
 export { Tabs } from "./tabs/Tabs";
 export { Textarea } from "./textarea/Textarea";
 export type { TextareaProps } from "./textarea/Textarea";
+export {
+  Popover,
+  type PopoverPopupProps,
+} from "./popover/Popover";
+export { Tooltip, type TooltipPopupProps } from "./tooltip/Tooltip";
