@@ -1,4 +1,4 @@
-// Orrery kit: plain CSS over tokens, behaviour on Base UI. Import kit/kit.css once for the styles.
+// Orrery kit: plain CSS over tokens, behaviour on UI SDK. Import kit/kit.css once for the styles.
 export { Button, IconButton } from "./button/Button";
 export type {
   ButtonProps,
