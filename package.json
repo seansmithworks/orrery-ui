@@ -103,6 +103,10 @@
     "catalog:build": "node kit/catalog/build.mjs",
     "catalog:check": "node kit/catalog/check.mjs",
     "kit-preview:build": "node example/build-kit-preview.mjs",
-    "kit-preview:check": "node example/build-kit-preview.mjs --check"
+    "kit-preview:check": "node example/build-kit-preview.mjs --check",
+    "eval": "node eval/run.mjs",
+    "eval:score": "node eval/score.mjs",
+    "eval:report": "node eval/report.mjs",
+    "eval:selftest": "node eval/selftest.mjs"
   }
 }

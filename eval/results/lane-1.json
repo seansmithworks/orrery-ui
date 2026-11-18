@@ -1,0 +1,2921 @@
+[
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 13729,
+      "total_cost_usd": 0.06986329999999999,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 12450,
+        "cache_read_input_tokens": 33873,
+        "output_tokens": 1666,
+        "output_tokens_details": {
+          "thinking_tokens": 199
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 12450,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 324,
+            "cache_read_input_tokens": 16782,
+            "cache_creation_input_tokens": 909,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 909
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "c7befe9b-aaf2-4b36-aa4d-05785a45add2",
+      "result": "I wrote `./solution.tsx`. I couldn't run or render it, so it is untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal dialog. The title is \"Delete this project?\" and the description is \"Its files and history are removed. This cannot be undone.\"\n- **\"Keep project\":** a secondary button that closes the dialog.\n- **\"Delete\":** a primary button that closes the dialog and sets the status text \"Project deleted.\" on the page. The status is a `<p role=\"status\">` that is always rendered, so screen readers should announce the text when it appears.\n- **Built-in behavior:** the kit"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "-catalog",
+    "seed": 1,
+    "wallMs": 14367,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 13346,
+      "total_cost_usd": 0.0538901,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 8823,
+        "cache_read_input_tokens": 30721,
+        "output_tokens": 1551,
+        "output_tokens_details": {
+          "thinking_tokens": 50
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 8823,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 319,
+            "cache_read_input_tokens": 13278,
+            "cache_creation_input_tokens": 786,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 786
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "4d77e653-ddf8-4d3c-8499-e58781f89889",
+      "result": "I wrote the confirmation to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal.\n- **Dialog:** it's titled \"Delete this project?\" with the description \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is a secondary button that closes the dialog. \"Delete\" is the primary button. It closes the dialog and sets the status text \"Project deleted.\"\n- **Status text:** it sits in a `role=\"status\"` paragraph that stays on the page and is empty until you delete, so screen readers announce the ch"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "-design",
+    "seed": 1,
+    "wallMs": 14071,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 13990,
+      "total_cost_usd": 0.0548999,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 8838,
+        "cache_read_input_tokens": 30619,
+        "output_tokens": 1647,
+        "output_tokens_details": {
+          "thinking_tokens": 92
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 8838,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 352,
+            "cache_read_input_tokens": 13227,
+            "cache_creation_input_tokens": 852,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 852
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "442f1b34-704c-49f5-9c95-ef024e08bee5",
+      "result": "I wrote the component to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal dialog.\n- **Dialog text:** the title is \"Delete this project?\" and the description is \"Its files and history are removed. This cannot be undone.\"\n- **\"Keep project\":** a secondary button that closes the dialog.\n- **\"Delete\":** a primary button that closes the dialog and sets \"Project deleted.\" in a `role=\"status\"` paragraph. That paragraph is always on the page, empty until the delete, so screen readers announce the message when it appears.\n\nI used"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "-rules",
+    "seed": 1,
+    "wallMs": 14856,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 6,
+      "duration_ms": 13063,
+      "total_cost_usd": 0.0461575,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 7216,
+        "cache_read_input_tokens": 28675,
+        "output_tokens": 1441,
+        "output_tokens_details": {
+          "thinking_tokens": 146
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7216,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 324,
+            "cache_read_input_tokens": 11649,
+            "cache_creation_input_tokens": 808,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 808
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "6e131f8e-c5a8-408a-80f5-0adcd2d0d050",
+      "result": "I wrote `./solution.tsx`, but I haven't run or type-checked it, since I can't run code here.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal.\n- **Dialog:** it's titled \"Delete this project?\", with the description \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is a secondary button that only closes the dialog. \"Delete\" is the primary button. It closes the dialog and sets the status text.\n- **Status text:** \"Project deleted.\" shows in a `<p role=\"status\">` on the page. The paragraph is always on the page and empty until you delete, s"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "floor",
+    "seed": 1,
+    "wallMs": 13857,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 6,
+      "duration_ms": 11802,
+      "total_cost_usd": 0.0450086,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 7139,
+        "cache_read_input_tokens": 28666,
+        "output_tokens": 1357,
+        "output_tokens_details": {
+          "thinking_tokens": 78
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7139,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 312,
+            "cache_read_input_tokens": 11642,
+            "cache_creation_input_tokens": 738,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 738
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "8e465674-28e8-4c77-b064-1a614ecce700",
+      "result": "I wrote `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the dialog.\n- **Dialog:** it's titled \"Delete this project?\" and carries the description \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is a secondary button that closes the dialog. \"Delete\" is the primary button. It closes the dialog and shows \"Project deleted.\" on the page.\n- **Status text:** it sits in an always-present `<p role=\"status\">` that is empty until you delete. Screen readers should announce it when the text appears.\n\nI"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "floor",
+    "seed": 2,
+    "wallMs": 12472,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 6,
+      "duration_ms": 14195,
+      "total_cost_usd": 0.0464586,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 7229,
+        "cache_read_input_tokens": 28666,
+        "output_tokens": 1466,
+        "output_tokens_details": {
+          "thinking_tokens": 168
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7229,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 331,
+            "cache_read_input_tokens": 11642,
+            "cache_creation_input_tokens": 828,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 828
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "4ab35c6b-cd9f-4e18-bfa0-b599c620c8fd",
+      "result": "I wrote `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens a modal built from the kit's `Dialog`.\n- **Dialog content:** the title is \"Delete this project?\" and the description is \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is a quiet button that just closes the dialog. \"Delete\" is the primary button; it closes the dialog and sets the state that shows \"Project deleted.\" on the page.\n- **Status text:** it sits in a `<p role=\"status\">`, so screen readers announce it when it appears.\n\nI didn"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "floor",
+    "seed": 3,
+    "wallMs": 14942,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 14317,
+      "total_cost_usd": 0.0797712,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 14450,
+        "cache_read_input_tokens": 35352,
+        "output_tokens": 1842,
+        "output_tokens_details": {
+          "thinking_tokens": 158
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 14450,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 381,
+            "cache_read_input_tokens": 18351,
+            "cache_creation_input_tokens": 892,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 892
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "cd212dde-4678-453c-afe2-e1ef5739e9e8",
+      "result": "I wrote `./solution.tsx`. I couldn't run it, so it's untested.\n\nIt uses the kit's `Dialog` parts, following the pattern in `kit/dialog/Dialog.example.tsx`:\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal.\n- **Dialog text:** the title is \"Delete this project?\", with the description \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is a secondary button that just closes the dialog. \"Delete\" is the primary button; it closes the dialog and sets the state that shows \"Project deleted.\"\n- **Status text:** it sits in a `<p role=\"status\">`, so"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "full",
+    "seed": 1,
+    "wallMs": 15298,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 14169,
+      "total_cost_usd": 0.0763288,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 13948,
+        "cache_read_input_tokens": 35808,
+        "output_tokens": 1694,
+        "output_tokens_details": {
+          "thinking_tokens": 96
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 13948,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 289,
+            "cache_read_input_tokens": 18357,
+            "cache_creation_input_tokens": 832,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 832
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "aa05e990-6905-47f0-9774-e129c125960c",
+      "result": "I wrote the confirmation to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal dialog.\n- **Dialog:** it's titled \"Delete this project?\" and has your description text. I built it from the kit's `Dialog`, which handles the modal behaviour (focus trap, Escape to close).\n- **Actions:** \"Keep project\" is a secondary button that closes the dialog. \"Delete\" is a primary button that closes the dialog and sets the status text.\n- **Status text:** \"Project deleted.\" shows in a `<p role=\"status\">`. That element is always on the page, "
+    },
+    "scenario": "confirm-delete",
+    "ablation": "full",
+    "seed": 2,
+    "wallMs": 14948,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 15072,
+      "total_cost_usd": 0.077614,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 13992,
+        "cache_read_input_tokens": 35800,
+        "output_tokens": 1805,
+        "output_tokens_details": {
+          "thinking_tokens": 152
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 13992,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 356,
+            "cache_read_input_tokens": 18349,
+            "cache_creation_input_tokens": 884,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 884
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "5773d296-99f8-470d-a0ce-be22b52d5162",
+      "result": "I wrote `./solution.tsx`. I haven't run it or type-checked it, since I can't run code here.\n\n- **Trigger:** a secondary \"Delete project\" button opens the modal dialog.\n- **Dialog text:** the title is \"Delete this project?\" and the description is \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is secondary and only closes the dialog. \"Delete\" is primary, closes the dialog and shows \"Project deleted.\" on the page.\n- **Status text:** it sits in a `role=\"status\"` element that is on the page from the start and empty until you delete. This lets screen reader"
+    },
+    "scenario": "confirm-delete",
+    "ablation": "full",
+    "seed": 3,
+    "wallMs": 15899,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 15532,
+      "total_cost_usd": 0.06725809999999999,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 11857,
+        "cache_read_input_tokens": 33441,
+        "output_tokens": 1647,
+        "output_tokens_details": {
+          "thinking_tokens": 83
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 11857,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 241,
+            "cache_read_input_tokens": 16277,
+            "cache_creation_input_tokens": 846,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 846
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "e6becd28-3c26-4177-a9ca-c9c84df9583b",
+      "result": "I wrote the crew card to `./solution.tsx`. I couldn't run or render it, so it's untested.\n\n- **Header:** \"Ada Okafor\" is an `h3`, with \"Flight engineer, Orbit 7\" below it as a paragraph. The card is an `<article>` labelled by that heading.\n- **Tabs:** Overview, Passes and History each show the text you gave. Overview is selected first.\n- **Footer:** \"Remove from crew\" is a `quiet` button and \"Save changes\" is a `primary` button.\n\nI added an `aria-label` of \"Crew member details\" on the tab list, which you didn't ask for. I didn't read `DESIGN.md` closely, because it describes a different packag"
+    },
+    "scenario": "crew-tabs",
+    "ablation": "-catalog",
+    "seed": 1,
+    "wallMs": 16040,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 12964,
+      "total_cost_usd": 0.040035100000000004,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 5556,
+        "cache_read_input_tokens": 27451,
+        "output_tokens": 1505,
+        "output_tokens_details": {
+          "thinking_tokens": 24
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 5556,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 170,
+            "cache_read_input_tokens": 9933,
+            "cache_creation_input_tokens": 889,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 889
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "134fec6e-da1b-477b-b4b5-e3e519932728",
+      "result": "I wrote the crew card to `./solution.tsx`. I haven't run or type-checked it, since I can't run code here.\n\nThe card has the \"Ada Okafor\" heading with \"Flight engineer, Orbit 7\" below it. Inside are the three tabs, with Overview selected first and the texts you gave. The footer has a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n\nI copied the structure from the kit's own Card and Tabs examples. The heading names the card, and it also labels the tab list."
+    },
+    "scenario": "crew-tabs",
+    "ablation": "-design",
+    "seed": 1,
+    "wallMs": 13600,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 9,
+      "duration_ms": 15456,
+      "total_cost_usd": 0.0572199,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 8734,
+        "cache_read_input_tokens": 30679,
+        "output_tokens": 1920,
+        "output_tokens_details": {
+          "thinking_tokens": 23
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 8734,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 235,
+            "cache_read_input_tokens": 13114,
+            "cache_creation_input_tokens": 886,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 886
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "085d29dc-b56c-4547-adc4-d43f512803a9",
+      "result": "I wrote the card to `./solution.tsx`. I couldn't run or render it, so it's untested.\n\nIt's built from the kit's `Card`, `Tabs` and `Button`, following the kit's crew-card and tabs examples:\n\n- **Header:** \"Ada Okafor\" is the heading, with \"Flight engineer, Orbit 7\" below it. The card is an `<article>` named by that heading.\n- **Tabs:** Overview, Passes and History each show the text you gave. Overview is selected first. The tab list is also labelled by the heading.\n- **Footer:** a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n\nThe buttons have no click handlers, so they "
+    },
+    "scenario": "crew-tabs",
+    "ablation": "-rules",
+    "seed": 1,
+    "wallMs": 16066,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 13344,
+      "total_cost_usd": 0.0443225,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 6663,
+        "cache_read_input_tokens": 28245,
+        "output_tokens": 1483,
+        "output_tokens_details": {
+          "thinking_tokens": 33
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 6663,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 258,
+            "cache_read_input_tokens": 11144,
+            "cache_creation_input_tokens": 785,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 785
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "508b65f3-db0a-4fe2-a79c-d773facbbeab",
+      "result": "I wrote the crew card to `./solution.tsx`. I haven't run or rendered it, since I can't run code here.\n\n- **Header:** \"Ada Okafor\" is an `h3`, with \"Flight engineer, Orbit 7\" below it. The card is an `article` labelled by that heading.\n- **Tabs:** Overview, Passes and History are in the card body, with Overview selected first. Each tab shows the text you gave.\n- **Footer:** \"Remove from crew\" is a quiet button and \"Save changes\" is a primary button.\n\nI added an `aria-label` of \"Crew member details\" on the tab list, which you didn't ask for.\n\nI didn't import `kit/kit.css` in the file. The kit's "
+    },
+    "scenario": "crew-tabs",
+    "ablation": "floor",
+    "seed": 1,
+    "wallMs": 14162,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 13320,
+      "total_cost_usd": 0.044003099999999996,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 6641,
+        "cache_read_input_tokens": 28231,
+        "output_tokens": 1460,
+        "output_tokens_details": {
+          "thinking_tokens": 22
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 6641,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 256,
+            "cache_read_input_tokens": 11134,
+            "cache_creation_input_tokens": 773,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 773
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "86779254-d1b7-4cbf-bc8e-a15e10a6093d",
+      "result": "I wrote the card to `./solution.tsx`. I haven't run or rendered it, since I can't run code here.\n\n- **Header:** \"Ada Okafor\" is an `h3`, with \"Flight engineer, Orbit 7\" in a `p` below it.\n- **Tabs:** Overview, Passes and History each show the text you gave. Overview is selected first.\n- **Footer:** \"Remove from crew\" is a quiet button and \"Save changes\" is a primary button.\n\nThe card renders as an `article` labelled by the name heading. I gave the tab list the label \"Crew member details\", which you didn't ask for. I added it so the tabs have an accessible name.\n\nThe kit's styles come from `kit"
+    },
+    "scenario": "crew-tabs",
+    "ablation": "floor",
+    "seed": 2,
+    "wallMs": 14012,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 7,
+      "duration_ms": 12866,
+      "total_cost_usd": 0.0443058,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 6674,
+        "cache_read_input_tokens": 28238,
+        "output_tokens": 1477,
+        "output_tokens_details": {
+          "thinking_tokens": 31
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 6674,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 239,
+            "cache_read_input_tokens": 11139,
+            "cache_creation_input_tokens": 801,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 801
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "c56e6107-faba-4d4d-b284-b524b6b1cb5f",
+      "result": "I wrote the card to `./solution.tsx`. I haven't run or rendered it, since I can't run code here.\n\n- **Header:** \"Ada Okafor\" is an `h3`, with \"Flight engineer, Orbit 7\" below it. The card is an `article` labelled by that heading.\n- **Tabs:** Overview, Passes and History each have the text you gave. Overview is selected first.\n- **Footer:** \"Remove from crew\" is a quiet button and \"Save changes\" is a primary button.\n\nEverything comes from `./kit` (`Card`, `Tabs` and `Button`). The file doesn't import the kit's stylesheet, so `kit/kit.css` has to be loaded elsewhere for the styles to show."
+    },
+    "scenario": "crew-tabs",
+    "ablation": "floor",
+    "seed": 3,
+    "wallMs": 13648,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 9,
+      "duration_ms": 15261,
+      "total_cost_usd": 0.0575364,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 9142,
+        "cache_read_input_tokens": 30124,
+        "output_tokens": 1794,
+        "output_tokens_details": {
+          "thinking_tokens": 0
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 9142,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 227,
+            "cache_read_input_tokens": 13073,
+            "cache_creation_input_tokens": 862,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 862
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "554527a7-8768-4db9-89c3-e453f98d709e",
+      "result": "I wrote the crew card to `./solution.tsx`. I haven't run or type-checked it, since I can't run code here.\n\n- **Header:** \"Ada Okafor\" is the heading, with \"Flight engineer, Orbit 7\" below it.\n- **Tabs:** Overview, Passes and History each show the text you gave. Overview is selected first.\n- **Footer:** \"Remove from crew\" is the quiet button and \"Save changes\" is the primary one.\n\nI based the layout on the kit's own card and tabs examples (`Card.example.tsx` and `Tabs.example.tsx`). The card is an `<article>` named by the heading, and the tab list uses the same heading as its accessible label."
+    },
+    "scenario": "crew-tabs",
+    "ablation": "full",
+    "seed": 1,
+    "wallMs": 16137,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 15400,
+      "total_cost_usd": 0.063863,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 10676,
+        "cache_read_input_tokens": 32530,
+        "output_tokens": 1789,
+        "output_tokens_details": {
+          "thinking_tokens": 73
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 10676,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 284,
+            "cache_read_input_tokens": 15006,
+            "cache_creation_input_tokens": 936,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 936
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "a3e34add-3145-48da-9909-d89148dce664",
+      "result": "I wrote the card to `./solution.tsx`. I haven't run it or type-checked it, since I can't run code here.\n\n- **Header:** \"Ada Okafor\" is an `h3`, with \"Flight engineer, Orbit 7\" under it.\n- **Tabs:** Overview, Passes and History sit in the card body, with Overview selected first. Each tab shows the text you gave.\n- **Footer:** a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n\nI copied the structure from the kit's own examples, `kit/card/Card.example.tsx` and `kit/tabs/Tabs.example.tsx`. The card is an `article` named by the heading, and the tab list is labelled by that same"
+    },
+    "scenario": "crew-tabs",
+    "ablation": "full",
+    "seed": 2,
+    "wallMs": 15975,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 14644,
+      "total_cost_usd": 0.063055,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 10669,
+        "cache_read_input_tokens": 32530,
+        "output_tokens": 1711,
+        "output_tokens_details": {
+          "thinking_tokens": 66
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 10669,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 213,
+            "cache_read_input_tokens": 15006,
+            "cache_creation_input_tokens": 929,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 929
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "6c40d0d7-b697-4150-ad40-0fede5d89d66",
+      "result": "I wrote the card to `./solution.tsx`. I haven't run or type-checked it, since I can't run code here.\n\nThe card is an `<article>` named by its \"Ada Okafor\" heading. \"Flight engineer, Orbit 7\" sits below it in muted text. The body holds the three tabs, with \"Overview\" selected first, and each tab has the text you gave. The footer has a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n\nI based the structure on the kit's own card and tabs examples, and I imported from `./kit` as you asked. The tab list is labelled by the card heading, so screen readers announce it with the crew"
+    },
+    "scenario": "crew-tabs",
+    "ablation": "full",
+    "seed": 3,
+    "wallMs": 15313,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 10,
+      "duration_ms": 22491,
+      "total_cost_usd": 0.1344703,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 25550,
+        "cache_read_input_tokens": 69003,
+        "output_tokens": 2535,
+        "output_tokens_details": {
+          "thinking_tokens": 305
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 25550,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 468,
+            "cache_read_input_tokens": 29764,
+            "cache_creation_input_tokens": 1036,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1036
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "05f0f599-ba2c-4fc2-b121-df76514ae62b",
+      "result": "I wrote the form to `./solution.tsx`. I couldn't run it, so it's untested and unchecked against the repo's source rules.\n\n- **Display name:** a text `Input` inside `Field.Root`. The hint \"Shown to your crew.\" is a `Field.Description`, so it's linked to the input.\n- **Time zone:** a `Select` with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\". Its label is a `Field.Label`.\n- **Email switch:** a `Switch` inside the `Field.Label`, following the usage example in `kit/switch/Switch.tsx`. Clicking the label text toggles it.\n- **Save profile:** a primary `Button` with `type=\"submit\"`"
+    },
+    "scenario": "profile-settings",
+    "ablation": "-catalog",
+    "seed": 1,
+    "wallMs": 22964,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 0
+    },
+    "total": 0.8
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 17468,
+      "total_cost_usd": 0.0528814,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 7462,
+        "cache_read_input_tokens": 29074,
+        "output_tokens": 2011,
+        "output_tokens_details": {
+          "thinking_tokens": 97
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 7462,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 340,
+            "cache_read_input_tokens": 11610,
+            "cache_creation_input_tokens": 1102,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1102
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "ba3768c0-ca01-4cd8-9a62-c2f0149d6709",
+      "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested. I also didn't open `Switch.tsx`, `Select.tsx` or `Field.tsx`. I followed the kit's example files instead.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\"\n- **Time zone:** a select with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\".\n- **Save button:** a primary \"Save profile\" button that submits the form. After a save, \"Profile saved.\" appears next to it.\n- **Status reset:** I made the status text c"
+    },
+    "scenario": "profile-settings",
+    "ablation": "-design",
+    "seed": 1,
+    "wallMs": 18025,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 11,
+      "duration_ms": 20098,
+      "total_cost_usd": 0.1111128,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20376,
+        "cache_read_input_tokens": 64488,
+        "output_tokens": 2314,
+        "output_tokens_details": {
+          "thinking_tokens": 44
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 20376,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 329,
+            "cache_read_input_tokens": 24646,
+            "cache_creation_input_tokens": 980,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 980
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "7cf6586e-91ad-4a1c-997c-643b6eda2c1f",
+      "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run or type-check it, so it's untested. I modelled it on the kit's own Select and Switch examples.\n\n- **Display name:** this is a kit `Input` inside a `Field`, with the hint \"Shown to your crew.\" as the field description.\n- **Time zone:** this is a kit `Select` with the placeholder \"Choose a time zone\". Its three options are UTC, Berlin and Tokyo.\n- **Email switch:** the label \"Email me about new orbits\" wraps a kit `Switch`, so clicking the text toggles it.\n- **Save profile:** this is a primary `Button` of type submit. Submitti"
+    },
+    "scenario": "profile-settings",
+    "ablation": "-rules",
+    "seed": 1,
+    "wallMs": 20574,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 17285,
+      "total_cost_usd": 0.07562189999999999,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 12868,
+        "cache_read_input_tokens": 34039,
+        "output_tokens": 2073,
+        "output_tokens_details": {
+          "thinking_tokens": 251
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 12868,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 380,
+            "cache_read_input_tokens": 16990,
+            "cache_creation_input_tokens": 1128,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1128
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "535c88bd-aa54-4848-8c51-302cc42a681f",
+      "result": "I wrote the form to `./solution.tsx`. I couldn't run or type-check it, so it's untested.\n\n- **Display name:** a text `Input` inside a `Field`, with the hint \"Shown to your crew.\" as the field description.\n- **Time zone:** a `Select` with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\". An `items` map makes the trigger show the labels.\n- **Email switch:** a `Switch` inside the field label, so clicking the text toggles it. The label reads \"Email me about new orbits\".\n- **Save button:** a primary `Button` of type submit, labelled \"Save profile\".\n- **Status text:** submitting calls"
+    },
+    "scenario": "profile-settings",
+    "ablation": "floor",
+    "seed": 1,
+    "wallMs": 17772,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 0
+    },
+    "total": 0.8
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 17744,
+      "total_cost_usd": 0.0753548,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 12829,
+        "cache_read_input_tokens": 34028,
+        "output_tokens": 2062,
+        "output_tokens_details": {
+          "thinking_tokens": 216
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 12829,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 403,
+            "cache_read_input_tokens": 16981,
+            "cache_creation_input_tokens": 1098,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1098
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "52fbcb35-ed2d-445e-96d0-bf08f249a5a0",
+      "result": "I wrote the form to `./solution.tsx`. I couldn't run it, so it hasn't been compiled or tested.\n\n- **Display name:** a text `Input` inside a `Field`, with the hint \"Shown to your crew.\".\n- **Time zone:** a `Select` with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\".\n- **Email switch:** a `Switch` inside the field's label, so clicking the text \"Email me about new orbits\" toggles it.\n- **Save button:** a primary `Button` of type submit labelled \"Save profile\".\n- **Status text:** submitting shows \"Profile saved.\" in a `<p role=\"status\">`. The form calls `preventDefault()`, so not"
+    },
+    "scenario": "profile-settings",
+    "ablation": "floor",
+    "seed": 2,
+    "wallMs": 18313,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 0
+    },
+    "total": 0.8
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 8,
+      "duration_ms": 17204,
+      "total_cost_usd": 0.07509389999999999,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 12886,
+        "cache_read_input_tokens": 34039,
+        "output_tokens": 2013,
+        "output_tokens_details": {
+          "thinking_tokens": 219
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 12886,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 302,
+            "cache_read_input_tokens": 16990,
+            "cache_creation_input_tokens": 1146,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1146
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "a039cb03-3fcb-43f5-8da9-2d4610798771",
+      "result": "I wrote the form to `./solution.tsx`. I couldn't run or type-check it, so it's untested.\n\n- **Fields:** It has the \"Display name\" text field with the hint \"Shown to your crew.\". It has the \"Time zone\" select with UTC, Berlin and Tokyo and the placeholder \"Choose a time zone\". It has the \"Email me about new orbits\" switch, whose label wraps the switch so clicking the text toggles it.\n- **Saving:** The \"Save profile\" button is a primary submit button. Submitting the form shows \"Profile saved.\" in a `role=\"status\"` paragraph. There's no backend, so nothing is actually sent. Editing any field afte"
+    },
+    "scenario": "profile-settings",
+    "ablation": "floor",
+    "seed": 3,
+    "wallMs": 17643,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "kit/button/Button.tsx",
+      "kit/button/button.css",
+      "kit/card/Card.tsx",
+      "kit/card/card.css",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.tsx",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.css",
+      "kit/select/Select.tsx",
+      "kit/select/select.css",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 0
+    },
+    "total": 0.8
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 9,
+      "duration_ms": 17196,
+      "total_cost_usd": 0.0745111,
+      "usage": {
+        "input_tokens": 8,
+        "cache_creation_input_tokens": 12517,
+        "cache_read_input_tokens": 34171,
+        "output_tokens": 2101,
+        "output_tokens_details": {
+          "thinking_tokens": 41
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 12517,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 332,
+            "cache_read_input_tokens": 16697,
+            "cache_creation_input_tokens": 1070,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1070
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "e60bf9a2-213e-4b12-a26f-9b3d045a7d4d",
+      "result": "I wrote the form to `./solution.tsx`. I couldn't run it, so it's untested. I modelled it on the kit's golden examples.\n\n- **Display name:** a `Field` with the label \"Display name\", an `Input`, and the description \"Shown to your crew.\"\n- **Time zone:** a `Select` with UTC, Berlin and Tokyo and the placeholder \"Choose a time zone\". I passed `items` so the trigger shows the label instead of the raw value.\n- **Email switch:** a `Switch` inside the label \"Email me about new orbits\".\n- **Save:** a primary `Button` \"Save profile\" submits the form. The status text \"Profile saved.\" shows in a `role=\"st"
+    },
+    "scenario": "profile-settings",
+    "ablation": "full",
+    "seed": 1,
+    "wallMs": 17704,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 11,
+      "duration_ms": 20087,
+      "total_cost_usd": 0.11219449999999999,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20469,
+        "cache_read_input_tokens": 64685,
+        "output_tokens": 2383,
+        "output_tokens_details": {
+          "thinking_tokens": 68
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 20469,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 364,
+            "cache_read_input_tokens": 24720,
+            "cache_creation_input_tokens": 999,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 999
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "d55a2b51-5b55-4621-a793-7f9030bca393",
+      "result": "I wrote the form to `./solution.tsx`. I couldn't run or type-check it, so it's untested. I followed the kit's own golden examples for each control.\n\n- **Display name:** a text `Input` inside `Field.Root`, with the description \"Shown to your crew.\"\n- **Time zone:** a `Select` with UTC, Berlin and Tokyo, the placeholder \"Choose a time zone\", and `items` so the trigger shows the label instead of the raw value.\n- **Email me about new orbits:** a `Switch` inside the field's label, so clicking the text toggles it.\n- **Save profile:** a primary submit `Button`. Submitting shows \"Profile saved.\" in a "
+    },
+    "scenario": "profile-settings",
+    "ablation": "full",
+    "seed": 2,
+    "wallMs": 20602,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  },
+  {
+    "run": {
+      "is_error": false,
+      "subtype": "success",
+      "num_turns": 11,
+      "duration_ms": 20983,
+      "total_cost_usd": 0.11346740000000002,
+      "usage": {
+        "input_tokens": 10,
+        "cache_creation_input_tokens": 20558,
+        "cache_read_input_tokens": 64754,
+        "output_tokens": 2474,
+        "output_tokens_details": {
+          "thinking_tokens": 133
+        },
+        "server_tool_use": {
+          "web_search_requests": 0,
+          "web_fetch_requests": 0
+        },
+        "service_tier": "standard",
+        "cache_creation": {
+          "ephemeral_1h_input_tokens": 20558,
+          "ephemeral_5m_input_tokens": 0
+        },
+        "inference_geo": "global",
+        "iterations": [
+          {
+            "input_tokens": 2,
+            "output_tokens": 370,
+            "cache_read_input_tokens": 24795,
+            "cache_creation_input_tokens": 1013,
+            "cache_creation": {
+              "ephemeral_5m_input_tokens": 0,
+              "ephemeral_1h_input_tokens": 1013
+            },
+            "type": "message"
+          }
+        ],
+        "speed": "standard",
+        "fallback_credit": null
+      },
+      "session_id": "6232534d-7c55-4a25-9227-d0e8a5a986a9",
+      "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested.\n\nIt builds on the kit's own `Field`, `Input`, `Select`, `Switch` and `Button`, following the patterns in the kit's golden examples.\n\n- **Display name:** a text input with the description \"Shown to your crew.\"\n- **Time zone:** a select with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\". The trigger shows the option's label instead of its raw value.\n- **Email switch:** the \"Email me about new orbits\" switch sits inside its label, so clicking the text toggles it.\n- **Save:** the primary \""
+    },
+    "scenario": "profile-settings",
+    "ablation": "full",
+    "seed": 3,
+    "wallMs": 21531,
+    "exit": 0,
+    "limited": false,
+    "workspaceFiles": [
+      "DESIGN.md",
+      "kit/button/Button.example.tsx",
+      "kit/button/Button.tsx",
+      "kit/button/button.catalog.json",
+      "kit/button/button.css",
+      "kit/card/Card.example.tsx",
+      "kit/card/Card.tsx",
+      "kit/card/card.catalog.json",
+      "kit/card/card.css",
+      "kit/catalog/README.md",
+      "kit/catalog/build.mjs",
+      "kit/catalog/check.mjs",
+      "kit/catalog.json",
+      "kit/checkbox/Checkbox.example.tsx",
+      "kit/checkbox/Checkbox.tsx",
+      "kit/checkbox/checkbox.catalog.json",
+      "kit/checkbox/checkbox.css",
+      "kit/control.css",
+      "kit/cx.ts",
+      "kit/dialog/Dialog.example.tsx",
+      "kit/dialog/Dialog.tsx",
+      "kit/dialog/dialog.catalog.json",
+      "kit/dialog/dialog.css",
+      "kit/field/Field.example.tsx",
+      "kit/field/Field.tsx",
+      "kit/field/field.catalog.json",
+      "kit/field/field.css",
+      "kit/floating.css",
+      "kit/index.ts",
+      "kit/kit.css",
+      "kit/radio/Radio.example.tsx",
+      "kit/radio/Radio.tsx",
+      "kit/radio/radio.catalog.json",
+      "kit/radio/radio.css",
+      "kit/select/Select.example.tsx",
+      "kit/select/Select.tsx",
+      "kit/select/select.catalog.json",
+      "kit/select/select.css",
+      "kit/switch/Switch.example.tsx",
+      "kit/switch/Switch.tsx",
+      "kit/switch/switch.catalog.json",
+      "kit/switch/switch.css",
+      "kit/tabs/Tabs.example.tsx",
+      "kit/tabs/Tabs.tsx",
+      "kit/tabs/tabs.catalog.json",
+      "kit/tabs/tabs.css",
+      "kit/textarea/Textarea.example.tsx",
+      "kit/textarea/Textarea.tsx",
+      "kit/textarea/textarea.catalog.json",
+      "kit/textarea/textarea.css",
+      "tokens/generated/css/northwind-kiln.css",
+      "tokens/generated/css/orrery.css",
+      "tokens/generated/css/orrery.iris.css",
+      "tokens/generated/css/orrery.system.css",
+      "tokens/generated/css/solar.css",
+      "tokens/generated/css/solar.system.css",
+      "tokens/rules/check-source.mjs",
+      "tokens/rules/registry.mjs",
+      "tokens/rules/rules.json",
+      "tokens/rules/test-rules.mjs"
+    ],
+    "scores": {
+      "kit-only": 1,
+      "literals": 1,
+      "typecheck": 1,
+      "catalog": 1,
+      "render": 1
+    },
+    "total": 1
+  }
+]

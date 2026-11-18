@@ -1,0 +1,6 @@
+{
+  "id": "profile-settings",
+  "title": "Profile settings form",
+  "prompt": "Build a profile settings form. It has: a text field labelled \"Display name\" with the hint \"Shown to your crew.\"; a select labelled \"Time zone\" with three options (UTC, Berlin, Tokyo) and the placeholder \"Choose a time zone\"; a switch labelled \"Email me about new orbits\"; and a primary button \"Save profile\" that submits the form. After saving, show the status text \"Profile saved.\".",
+  "steps": []
+}

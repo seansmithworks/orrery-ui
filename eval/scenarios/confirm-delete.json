@@ -1,0 +1,6 @@
+{
+  "id": "confirm-delete",
+  "title": "Confirm before deleting",
+  "prompt": "Build a destructive-action confirmation. A secondary button labelled \"Delete project\" opens a modal dialog titled \"Delete this project?\" with the description \"Its files and history are removed. This cannot be undone.\". The dialog has two actions: \"Keep project\" (closes the dialog) and a primary \"Delete\" button (closes the dialog and shows the status text \"Project deleted.\" on the page).",
+  "steps": [{ "role": "button", "name": "Delete project" }]
+}
