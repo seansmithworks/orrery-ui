@@ -42,6 +42,35 @@ export function reducedMotionGate(doc, where) {
   return bad;
 }
 
+// ---- Neutral. DESIGN.md, Foundations, Colour: brand orrery is neutral, hue enters only through a brand file.
+// The roles a page is made of. Measured as OKLCH chroma; the most chromatic of them today (text-muted) is about 0.008.
+export const NEUTRAL_ROLES = ['page', 'layer-1', 'layer-2', 'text', 'text-muted'];
+export const NEUTRAL_CHROMA = 0.01;
+const linear = (c) => (c <= 0.04045 ? c / 12.92 : ((c + 0.055) / 1.055) ** 2.4);
+/** OKLCH chroma of an srgb color (Ottosson's OKLab matrices). */
+export function oklchChroma([r8, g8, b8]) {
+  const [r, g, b] = [r8, g8, b8].map(linear);
+  const l = Math.cbrt(0.4122214708 * r + 0.5363325363 * g + 0.0514459929 * b);
+  const m = Math.cbrt(0.2119034982 * r + 0.6806995451 * g + 0.1073969566 * b);
+  const s = Math.cbrt(0.0883024619 * r + 0.2817188376 * g + 0.6299787005 * b);
+  return Math.hypot(1.9779984951 * l - 2.428592205 * m + 0.4505937099 * s, 0.0259040371 * l + 0.7827717662 * m - 0.808675766 * s);
+}
+
+/** Failure lines for one mode of brand orrery: a page, layer or text role with an OKLCH chroma of NEUTRAL_CHROMA or more. */
+export function neutralGate(tokens, where) {
+  const bad = [];
+  for (const role of NEUTRAL_ROLES) {
+    const id = `color.${role}`, c = tokens[id]?.value;
+    if (!c) bad.push(`not neutral: ${id} (${where}) is missing`);
+    else if (c.colorSpace !== 'srgb') bad.push(`not neutral: ${id} (${where}) is in ${c.colorSpace}; the neutral gate reads srgb`);
+    else {
+      const chroma = oklchChroma(c.components);
+      if (chroma >= NEUTRAL_CHROMA) bad.push(`not neutral: ${id} (${where}) is ${c.hex ?? JSON.stringify(c.components)}, OKLCH chroma ${chroma.toFixed(4)}; brand orrery's page, layer and text roles stay under ${NEUTRAL_CHROMA}. Hue enters only through a brand file.`);
+    }
+  }
+  return bad;
+}
+
 /** Failure lines for one mode: hit target under the floor, a spring with no conversion rule, an elevation level the emitters cannot draw. */
 export function systemGate(tokens, doc, where) {
   const bad = [];

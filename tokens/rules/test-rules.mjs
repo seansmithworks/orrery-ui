@@ -57,6 +57,18 @@ export function ruleTests({ tmp, run }) {
       assert.equal(fs.existsSync(out), false);
     },
 
+    '[brand-orrery-neutral] neutralGate: a cream light page or a warm dark layer in brand orrery fails the build, naming the role, brand, mode and chroma, and writes nothing'() {
+      const cream = seeded('brands/orrery/modes/light.tokens.json', (d) => { d.color.page.$value = { colorSpace: 'srgb', components: [0.9608, 0.9412, 0.9098], hex: '#f5f0e8' }; });
+      assert.equal(cream.r.status, 1, cream.r.stderr);
+      assert.match(cream.r.stderr, /^not neutral: color\.page \(brand orrery, mode light\) is #f5f0e8, OKLCH chroma 0\.0119; brand orrery's page, layer and text roles stay under 0\.01\. Hue enters only through a brand file\.$/m);
+      assert.doesNotMatch(cream.r.stderr, /not neutral: .*mode dark/);
+      assert.equal(fs.existsSync(cream.out), false);
+      const warm = seeded('brands/orrery/modes/dark.tokens.json', (d) => { d.color['layer-1'].$value = { colorSpace: 'srgb', components: [0.1647, 0.1255, 0.0863], hex: '#2a2016' }; });
+      assert.equal(warm.r.status, 1, warm.r.stderr);
+      assert.match(warm.r.stderr, /^not neutral: color\.layer-1 \(brand orrery, mode dark\) is #2a2016, OKLCH chroma 0\.0235;/m);
+      assert.doesNotMatch(warm.r.stderr, /not neutral: .*mode light/);
+    },
+
     '[generated-matches-source] driftGate: drift: a generated file that differs, is missing or is stale fails, naming the file'() {
       const committed = path.join(tmp, 'drift-committed'), fresh = path.join(tmp, 'drift-fresh');
       for (const dir of [committed, fresh]) fs.mkdirSync(path.join(dir, 'css'), { recursive: true });
