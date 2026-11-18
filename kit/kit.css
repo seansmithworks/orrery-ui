@@ -15,6 +15,7 @@
 @import "./dialog/dialog.css";
 @import "./card/card.css";
 @import "./select/select.css";
+@import "./menu/menu.css";
 @import "./popover/popover.css";
 @import "./tooltip/tooltip.css";
 @import "./checkbox/checkbox.css";

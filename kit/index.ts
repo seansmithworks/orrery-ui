@@ -17,6 +17,13 @@ export {
   type SelectPopupProps,
   type SelectTriggerProps,
 } from "./select/Select";
+export {
+  Menu,
+  type MenuItemProps,
+  type MenuPopupProps,
+  type MenuRootProps,
+  type MenuTriggerProps,
+} from "./menu/Menu";
 export { Checkbox, type CheckboxProps } from "./checkbox/Checkbox";
 export { Radio } from "./radio/Radio";
 export { Switch, type SwitchProps } from "./switch/Switch";

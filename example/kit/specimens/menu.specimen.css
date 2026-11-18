@@ -1,0 +1,49 @@
+/* Menu block layout only. Tokens, never literals. */
+
+.spec-menu-wide {
+  grid-column: 1 / -1;
+}
+
+.spec-menu-last {
+  display: block;
+  min-height: var(--type-line-height-13);
+  color: var(--text-muted);
+  font-size: var(--type-size-13);
+}
+
+/* The open state's frame (../held-open-frame.tsx). Its document is the popup's viewport, so the
+   held-open popup sits under its trigger inside the frame and never rises above a live popup or
+   dialog. The frame's padding is the padding of the frame document's body. */
+.spec-menu-frame {
+  min-height: calc(var(--space-72) * 6);
+  border: var(--line-width) solid var(--line);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+}
+.spec-menu-frame__body {
+  padding: var(--space-16);
+}
+
+/* UI SDK places a popup against its document's viewport: here the frame, which could flip the popup
+   above the trigger and out of the frame. The picture pins only the popup's placement (UI SDK
+   writes top, left and --available-height on the popup itself): its box starts the kit's offset
+   under the trigger (the frame's padding, the trigger, the offset), at the frame padding's start
+   edge, and --available-height is the kit's max height plus offset, so the kit's own clamp resolves
+   to its max height. The popup's drawing, items and max height all come from the kit's rules. The
+   live cells and menu.kit.spec.ts check the real placement, offset and clamp. */
+.spec-menu-frame__body .orr-menu__popup {
+  top: calc(
+    var(--space-16) + var(--hit-target-min) + var(--orr-menu-offset)
+  ) !important;
+  left: var(--space-16) !important;
+  --available-height: calc(
+    var(--orr-menu-max-height) + var(--orr-menu-offset)
+  ) !important;
+}
+
+/* A held-open popup is as wide as its text and its trigger, both of which differ between macOS and
+   Linux, so the picture fixes the width: the baseline records the same box on every platform. */
+.spec-menu-frame__body .orr-menu__popup {
+  width: calc(var(--space-72) * 3);
+  min-width: 0;
+}
