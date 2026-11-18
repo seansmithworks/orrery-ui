@@ -252,8 +252,7 @@
           },
           "onCheckedChange": {
             "x-type": "function",
-            "x-from": "ui-sdk",
-            "description": "Called with the new checked value when the person ticks or unticks it."
+            "description": "Called with the new checked value, true or false, when the person ticks or unticks it. A useState setter fits as is."
           },
           "indeterminate": {
             "type": "boolean",
@@ -830,8 +829,7 @@
               },
               "finalFocus": {
                 "x-type": "object",
-                "x-from": "ui-sdk",
-                "description": "What takes focus on close: a selector, an element, a function, or none. Needed when an action removes the trigger."
+                "description": "Leave unset: focus returns to the trigger. Set it (a ref, element, function, selector or \"none\") only if an action removes the trigger."
               }
             },
             "required": []
@@ -1357,18 +1355,15 @@
             "properties": {
               "value": {
                 "type": "string",
-                "x-from": "ui-sdk",
-                "description": "The chosen option's value, when you control it; pair with onValueChange. Use defaultValue otherwise."
+                "description": "The chosen option's value, when you control it; \"\" chooses none. Pair with onValueChange, else use defaultValue."
               },
               "defaultValue": {
                 "type": "string",
-                "x-from": "ui-sdk",
                 "description": "The option chosen first, when it manages its own state. Unset, none is chosen and Tab enters on the first option."
               },
               "onValueChange": {
                 "x-type": "function",
-                "x-from": "ui-sdk",
-                "description": "Called with the newly chosen option's value."
+                "description": "Called with the chosen value as a string, \"\" if a form reset clears it. A useState setter fits as is."
               },
               "disabled": {
                 "type": "boolean",

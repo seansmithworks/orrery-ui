@@ -9,16 +9,47 @@ import { cx } from "../cx";
 
 type WithClass<P> = Omit<P, "className"> & { className?: string };
 
+type SdkGroupProps = ComponentProps<typeof SdkRadioGroup>;
+type ValueChangeDetails = Parameters<
+  NonNullable<SdkGroupProps["onValueChange"]>
+>[1];
+
+// The value is a string, and "" means none is chosen, as a native radio group's value reads. UI SDK says none with
+// null; the kit maps between the two, so a plain `setValue` from useState("") is a valid onValueChange.
+type RadioGroupProps = WithClass<
+  Omit<SdkGroupProps, "value" | "defaultValue" | "onValueChange">
+> & {
+  /** The chosen option's value; "" or null chooses none. Pair it with onValueChange. */
+  value?: string | null;
+  /** The option chosen first, when the group manages its own state. */
+  defaultValue?: string | null;
+  /** Called with the chosen value, or "" when a form reset leaves none chosen; the details argument is optional to take. */
+  onValueChange?: (value: string, details: ValueChangeDetails) => void;
+};
+
+const none = (v: string | null | undefined) => (v === "" ? null : v);
+
 /**
  * The group: one value, one tab stop, arrow keys that move and select. Inside Field.Root the field's label names
  * it and its error shows for a required group with nothing chosen.
  */
 function Group({
   className,
+  value,
+  defaultValue,
+  onValueChange,
   ...props
-}: WithClass<ComponentProps<typeof SdkRadioGroup>>) {
+}: RadioGroupProps) {
   return (
-    <SdkRadioGroup {...props} className={cx("orr-radio-group", className)} />
+    <SdkRadioGroup
+      {...props}
+      value={none(value)}
+      defaultValue={none(defaultValue)}
+      onValueChange={
+        onValueChange && ((next, details) => onValueChange(next ?? "", details))
+      }
+      className={cx("orr-radio-group", className)}
+    />
   );
 }
 

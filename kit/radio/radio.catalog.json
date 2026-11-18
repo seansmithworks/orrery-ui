@@ -13,18 +13,15 @@
             "properties": {
               "value": {
                 "type": "string",
-                "x-from": "ui-sdk",
-                "description": "The chosen option's value, when you control it; pair with onValueChange. Use defaultValue otherwise."
+                "description": "The chosen option's value, when you control it; \"\" chooses none. Pair with onValueChange, else use defaultValue."
               },
               "defaultValue": {
                 "type": "string",
-                "x-from": "ui-sdk",
                 "description": "The option chosen first, when it manages its own state. Unset, none is chosen and Tab enters on the first option."
               },
               "onValueChange": {
                 "x-type": "function",
-                "x-from": "ui-sdk",
-                "description": "Called with the newly chosen option's value."
+                "description": "Called with the chosen value as a string, \"\" if a form reset clears it. A useState setter fits as is."
               },
               "disabled": {
                 "type": "boolean",

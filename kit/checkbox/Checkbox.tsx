@@ -6,14 +6,27 @@ import {
 } from "@ui-sdk/react/checkbox";
 import { cx } from "../cx";
 
-// checked and defaultChecked stay booleans: a mixed box is the indeterminate prop, not a checked value.
+type SdkCheckboxProps = ComponentProps<typeof SdkCheckbox>;
+type CheckedChangeDetails = Parameters<
+  NonNullable<SdkCheckboxProps["onCheckedChange"]>
+>[1];
+
+// checked, defaultChecked and onCheckedChange stay booleans: a mixed box is the indeterminate prop, not a checked
+// value. So a plain `setChecked` from useState(false) is a valid onCheckedChange.
 export type CheckboxProps = Omit<
-  ComponentProps<typeof SdkCheckbox>,
-  "className" | "children" | "render" | "checked" | "defaultChecked"
+  SdkCheckboxProps,
+  | "className"
+  | "children"
+  | "render"
+  | "checked"
+  | "defaultChecked"
+  | "onCheckedChange"
 > &
   Pick<ComponentProps<"input">, "checked" | "defaultChecked"> & {
     /** Shows a dash and announces mixed. It wins over checked. */
     indeterminate?: boolean;
+    /** Called with the next checked state, true or false; the details argument is optional to take. */
+    onCheckedChange?: (checked: boolean, details: CheckedChangeDetails) => void;
     className?: string;
   };
 
@@ -36,6 +49,7 @@ export type CheckboxProps = Omit<
 export function Checkbox({
   indeterminate,
   checked,
+  onCheckedChange,
   className,
   ...props
 }: CheckboxProps) {
@@ -46,6 +60,12 @@ export function Checkbox({
     <SdkCheckbox
       {...props}
       checked={indeterminate ? "indeterminate" : checked}
+      // A press always reports true or false. Only a form reset or restore to a mixed start can report
+      // "indeterminate"; that box is not checked, as a native input's checked is false while it shows mixed.
+      onCheckedChange={
+        onCheckedChange &&
+        ((next, details) => onCheckedChange(next === true, details))
+      }
       render={<span />}
       className={cx("orr-checkbox", "orr-control", className)}
     >

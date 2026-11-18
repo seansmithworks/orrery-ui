@@ -95,13 +95,25 @@ function Trigger({ variant, size, ...props }: MenuTriggerProps) {
 type Content = ComponentProps<typeof SdkMenuContent>;
 
 export type MenuPopupProps = WithClass<
-  Omit<Content, "container" | "render" | "children" | "sideOffset">
+  Omit<
+    Content,
+    "container" | "render" | "children" | "sideOffset" | "finalFocus"
+  >
 > & {
   /** Extra gap from the trigger in px, added to the kit's offset. */
   sideOffset?: number;
   /** Where the popup mounts, an element or a ref to one. Defaults to in place, in the top layer. */
   container?: HTMLElement | null | RefObject<HTMLElement | null>;
+  /**
+   * What takes focus on close. Default: the trigger, which is right whenever the trigger is still there.
+   * Set it only when an action removes the trigger: a ref, an element, a function, a selector, or "none".
+   */
+  finalFocus?: Content["finalFocus"] | RefObject<HTMLElement | null>;
 } & Children;
+
+// A ref is read when the menu closes, not when it renders, so it can point at an element mounted later.
+const focusTarget = (t: MenuPopupProps["finalFocus"]): Content["finalFocus"] =>
+  t && typeof t === "object" && "current" in t ? () => t.current : t;
 
 /**
  * Popup in the kit's positioner element, which holds the kit's offset. UI SDK opens the popup in the
@@ -115,6 +127,7 @@ function Popup({
   children,
   sideOffset,
   collisionPadding = 8,
+  finalFocus,
   ...props
 }: MenuPopupProps) {
   // UI SDK places the popup's border box itself and writes margin: 0 inline, so the kit's offset
@@ -141,6 +154,7 @@ function Popup({
           {...props}
           sideOffset={offset + (sideOffset ?? 0)}
           collisionPadding={collisionPadding}
+          finalFocus={focusTarget(finalFocus)}
           // Component class first, orr-floating second: the kit baseline keys an element by its first orr- class.
           className={cx("orr-menu__popup", "orr-floating", className)}
         >

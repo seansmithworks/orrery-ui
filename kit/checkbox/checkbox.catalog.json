@@ -19,8 +19,7 @@
           },
           "onCheckedChange": {
             "x-type": "function",
-            "x-from": "ui-sdk",
-            "description": "Called with the new checked value when the person ticks or unticks it."
+            "description": "Called with the new checked value, true or false, when the person ticks or unticks it. A useState setter fits as is."
           },
           "indeterminate": {
             "type": "boolean",

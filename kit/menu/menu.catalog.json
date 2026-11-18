@@ -107,8 +107,7 @@
               },
               "finalFocus": {
                 "x-type": "object",
-                "x-from": "ui-sdk",
-                "description": "What takes focus on close: a selector, an element, a function, or none. Needed when an action removes the trigger."
+                "description": "Leave unset: focus returns to the trigger. Set it (a ref, element, function, selector or \"none\") only if an action removes the trigger."
               }
             },
             "required": []
