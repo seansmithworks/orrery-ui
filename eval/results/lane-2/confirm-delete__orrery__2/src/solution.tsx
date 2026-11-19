@@ -7,14 +7,14 @@ export default function DeleteProject() {
   return (
     <main
       style={{
+        minHeight: "100vh",
+        boxSizing: "border-box",
+        padding: "var(--space-24)",
+        background: "var(--page)",
+        color: "var(--text)",
         display: "flex",
         alignItems: "center",
         gap: "var(--space-12)",
-        padding: "var(--space-24)",
-        minHeight: "100vh",
-        boxSizing: "border-box",
-        background: "var(--page)",
-        color: "var(--text)",
       }}
     >
       <Dialog.Root>

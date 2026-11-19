@@ -1,8 +1,12 @@
 import { useState, type FormEvent } from "react";
 import { Button, Dialog, Field, Input, Radio, Switch, Tabs } from "./kit";
 
-const column = (gap: string) =>
-  ({ display: "flex", flexDirection: "column", gap }) as const;
+const stack = (gap: string) =>
+  ({
+    display: "flex",
+    flexDirection: "column",
+    gap: `var(--space-${gap})`,
+  }) as const;
 
 export default function WorkspaceSettings() {
   const [saved, setSaved] = useState(false);
@@ -16,28 +20,28 @@ export default function WorkspaceSettings() {
   return (
     <main
       style={{
-        ...column("var(--space-24)"),
-        padding: "var(--space-24)",
-        maxWidth: "var(--layout-measure)",
-        margin: "0 auto",
-        background: "var(--page)",
-        color: "var(--text)",
+        ...stack("24"),
         minHeight: "100vh",
         boxSizing: "border-box",
+        padding: "var(--space-32)",
+        background: "var(--page)",
+        color: "var(--text)",
       }}
     >
-      <h1 style={{ margin: 0 }}>Workspace settings</h1>
+      <h1 id="settings-title" style={{ margin: 0 }}>
+        Workspace settings
+      </h1>
       <Tabs.Root defaultValue="general">
-        <Tabs.List aria-label="Settings sections">
+        <Tabs.List aria-labelledby="settings-title">
           <Tabs.Tab value="general">General</Tabs.Tab>
           <Tabs.Tab value="notifications">Notifications</Tabs.Tab>
           <Tabs.Tab value="danger">Danger zone</Tabs.Tab>
         </Tabs.List>
 
-        <Tabs.Panel value="general">
+        <Tabs.Panel value="general" keepMounted>
           <form
             onSubmit={save}
-            style={{ ...column("var(--space-20)"), paddingBlock: "var(--space-20)" }}
+            style={{ ...stack("20"), paddingBlock: "var(--space-24)" }}
           >
             <Field.Root name="workspaceName">
               <Field.Label>Workspace name</Field.Label>
@@ -74,9 +78,7 @@ export default function WorkspaceSettings() {
         </Tabs.Panel>
 
         <Tabs.Panel value="notifications">
-          <div
-            style={{ ...column("var(--space-20)"), paddingBlock: "var(--space-20)" }}
-          >
+          <div style={{ ...stack("20"), paddingBlock: "var(--space-24)" }}>
             <Field.Root>
               <Field.Label>
                 <Switch name="weeklySummary" defaultChecked />
@@ -93,19 +95,11 @@ export default function WorkspaceSettings() {
         </Tabs.Panel>
 
         <Tabs.Panel value="danger">
-          <div
-            style={{ ...column("var(--space-16)"), paddingBlock: "var(--space-20)" }}
-          >
-            <p style={{ margin: 0 }}>
+          <div style={{ ...stack("16"), paddingBlock: "var(--space-24)" }}>
+            <p style={{ margin: 0, maxWidth: "var(--layout-measure)" }}>
               Deleting this workspace is permanent and cannot be reversed.
             </p>
-            <div
-              style={{
-                display: "flex",
-                alignItems: "center",
-                gap: "var(--space-12)",
-              }}
-            >
+            <div>
               <Dialog.Root>
                 <Dialog.Trigger variant="secondary">
                   Delete workspace
@@ -129,8 +123,8 @@ export default function WorkspaceSettings() {
                   </Dialog.Actions>
                 </Dialog.Popup>
               </Dialog.Root>
-              <span role="status">{deleted ? "Workspace deleted." : ""}</span>
             </div>
+            <span role="status">{deleted ? "Workspace deleted." : ""}</span>
           </div>
         </Tabs.Panel>
       </Tabs.Root>

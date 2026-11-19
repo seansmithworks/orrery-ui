@@ -1,13 +1,14 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type FormEvent } from "react";
 import { Button, Card, Checkbox, Field, Input, Radio } from "./kit";
+import "./solution.css";
 
-const TEAMS = ["Solo", "Small crew (2 to 10)", "Large crew (11 or more)"];
+const TEAMS = [
+  "Solo",
+  "Small crew (2 to 10)",
+  "Large crew (11 or more)",
+] as const;
 
-const col = {
-  display: "flex",
-  flexDirection: "column",
-  gap: "var(--space-20)",
-} as const;
+const TITLES = ["Your details", "Your team", "Confirm"];
 
 export default function SignUp() {
   const [step, setStep] = useState(1);
@@ -15,8 +16,7 @@ export default function SignUp() {
   const [email, setEmail] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
   const [emailError, setEmailError] = useState<string | null>(null);
-  const [team, setTeam] = useState("");
-  const [teamError, setTeamError] = useState(false);
+  const [team, setTeam] = useState<string>(TEAMS[0]);
   const [agreed, setAgreed] = useState(false);
   const [created, setCreated] = useState(false);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -30,86 +30,71 @@ export default function SignUp() {
     heading.current?.focus();
   }, [step]);
 
-  function next1() {
-    const n = name.trim() ? null : "Enter your name.";
-    const e = email.includes("@") ? null : "Enter a valid email.";
+  const checkName = (v: string) => (v.trim() ? null : "Enter your name.");
+  const checkEmail = (v: string) =>
+    v.includes("@") ? null : "Enter a valid email.";
+
+  function next1(event: FormEvent) {
+    event.preventDefault();
+    const n = checkName(name);
+    const e = checkEmail(email);
     setNameError(n);
     setEmailError(e);
     if (!n && !e) setStep(2);
   }
 
-  function next2() {
-    if (!team) {
-      setTeamError(true);
-      return;
-    }
+  function next2(event: FormEvent) {
+    event.preventDefault();
     setStep(3);
   }
 
-  const titles = ["Your details", "Your team", "Confirm"];
+  function create(event: FormEvent) {
+    event.preventDefault();
+    if (agreed) setCreated(true);
+  }
 
   return (
-    <main
-      style={{
-        boxSizing: "border-box",
-        minHeight: "100vh",
-        padding: "var(--space-24)",
-        background: "var(--page)",
-        color: "var(--text)",
-        fontFamily: "var(--font-sans)",
-      }}
-    >
-      <div style={{ maxWidth: "var(--layout-measure)", margin: "0 auto" }}>
-        <Card.Root render={<section />} aria-labelledby="step-title">
+    <main className="signup">
+      <div className="signup__inner">
+        <Card.Root render={<section />} aria-labelledby="signup-title">
           <Card.Header>
-            <p
-              style={{
-                margin: 0,
-                color: "var(--text-muted)",
-                fontFamily: "var(--font-mono)",
-                fontSize: "var(--type-size-12)",
-                lineHeight: "var(--type-line-height-12)",
-              }}
-            >
-              Step {step} of 3
-            </p>
-            <h1 id="step-title" ref={heading} tabIndex={-1}>
-              {titles[step - 1]}
-            </h1>
+            <p className="signup__step">Step {step} of 3</p>
+            <h2 id="signup-title" className="signup__title" ref={heading} tabIndex={-1}>
+              {TITLES[step - 1]}
+            </h2>
           </Card.Header>
 
           {step === 1 && (
-            <form
-              noValidate
-              onSubmit={(ev) => {
-                ev.preventDefault();
-                next1();
-              }}
-              style={col}
-            >
-              <Field.Root name="name" invalid={nameError !== null}>
-                <Field.Label>Full name</Field.Label>
-                <Input
-                  autoComplete="name"
-                  required
-                  value={name}
-                  onChange={(ev) => setName(ev.target.value)}
-                />
-                <Field.Error match={nameError !== null}>{nameError}</Field.Error>
-              </Field.Root>
-              <Field.Root name="email" invalid={emailError !== null}>
-                <Field.Label>Email</Field.Label>
-                <Input
-                  type="email"
-                  autoComplete="email"
-                  required
-                  value={email}
-                  onChange={(ev) => setEmail(ev.target.value)}
-                />
-                <Field.Error match={emailError !== null}>
-                  {emailError}
-                </Field.Error>
-              </Field.Root>
+            <form noValidate onSubmit={next1} className="signup__form">
+              <Card.Body>
+                <Field.Root name="name" invalid={nameError !== null}>
+                  <Field.Label>Full name</Field.Label>
+                  <Input
+                    autoComplete="name"
+                    required
+                    value={name}
+                    onChange={(ev) => {
+                      setName(ev.target.value);
+                      if (nameError) setNameError(checkName(ev.target.value));
+                    }}
+                  />
+                  <Field.Error match={nameError !== null}>{nameError}</Field.Error>
+                </Field.Root>
+                <Field.Root name="email" invalid={emailError !== null}>
+                  <Field.Label>Email</Field.Label>
+                  <Input
+                    type="email"
+                    autoComplete="email"
+                    required
+                    value={email}
+                    onChange={(ev) => {
+                      setEmail(ev.target.value);
+                      if (emailError) setEmailError(checkEmail(ev.target.value));
+                    }}
+                  />
+                  <Field.Error match={emailError !== null}>{emailError}</Field.Error>
+                </Field.Root>
+              </Card.Body>
               <Card.Footer>
                 <Button variant="primary" type="submit">
                   Continue
@@ -119,35 +104,21 @@ export default function SignUp() {
           )}
 
           {step === 2 && (
-            <form
-              noValidate
-              onSubmit={(ev) => {
-                ev.preventDefault();
-                next2();
-              }}
-              style={col}
-            >
-              <Field.Root invalid={teamError}>
-                <Field.Label>Team size</Field.Label>
-                <Radio.Group
-                  name="team"
-                  required
-                  value={team}
-                  onValueChange={(v: string) => {
-                    setTeam(v);
-                    setTeamError(false);
-                  }}
-                >
-                  {TEAMS.map((t) => (
-                    <Radio.Item key={t} value={t}>
-                      {t}
-                    </Radio.Item>
-                  ))}
-                </Radio.Group>
-                <Field.Error match={teamError}>Choose a team size.</Field.Error>
-              </Field.Root>
+            <form noValidate onSubmit={next2} className="signup__form">
+              <Card.Body>
+                <Field.Root>
+                  <Field.Label>Team size</Field.Label>
+                  <Radio.Group name="team" value={team} onValueChange={setTeam}>
+                    {TEAMS.map((t) => (
+                      <Radio.Item key={t} value={t}>
+                        {t}
+                      </Radio.Item>
+                    ))}
+                  </Radio.Group>
+                </Field.Root>
+              </Card.Body>
               <Card.Footer>
-                <Button type="button" onClick={() => setStep(1)}>
+                <Button variant="quiet" type="button" onClick={() => setStep(1)}>
                   Back
                 </Button>
                 <Button variant="primary" type="submit">
@@ -158,43 +129,34 @@ export default function SignUp() {
           )}
 
           {step === 3 && (
-            <form
-              noValidate
-              onSubmit={(ev) => {
-                ev.preventDefault();
-                if (agreed) setCreated(true);
-              }}
-              style={col}
-            >
-              <dl
-                style={{
-                  margin: 0,
-                  display: "grid",
-                  gridTemplateColumns: "auto 1fr",
-                  columnGap: "var(--space-16)",
-                  rowGap: "var(--space-8)",
-                }}
-              >
-                <dt style={{ color: "var(--text-muted)" }}>Name</dt>
-                <dd style={{ margin: 0, overflowWrap: "anywhere" }}>{name}</dd>
-                <dt style={{ color: "var(--text-muted)" }}>Email</dt>
-                <dd style={{ margin: 0, overflowWrap: "anywhere" }}>{email}</dd>
-                <dt style={{ color: "var(--text-muted)" }}>Team</dt>
-                <dd style={{ margin: 0 }}>{team}</dd>
-              </dl>
-              <Field.Root>
-                <Field.Label>
-                  <Checkbox
-                    name="terms"
-                    checked={agreed}
-                    onCheckedChange={(c: boolean) => setAgreed(c)}
-                    disabled={created}
-                  />
-                  I agree to the terms
-                </Field.Label>
-              </Field.Root>
+            <form noValidate onSubmit={create} className="signup__form">
+              <Card.Body>
+                <dl className="signup__summary">
+                  <dt>Name</dt>
+                  <dd>{name}</dd>
+                  <dt>Email</dt>
+                  <dd>{email}</dd>
+                  <dt>Team</dt>
+                  <dd>{team}</dd>
+                </dl>
+                <Field.Root>
+                  <Field.Label>
+                    <Checkbox
+                      name="terms"
+                      checked={agreed}
+                      onCheckedChange={setAgreed}
+                      disabled={created}
+                    />
+                    I agree to the terms
+                  </Field.Label>
+                </Field.Root>
+                <p className="signup__done" role="status">
+                  {created ? "Account created." : ""}
+                </p>
+              </Card.Body>
               <Card.Footer>
                 <Button
+                  variant="quiet"
                   type="button"
                   disabled={created}
                   onClick={() => setStep(2)}
@@ -209,9 +171,6 @@ export default function SignUp() {
                   Create account
                 </Button>
               </Card.Footer>
-              <p role="status" style={{ margin: 0 }}>
-                {created ? "Account created." : ""}
-              </p>
             </form>
           )}
         </Card.Root>

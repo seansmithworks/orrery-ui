@@ -21,15 +21,13 @@
     "total": 6
   },
   "brand": {
-    "score": 0.75,
-    "pass": false,
-    "details": [
-      "only 0% of the page changes between orrery dark and solar (needs 30%)"
-    ],
+    "score": 1,
+    "pass": true,
+    "details": [],
     "literals": 0,
     "ratios": {
       "lightDark": 0.9999970703125,
-      "darkSolar": 0.000826171875
+      "darkSolar": 0.995388671875
     }
   },
   "notes": [],
@@ -50,5 +48,5 @@
       "details": []
     }
   },
-  "total": 0.95
+  "total": 1
 }

@@ -1,0 +1,56 @@
+{
+  "scenario": "onboarding",
+  "condition": "orrery",
+  "rep": 2,
+  "wallMs": 33767,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 11,
+    "duration_ms": 32919,
+    "total_cost_usd": 0.2206517,
+    "usage": {
+      "input_tokens": 12,
+      "cache_creation_input_tokens": 40412,
+      "cache_read_input_tokens": 139797,
+      "output_tokens": 4500,
+      "output_tokens_details": {
+        "thinking_tokens": 285
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 40412,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 472,
+          "cache_read_input_tokens": 42990,
+          "cache_creation_input_tokens": 2845,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2845
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the three-step sign-up flow to `./solution.tsx`. I couldn't run it here, so it hasn't been type-checked or tried in a browser. It uses the Orrery kit's `Card`, `Field`, `Input`, `Radio`, `Checkbox` and `Button`, so it should follow whichever brand is active.\n\n- **Progress:** each step shows \"Step N of 3\" above its title (\"Your details\", \"Your team\", \"Confirm\"). Focus moves to the title when the step changes.\n- **Step 1:** \"Continue\" shows \"Enter your name.\" for an empty name and \"Enter a valid email.\" for an email without an `@`, each under its own field. It doesn't advance until both are fixed. A name of only spaces counts as empty.\n- **Step 2:** the three team options are a single-choice radio group, with \"Back\" and \"Continue\". I added one thing you didn't ask for: if no team is "
+  }
+}

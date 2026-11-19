@@ -1,11 +1,8 @@
 {
   "build": {
-    "score": 0,
-    "pass": false,
-    "details": [
-      "solution.tsx(136,19): error TS2322: Type '(v: string) => void' is not assignable to type '(value: string | null, details: ChangeDetails<RadioGroupValueChangeReason>) => void'.",
-      "solution.tsx(190,21): error TS2322: Type '(c: boolean) => void' is not assignable to type '(checked: CheckedState, details: ChangeDetails<CheckboxCheckedChangeReason>) => void'."
-    ]
+    "score": 1,
+    "pass": true,
+    "details": []
   },
   "axe": {
     "score": 1,
@@ -29,16 +26,18 @@
     "details": [],
     "literals": 0,
     "ratios": {
-      "lightDark": 0.9999921875,
-      "darkSolar": 0.9961376953125
+      "lightDark": 0.99998828125,
+      "darkSolar": 0.9961396484375
     }
   },
   "notes": [],
   "secondary": {
     "kit-only": {
-      "score": 1,
-      "pass": true,
-      "details": []
+      "score": 0.9655172413793104,
+      "pass": false,
+      "details": [
+        "3 import \"./solution.css\" is not the kit or React; import UI from \"./kit\""
+      ]
     },
     "literals": {
       "score": 1,
@@ -51,5 +50,5 @@
       "details": []
     }
   },
-  "total": 0.8
+  "total": 1
 }

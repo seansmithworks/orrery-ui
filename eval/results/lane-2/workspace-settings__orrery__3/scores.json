@@ -15,14 +15,9 @@
     "details": []
   },
   "hit-target": {
-    "score": 0.8181818181818182,
-    "pass": false,
-    "details": [
-      "1280px page: \"Viewer\" is 16x16, its hit area is under 44x44",
-      "1280px page: \"Editor\" is 16x16, its hit area is under 44x44",
-      "375px page: \"Viewer\" is 16x16, its hit area is under 44x44",
-      "375px page: \"Editor\" is 16x16, its hit area is under 44x44"
-    ],
+    "score": 1,
+    "pass": true,
+    "details": [],
     "total": 22
   },
   "brand": {
@@ -32,7 +27,7 @@
     "literals": 0,
     "ratios": {
       "lightDark": 0.9999697265625,
-      "darkSolar": 0.53746875
+      "darkSolar": 0.99996875
     }
   },
   "notes": [],
@@ -53,5 +48,5 @@
       "details": []
     }
   },
-  "total": 0.9636363636363636
+  "total": 1
 }

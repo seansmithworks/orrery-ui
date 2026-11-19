@@ -10,11 +10,12 @@ export default function DeleteProject() {
         display: "flex",
         alignItems: "center",
         gap: "var(--space-12)",
-        padding: "var(--space-20)",
+        padding: "var(--space-24)",
         minHeight: "100vh",
         boxSizing: "border-box",
         background: "var(--page)",
         color: "var(--text)",
+        fontFamily: "var(--font-sans)",
       }}
     >
       <Dialog.Root>

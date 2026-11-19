@@ -2,11 +2,11 @@
   "scenario": "profile-settings",
   "condition": "orrery",
   "rep": 1,
-  "wallMs": 29127,
+  "wallMs": 24466,
   "exit": 0,
   "limited": false,
   "timedOut": false,
-  "workspaceFiles": 77,
+  "workspaceFiles": 78,
   "written": [
     "solution.tsx"
   ],
@@ -14,16 +14,16 @@
   "run": {
     "is_error": false,
     "subtype": "success",
-    "num_turns": 11,
-    "duration_ms": 28312,
-    "total_cost_usd": 0.20012710000000003,
+    "num_turns": 9,
+    "duration_ms": 21478,
+    "total_cost_usd": 0.1835677,
     "usage": {
       "input_tokens": 12,
-      "cache_creation_input_tokens": 39166,
-      "cache_read_input_tokens": 138591,
-      "output_tokens": 2958,
+      "cache_creation_input_tokens": 36884,
+      "cache_read_input_tokens": 136377,
+      "output_tokens": 2237,
       "output_tokens_details": {
-        "thinking_tokens": 219
+        "thinking_tokens": 115
       },
       "server_tool_use": {
         "web_search_requests": 0,
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 39166,
+        "ephemeral_1h_input_tokens": 36884,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 297,
-          "cache_read_input_tokens": 42607,
-          "cache_creation_input_tokens": 1352,
+          "output_tokens": 351,
+          "cache_read_input_tokens": 41406,
+          "cache_creation_input_tokens": 271,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 1352
+            "ephemeral_1h_input_tokens": 271
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I've written the profile form to `./solution.tsx`. I haven't run it, because I can't run code here.\n\nIt has the display name field with its hint, the time zone select, the \"Email me about new orbits\" switch and a primary \"Save profile\" submit button. Submitting shows \"Profile saved.\" in a status line. All of it is built from the kit's `Card`, `Field`, `Input`, `Select`, `Switch` and `Button`, and the spacing and colours come from token variables, so it follows whichever brand is active.\n\nI based the structure on the kit's example files and only skimmed the first part of `catalog.json`. I didn't read the Select, Switch or Card catalog entries or their component code.\n\nThe select has no `required` flag, so you can save without choosing a time zone.\n\nChanging any field clears the \"Profile sav"
+    "result": "I wrote the profile settings form to `./solution.tsx`. I couldn't run it, so it's untested. I did check that `--space-24` and `--text` exist in the Orrery token CSS.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\"\n- **Time zone:** a select with UTC, Berlin and Tokyo, and the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\".\n- **Save button:** a primary \"Save profile\" button that submits the form. After saving, \"Profile saved.\" appears next to it as status text. It clears when any field changes.\n\nThe page uses the kit components (`Field`, `Input`, `Select`, `Switch`, `Button`) and only brand variables for spacing and colour. It should follow whichever of the three brands is active.\n\nI also added a \"Profile settings\" he"
   }
 }

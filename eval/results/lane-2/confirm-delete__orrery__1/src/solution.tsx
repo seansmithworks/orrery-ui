@@ -5,12 +5,16 @@ export default function DeleteProject() {
   const [deleted, setDeleted] = useState(false);
 
   return (
-    <div
+    <main
       style={{
         display: "flex",
         alignItems: "center",
-        gap: "var(--space-12)",
-        padding: "var(--space-20)",
+        gap: "var(--space-16)",
+        padding: "var(--space-24)",
+        color: "var(--text)",
+        background: "var(--page)",
+        minHeight: "100vh",
+        boxSizing: "border-box",
       }}
     >
       <Dialog.Root>
@@ -31,6 +35,6 @@ export default function DeleteProject() {
         </Dialog.Popup>
       </Dialog.Root>
       <span role="status">{deleted ? "Project deleted." : ""}</span>
-    </div>
+    </main>
   );
 }

@@ -1,0 +1,56 @@
+{
+  "scenario": "onboarding",
+  "condition": "orrery",
+  "rep": 1,
+  "wallMs": 43683,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 14,
+    "duration_ms": 42647,
+    "total_cost_usd": 0.25165410000000005,
+    "usage": {
+      "input_tokens": 18,
+      "cache_creation_input_tokens": 42456,
+      "cache_read_input_tokens": 273541,
+      "output_tokens": 5444,
+      "output_tokens_details": {
+        "thinking_tokens": 387
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 42456,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 462,
+          "cache_read_input_tokens": 44474,
+          "cache_creation_input_tokens": 2775,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2775
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I've written the sign-up flow to `./solution.tsx`. I haven't run it, because I can't run code here.\n\n- **Step indicator:** each step shows \"Step N of 3\" and its title: \"Your details\", \"Your team\" or \"Confirm\". Focus moves to the title when the step changes.\n- **Step 1:** \"Full name\" and \"Email\" are required. \"Continue\" shows \"Enter your name.\" or \"Enter a valid email.\" next to the field that failed. The flow stays on step 1 until both pass. The email check only looks for an `@`, as you specified.\n- **Step 2:** the three team options are radios, with \"Back\" and \"Continue\". I preselected \"Solo\" so exactly one option is always chosen. That is my choice, not something you specified. Say so if you'd rather start with none selected and block \"Continue\" until one is picked.\n- **Step 3:** shows th"
+  }
+}

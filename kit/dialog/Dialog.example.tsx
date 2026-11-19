@@ -1,5 +1,7 @@
-// Golden example: confirm before deleting an orbit. Deleting removes the row, and the trigger with it, so
-// the popup passes finalFocus to the list heading instead of leaving focus on <body>. Spacing is token variables only.
+// Golden example: confirm before deleting an orbit. Close the dialog any way but Delete and focus returns to
+// its trigger, the default: set no finalFocus for that, on a Dialog, Menu or Popover. Only Delete removes the
+// row, and the trigger with it, so only then does finalFocus send focus to the list heading. Spacing is token
+// variables only.
 import { useRef, useState } from "react";
 import { Dialog } from "../index";
 
@@ -11,6 +13,8 @@ const ORBITS = [
 export default function DeleteOrbit() {
   const [orbits, setOrbits] = useState(ORBITS);
   const heading = useRef<HTMLHeadingElement>(null);
+  // The orbit being deleted, read when its dialog closes.
+  const deleting = useRef<string | null>(null);
 
   return (
     <section aria-labelledby="orbits-heading">
@@ -45,7 +49,12 @@ export default function DeleteOrbit() {
               >
                 Delete
               </Dialog.Trigger>
-              <Dialog.Popup finalFocus={heading}>
+              {/* Unset or undefined, finalFocus is the trigger. Override it only when the trigger is gone at close. */}
+              <Dialog.Popup
+                finalFocus={() =>
+                  deleting.current === orbit.id ? heading.current : undefined
+                }
+              >
                 <Dialog.Header>
                   <Dialog.Title>Delete {orbit.name}?</Dialog.Title>
                   <Dialog.CloseIcon />
@@ -58,9 +67,10 @@ export default function DeleteOrbit() {
                   <Dialog.Close variant="secondary">Keep orbit</Dialog.Close>
                   <Dialog.Close
                     variant="primary"
-                    onClick={() =>
-                      setOrbits((all) => all.filter((o) => o.id !== orbit.id))
-                    }
+                    onClick={() => {
+                      deleting.current = orbit.id;
+                      setOrbits((all) => all.filter((o) => o.id !== orbit.id));
+                    }}
                   >
                     Delete orbit
                   </Dialog.Close>

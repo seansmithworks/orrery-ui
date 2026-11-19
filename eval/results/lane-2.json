@@ -60,17 +60,17 @@
       "axe": 1,
       "keyboard": 1,
       "hit-target": 1,
-      "brand": 0.75
+      "brand": 1
     },
-    "total": 0.95,
+    "total": 1,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 5,
-    "wallMs": 13800,
-    "costUsd": 0.1510562
+    "turns": 6,
+    "wallMs": 22655,
+    "costUsd": 0.1563472
   },
   {
     "run": "confirm-delete__orrery__2",
@@ -90,9 +90,9 @@
       "literals": 1,
       "catalog": 1
     },
-    "turns": 6,
-    "wallMs": 15087,
-    "costUsd": 0.15703840000000002
+    "turns": 7,
+    "wallMs": 17563,
+    "costUsd": 0.1609421
   },
   {
     "run": "confirm-delete__orrery__3",
@@ -113,8 +113,8 @@
       "catalog": 1
     },
     "turns": 6,
-    "wallMs": 15470,
-    "costUsd": 0.1574044
+    "wallMs": 14753,
+    "costUsd": 0.1519292
   },
   {
     "run": "confirm-delete__shadcn__1",
@@ -224,21 +224,21 @@
     "condition": "orrery",
     "rep": 1,
     "scores": {
-      "build": 0,
-      "axe": 1,
+      "build": 1,
+      "axe": 0.3333333333333333,
       "keyboard": 1,
       "hit-target": 1,
-      "brand": 1
+      "brand": 0.75
     },
-    "total": 0.8,
+    "total": 0.8166666666666667,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 8,
-    "wallMs": 27070,
-    "costUsd": 0.1908831
+    "turns": 7,
+    "wallMs": 34230,
+    "costUsd": 0.1862348
   },
   {
     "run": "crew-roster__orrery__2",
@@ -248,19 +248,19 @@
     "scores": {
       "build": 1,
       "axe": 1,
-      "keyboard": 0.8,
+      "keyboard": 1,
       "hit-target": 1,
       "brand": 1
     },
-    "total": 0.96,
+    "total": 1,
     "secondary": {
-      "kit-only": 0.9090909090909091,
+      "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 18,
-    "wallMs": 57262,
-    "costUsd": 0.30440370000000005
+    "turns": 6,
+    "wallMs": 23537,
+    "costUsd": 0.17138369999999997
   },
   {
     "run": "crew-roster__orrery__3",
@@ -276,13 +276,13 @@
     },
     "total": 0.96,
     "secondary": {
-      "kit-only": 1,
+      "kit-only": 0.9090909090909091,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 6,
-    "wallMs": 22457,
-    "costUsd": 0.1757425
+    "turns": 9,
+    "wallMs": 25993,
+    "costUsd": 0.1910349
   },
   {
     "run": "crew-roster__shadcn__1",
@@ -405,8 +405,8 @@
       "catalog": 1
     },
     "turns": 8,
-    "wallMs": 18854,
-    "costUsd": 0.1760157
+    "wallMs": 22294,
+    "costUsd": 0.17293530000000001
   },
   {
     "run": "crew-tabs__orrery__2",
@@ -426,9 +426,9 @@
       "literals": 1,
       "catalog": 1
     },
-    "turns": 9,
-    "wallMs": 20763,
-    "costUsd": 0.17677079999999998
+    "turns": 8,
+    "wallMs": 18215,
+    "costUsd": 0.17074700000000004
   },
   {
     "run": "crew-tabs__orrery__3",
@@ -449,8 +449,8 @@
       "catalog": 1
     },
     "turns": 8,
-    "wallMs": 17989,
-    "costUsd": 0.17470870000000002
+    "wallMs": 20842,
+    "costUsd": 0.1683126
   },
   {
     "run": "crew-tabs__shadcn__1",
@@ -560,21 +560,21 @@
     "condition": "orrery",
     "rep": 1,
     "scores": {
-      "build": 0,
+      "build": 1,
       "axe": 1,
       "keyboard": 1,
       "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
+    "total": 1,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 14,
-    "wallMs": 43683,
-    "costUsd": 0.25165410000000005
+    "turns": 11,
+    "wallMs": 33734,
+    "costUsd": 0.22236460000000002
   },
   {
     "run": "onboarding__orrery__2",
@@ -582,21 +582,21 @@
     "condition": "orrery",
     "rep": 2,
     "scores": {
-      "build": 0,
+      "build": 1,
       "axe": 1,
       "keyboard": 1,
       "hit-target": 1,
       "brand": 1
     },
-    "total": 0.8,
+    "total": 1,
     "secondary": {
-      "kit-only": 1,
+      "kit-only": 0.9655172413793104,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 11,
-    "wallMs": 33767,
-    "costUsd": 0.2206517
+    "turns": 13,
+    "wallMs": 38730,
+    "costUsd": 0.23299189999999997
   },
   {
     "run": "onboarding__orrery__3",
@@ -604,21 +604,21 @@
     "condition": "orrery",
     "rep": 3,
     "scores": {
-      "build": 0,
+      "build": 1,
       "axe": 1,
       "keyboard": 1,
       "hit-target": 1,
-      "brand": 1
+      "brand": 0.75
     },
-    "total": 0.8,
+    "total": 0.95,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 11,
-    "wallMs": 33776,
-    "costUsd": 0.22128579999999998
+    "turns": 9,
+    "wallMs": 26997,
+    "costUsd": 0.19930179999999997
   },
   {
     "run": "onboarding__shadcn__1",
@@ -729,20 +729,20 @@
     "rep": 1,
     "scores": {
       "build": 1,
-      "axe": 1,
+      "axe": 0.3333333333333333,
       "keyboard": 1,
       "hit-target": 1,
-      "brand": 1
+      "brand": 0.75
     },
-    "total": 1,
+    "total": 0.8166666666666667,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 11,
-    "wallMs": 29127,
-    "costUsd": 0.20012710000000003
+    "turns": 9,
+    "wallMs": 24466,
+    "costUsd": 0.1835677
   },
   {
     "run": "profile-settings__orrery__2",
@@ -758,13 +758,13 @@
     },
     "total": 1,
     "secondary": {
-      "kit-only": 1,
+      "kit-only": 0.9473684210526315,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 11,
-    "wallMs": 28229,
-    "costUsd": 0.19895550000000004
+    "turns": 13,
+    "wallMs": 29298,
+    "costUsd": 0.2082166
   },
   {
     "run": "profile-settings__orrery__3",
@@ -785,8 +785,8 @@
       "catalog": 1
     },
     "turns": 10,
-    "wallMs": 27116,
-    "costUsd": 0.19157350000000004
+    "wallMs": 25136,
+    "costUsd": 0.1887201
   },
   {
     "run": "profile-settings__shadcn__1",
@@ -899,18 +899,18 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0.8,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.96,
+    "total": 1,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 14,
-    "wallMs": 40678,
-    "costUsd": 0.23269469999999998
+    "turns": 11,
+    "wallMs": 30784,
+    "costUsd": 0.20501309999999998
   },
   {
     "run": "workspace-settings__orrery__2",
@@ -921,18 +921,18 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0.8181818181818182,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.9636363636363636,
+    "total": 1,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 12,
-    "wallMs": 37690,
-    "costUsd": 0.2220918
+    "turns": 14,
+    "wallMs": 37622,
+    "costUsd": 0.22911130000000002
   },
   {
     "run": "workspace-settings__orrery__3",
@@ -943,18 +943,18 @@
       "build": 1,
       "axe": 1,
       "keyboard": 1,
-      "hit-target": 0.8181818181818182,
+      "hit-target": 1,
       "brand": 1
     },
-    "total": 0.9636363636363636,
+    "total": 1,
     "secondary": {
       "kit-only": 1,
       "literals": 1,
       "catalog": 1
     },
-    "turns": 12,
-    "wallMs": 35158,
-    "costUsd": 0.2197215
+    "turns": 16,
+    "wallMs": 30747,
+    "costUsd": 0.1369647
   },
   {
     "run": "workspace-settings__shadcn__1",

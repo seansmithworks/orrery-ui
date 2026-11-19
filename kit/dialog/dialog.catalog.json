@@ -71,7 +71,7 @@
               },
               "finalFocus": {
                 "x-type": "object",
-                "description": "What takes focus on close: a ref, a function returning an element, or false. Needed when the trigger may be gone by then."
+                "description": "Leave unset: focus returns to the trigger. Set it (a ref, a function, or false) only for a close that removes the trigger."
               },
               "initialFocus": {
                 "x-type": "object",
@@ -166,7 +166,7 @@
       ],
       "a11y": [
         "Give every Dialog.Popup a Dialog.Title; it is the dialog's accessible name.",
-        "If the trigger can unmount while the dialog is open, pass finalFocus on Dialog.Popup.",
+        "Focus returns to the trigger on close; set finalFocus only for the close that removes the trigger.",
         "Offer a visible way out: a Dialog.CloseIcon in the header or a Dialog.Close in the actions."
       ]
     }

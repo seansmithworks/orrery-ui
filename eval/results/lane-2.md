@@ -14,15 +14,15 @@ Scenarios with a golden-example twin in the kit (lane 1): confirm-delete, crew-t
 
 | scenario | orrery | bare | shadcn |
 |---|---|---|---|
-| confirm-delete | 0.98 (3) | 0.95 (3) | 1.00 (3) |
-| crew-roster (new) | 0.91 (3) | 1.00 (3) | 0.80 (3) |
+| confirm-delete | 1.00 (3) | 0.95 (3) | 1.00 (3) |
+| crew-roster (new) | 0.93 (3) | 1.00 (3) | 0.80 (3) |
 | crew-tabs | 1.00 (3) | 1.00 (3) | 0.96 (3) |
-| onboarding (new) | 0.80 (3) | 1.00 (3) | 1.00 (3) |
-| profile-settings | 1.00 (3) | 1.00 (3) | 0.93 (3) |
-| workspace-settings (new) | 0.96 (3) | 0.91 (3) | 0.93 (3) |
-| lane-1 scenarios | 0.99 (9) | 0.98 (9) | 0.96 (9) |
-| new scenarios | 0.89 (9) | 0.97 (9) | 0.91 (9) |
-| **all** | **0.94 (18)** | **0.98 (18)** | **0.94 (18)** |
+| onboarding (new) | 0.98 (3) | 1.00 (3) | 1.00 (3) |
+| profile-settings | 0.94 (3) | 1.00 (3) | 0.93 (3) |
+| workspace-settings (new) | 1.00 (3) | 0.91 (3) | 0.93 (3) |
+| lane-1 scenarios | 0.98 (9) | 0.98 (9) | 0.96 (9) |
+| new scenarios | 0.97 (9) | 0.97 (9) | 0.91 (9) |
+| **all** | **0.97 (18)** | **0.98 (18)** | **0.94 (18)** |
 
 ## By scorer, condition by scorer (all scenarios)
 
@@ -30,7 +30,7 @@ Mean score, then runs that passed outright.
 
 | condition | build | axe | keyboard | hit-target | brand | total |
 |---|---|---|---|---|---|---|
-| orrery | 0.78 (14/18) | 1.00 (18/18) | 0.98 (16/18) | 0.97 (15/18) | 0.99 (17/18) | 0.94 |
+| orrery | 1.00 (18/18) | 0.93 (16/18) | 0.99 (17/18) | 1.00 (18/18) | 0.96 (15/18) | 0.97 |
 | bare | 1.00 (18/18) | 1.00 (18/18) | 1.00 (18/18) | 0.97 (16/18) | 0.92 (12/18) | 0.98 |
 | shadcn | 1.00 (18/18) | 0.83 (15/18) | 0.99 (17/18) | 0.86 (11/18) | 1.00 (18/18) | 0.94 |
 
@@ -40,7 +40,7 @@ Radix's modal dropdown menu sets `aria-hidden` on the app root while its buttons
 
 | condition | axe (all rules) | axe without aria-hidden-focus | total (all rules) | total without aria-hidden-focus |
 |---|---|---|---|---|
-| orrery | 1.00 (18/18) | 1.00 (18/18) | 0.94 | 0.94 |
+| orrery | 0.93 (16/18) | 0.93 (16/18) | 0.97 | 0.97 |
 | bare | 1.00 (18/18) | 1.00 (18/18) | 0.98 | 0.98 |
 | shadcn | 0.83 (15/18) | 1.00 (18/18) | 0.94 | 0.97 |
 
@@ -52,38 +52,38 @@ Radix's modal dropdown menu sets `aria-hidden` on the app root while its buttons
 | confirm-delete | axe | 3/3 | 3/3 | 3/3 |
 | confirm-delete | keyboard | 3/3 | 3/3 | 3/3 |
 | confirm-delete | hit-target | 3/3 | 3/3 | 3/3 |
-| confirm-delete | brand | 2/3 | 0/3 | 3/3 |
-| crew-roster | build | 2/3 | 3/3 | 3/3 |
-| crew-roster | axe | 3/3 | 3/3 | 0/3 |
-| crew-roster | keyboard | 1/3 | 3/3 | 3/3 |
+| confirm-delete | brand | 3/3 | 0/3 | 3/3 |
+| crew-roster | build | 3/3 | 3/3 | 3/3 |
+| crew-roster | axe | 2/3 | 3/3 | 0/3 |
+| crew-roster | keyboard | 2/3 | 3/3 | 3/3 |
 | crew-roster | hit-target | 3/3 | 3/3 | 3/3 |
-| crew-roster | brand | 3/3 | 3/3 | 3/3 |
+| crew-roster | brand | 2/3 | 3/3 | 3/3 |
 | crew-tabs | build | 3/3 | 3/3 | 3/3 |
 | crew-tabs | axe | 3/3 | 3/3 | 3/3 |
 | crew-tabs | keyboard | 3/3 | 3/3 | 3/3 |
 | crew-tabs | hit-target | 3/3 | 3/3 | 2/3 |
 | crew-tabs | brand | 3/3 | 3/3 | 3/3 |
-| onboarding | build | 0/3 | 3/3 | 3/3 |
+| onboarding | build | 3/3 | 3/3 | 3/3 |
 | onboarding | axe | 3/3 | 3/3 | 3/3 |
 | onboarding | keyboard | 3/3 | 3/3 | 3/3 |
 | onboarding | hit-target | 3/3 | 3/3 | 3/3 |
-| onboarding | brand | 3/3 | 3/3 | 3/3 |
+| onboarding | brand | 2/3 | 3/3 | 3/3 |
 | profile-settings | build | 3/3 | 3/3 | 3/3 |
-| profile-settings | axe | 3/3 | 3/3 | 3/3 |
+| profile-settings | axe | 2/3 | 3/3 | 3/3 |
 | profile-settings | keyboard | 3/3 | 3/3 | 3/3 |
 | profile-settings | hit-target | 3/3 | 3/3 | 0/3 |
-| profile-settings | brand | 3/3 | 3/3 | 3/3 |
+| profile-settings | brand | 2/3 | 3/3 | 3/3 |
 | workspace-settings | build | 3/3 | 3/3 | 3/3 |
 | workspace-settings | axe | 3/3 | 3/3 | 3/3 |
 | workspace-settings | keyboard | 3/3 | 3/3 | 2/3 |
-| workspace-settings | hit-target | 0/3 | 1/3 | 0/3 |
+| workspace-settings | hit-target | 3/3 | 1/3 | 0/3 |
 | workspace-settings | brand | 3/3 | 0/3 | 3/3 |
 
 ## Effort
 
 | condition | turns | wall s | CLI cost USD (mean) | CLI cost USD (sum) |
 |---|---|---|---|---|
-| orrery | 10.00 | 28.78 | 0.201 | 3.62 |
+| orrery | 9.50 | 26.53 | 0.185 | 3.34 |
 | bare | 5.56 | 26.63 | 0.081 | 1.46 |
 | shadcn | 8.06 | 22.95 | 0.080 | 1.44 |
 
@@ -96,8 +96,8 @@ Subscription auth: cost is the CLI's own estimate, not a bill.
 | confirm-delete | 1.00 | 1.00 | 1.00 |
 | crew-roster | 0.97 | 1.00 | 1.00 |
 | crew-tabs | 1.00 | 1.00 | 1.00 |
-| onboarding | 1.00 | 1.00 | 1.00 |
-| profile-settings | 1.00 | 1.00 | 1.00 |
+| onboarding | 0.99 | 1.00 | 1.00 |
+| profile-settings | 0.98 | 1.00 | 1.00 |
 | workspace-settings | 1.00 | 1.00 | 1.00 |
 
 ## Failure details
@@ -106,11 +106,11 @@ Commonest failure messages per condition and scorer (count = runs showing it).
 
 ### orrery
 
-- **build** (4 runs): 2x solution.tsx: error TS2322: Type '(c: boolean) => void' is not assignable to type '(checked: CheckedState, details: ChangeDetails<CheckboxCheckedChangeReason>) => void'.; 1x solution.tsx: error TS2322: Type 'RefObject<HTMLHeadingElement / null>' is not assignable to type 'PopupFocusTarget / undefined'.; 1x solution.tsx: error TS2322: Type 'Dispatch<SetStateAction<string>>' is not assignable to type '(value: string / null, details: ChangeDetails<RadioGroupValueChangeReason>) => void'.; 1x solution.tsx: error TS2322: Type 'Dispatch<SetStateAction<boolean>>' is not assignable to type '(checked: CheckedState, details: ChangeDetails<CheckboxCheckedChangeReason>) => void'.
-- **axe**: no failures
-- **keyboard** (2 runs): 2x overlay: focus did not return to "Actions for Ada Okafor"
-- **hit-target** (3 runs): 3x 1280px page: "Viewer" is 16x16, its hit area is under 44x44; 3x 1280px page: "Editor" is 16x16, its hit area is under 44x44; 3x 375px page: "Viewer" is 16x16, its hit area is under 44x44; 3x 375px page: "Editor" is 16x16, its hit area is under 44x44
-- **brand** (1 runs): 1x only 0% of the page changes between orrery dark and solar (needs 30%)
+- **build**: no failures
+- **axe** (2 runs): 1x orrery-dark: axe color-contrast (serious): …, e.g. h1; 1x orrery-dark: after steps: axe color-contrast (serious): …, e.g. h1; 1x solar: axe color-contrast (serious): …, e.g. h1; 1x solar: after steps: axe color-contrast (serious): …, e.g. h1
+- **keyboard** (1 runs): 1x overlay: focus did not return to "Actions for Ada Okafor"
+- **hit-target**: no failures
+- **brand** (3 runs): 1x only 24% of the page changes between orrery dark and solar (needs 30%); 1x only 22% of the page changes between orrery dark and solar (needs 30%); 1x only 5% of the page changes between orrery dark and solar (needs 30%)
 
 ### bare
 
@@ -135,54 +135,54 @@ Commonest failure messages per condition and scorer (count = runs showing it).
 | confirm-delete__bare__1 | 1.00 | 1.00 | 1.00 | 1.00 | 0.75 | 0.95 | 5 | 21 | 0.060 |
 | confirm-delete__bare__2 | 1.00 | 1.00 | 1.00 | 1.00 | 0.75 | 0.95 | 5 | 18 | 0.056 |
 | confirm-delete__bare__3 | 1.00 | 1.00 | 1.00 | 1.00 | 0.75 | 0.95 | 5 | 19 | 0.058 |
-| confirm-delete__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 0.75 | 0.95 | 5 | 14 | 0.151 |
-| confirm-delete__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 15 | 0.157 |
-| confirm-delete__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 15 | 0.157 |
+| confirm-delete__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 23 | 0.156 |
+| confirm-delete__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 7 | 18 | 0.161 |
+| confirm-delete__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 15 | 0.152 |
 | confirm-delete__shadcn__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 7 | 18 | 0.074 |
 | confirm-delete__shadcn__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 7 | 17 | 0.070 |
 | confirm-delete__shadcn__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 7 | 17 | 0.068 |
 | crew-roster__bare__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 5 | 28 | 0.087 |
 | crew-roster__bare__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 30 | 0.095 |
 | crew-roster__bare__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 5 | 28 | 0.089 |
-| crew-roster__orrery__1 | 0.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.80 | 8 | 27 | 0.191 |
-| crew-roster__orrery__2 | 1.00 | 1.00 | 0.80 | 1.00 | 1.00 | 0.96 | 18 | 57 | 0.304 |
-| crew-roster__orrery__3 | 1.00 | 1.00 | 0.80 | 1.00 | 1.00 | 0.96 | 6 | 22 | 0.176 |
+| crew-roster__orrery__1 | 1.00 | 0.33 | 1.00 | 1.00 | 0.75 | 0.82 | 7 | 34 | 0.186 |
+| crew-roster__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 24 | 0.171 |
+| crew-roster__orrery__3 | 1.00 | 1.00 | 0.80 | 1.00 | 1.00 | 0.96 | 9 | 26 | 0.191 |
 | crew-roster__shadcn__1 | 1.00 | 0.00 | 1.00 | 1.00 | 1.00 | 0.80 | 8 | 23 | 0.081 |
 | crew-roster__shadcn__2 | 1.00 | 0.00 | 1.00 | 1.00 | 1.00 | 0.80 | 6 | 19 | 0.081 |
 | crew-roster__shadcn__3 | 1.00 | 0.00 | 1.00 | 1.00 | 1.00 | 0.80 | 5 | 18 | 0.044 |
 | crew-tabs__bare__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 24 | 0.067 |
 | crew-tabs__bare__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 20 | 0.063 |
 | crew-tabs__bare__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 21 | 0.067 |
-| crew-tabs__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 19 | 0.176 |
-| crew-tabs__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 9 | 21 | 0.177 |
-| crew-tabs__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 18 | 0.175 |
+| crew-tabs__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 22 | 0.173 |
+| crew-tabs__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 18 | 0.171 |
+| crew-tabs__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 21 | 0.168 |
 | crew-tabs__shadcn__1 | 1.00 | 1.00 | 1.00 | 0.40 | 1.00 | 0.88 | 9 | 22 | 0.079 |
 | crew-tabs__shadcn__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 20 | 0.071 |
 | crew-tabs__shadcn__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 19 | 0.071 |
 | onboarding__bare__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 5 | 30 | 0.094 |
 | onboarding__bare__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 5 | 31 | 0.093 |
 | onboarding__bare__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 31 | 0.094 |
-| onboarding__orrery__1 | 0.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.80 | 14 | 44 | 0.252 |
-| onboarding__orrery__2 | 0.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.80 | 11 | 34 | 0.221 |
-| onboarding__orrery__3 | 0.00 | 1.00 | 1.00 | 1.00 | 1.00 | 0.80 | 11 | 34 | 0.221 |
+| onboarding__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 11 | 34 | 0.222 |
+| onboarding__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 13 | 39 | 0.233 |
+| onboarding__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 0.75 | 0.95 | 9 | 27 | 0.199 |
 | onboarding__shadcn__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 8 | 28 | 0.079 |
 | onboarding__shadcn__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 23 | 0.059 |
 | onboarding__shadcn__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 7 | 24 | 0.063 |
 | profile-settings__bare__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 23 | 0.071 |
 | profile-settings__bare__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 5 | 21 | 0.064 |
 | profile-settings__bare__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 6 | 23 | 0.069 |
-| profile-settings__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 11 | 29 | 0.200 |
-| profile-settings__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 11 | 28 | 0.199 |
-| profile-settings__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 10 | 27 | 0.192 |
+| profile-settings__orrery__1 | 1.00 | 0.33 | 1.00 | 1.00 | 0.75 | 0.82 | 9 | 24 | 0.184 |
+| profile-settings__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 13 | 29 | 0.208 |
+| profile-settings__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 10 | 25 | 0.189 |
 | profile-settings__shadcn__1 | 1.00 | 1.00 | 1.00 | 0.75 | 1.00 | 0.95 | 10 | 25 | 0.091 |
 | profile-settings__shadcn__2 | 1.00 | 1.00 | 1.00 | 0.75 | 1.00 | 0.95 | 6 | 19 | 0.072 |
 | profile-settings__shadcn__3 | 1.00 | 1.00 | 1.00 | 0.50 | 1.00 | 0.90 | 10 | 25 | 0.091 |
 | workspace-settings__bare__1 | 1.00 | 1.00 | 1.00 | 0.70 | 0.75 | 0.89 | 6 | 39 | 0.115 |
 | workspace-settings__bare__2 | 1.00 | 1.00 | 1.00 | 1.00 | 0.75 | 0.95 | 6 | 35 | 0.105 |
 | workspace-settings__bare__3 | 1.00 | 1.00 | 1.00 | 0.70 | 0.75 | 0.89 | 6 | 38 | 0.112 |
-| workspace-settings__orrery__1 | 1.00 | 1.00 | 1.00 | 0.80 | 1.00 | 0.96 | 14 | 41 | 0.233 |
-| workspace-settings__orrery__2 | 1.00 | 1.00 | 1.00 | 0.82 | 1.00 | 0.96 | 12 | 38 | 0.222 |
-| workspace-settings__orrery__3 | 1.00 | 1.00 | 1.00 | 0.82 | 1.00 | 0.96 | 12 | 35 | 0.220 |
+| workspace-settings__orrery__1 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 11 | 31 | 0.205 |
+| workspace-settings__orrery__2 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 14 | 38 | 0.229 |
+| workspace-settings__orrery__3 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 1.00 | 16 | 31 | 0.137 |
 | workspace-settings__shadcn__1 | 1.00 | 1.00 | 1.00 | 0.70 | 1.00 | 0.94 | 11 | 32 | 0.114 |
 | workspace-settings__shadcn__2 | 1.00 | 1.00 | 0.80 | 0.70 | 1.00 | 0.90 | 11 | 33 | 0.117 |
 | workspace-settings__shadcn__3 | 1.00 | 1.00 | 1.00 | 0.70 | 1.00 | 0.94 | 11 | 31 | 0.113 |
@@ -191,7 +191,22 @@ Each run keeps its source (`lane-2/<run>/src/`), scores (`scores.json`), run met
 
 ## Verdict
 
-n = 18 runs per condition (6 scenarios x 3 reps), Sonnet, one prompt for all three. Totals: orrery 0.94, bare 0.98, shadcn 0.94 (0.97 if axe's `aria-hidden-focus` rule is left out, see below).
+n = 18 runs per condition (6 scenarios x 3 reps), Sonnet, one prompt for all three. Totals: orrery 0.97 (0.94 before the kit fixes below), bare 0.98, shadcn 0.94 (0.97 if axe's `aria-hidden-focus` rule is left out, see below).
+
+### After the kit fixes (orrery rerun)
+
+The first orrery grid exposed three kit problems, fixed on `fix/kit-agent-ergonomics`: callback and focus prop types that rejected a plain `useState` setter or a ref, a Dialog golden example that taught `finalFocus={heading}` for every close, and Radio options 33px apart with 44px hit areas. All 18 orrery cells were rerun against the fixed kit with the same harness, prompt and model. The first grid is kept in `lane-2/superseded/orrery-v1/`.
+
+| orrery | build | axe | keyboard | hit-target | brand | total | turns | CLI cost USD (mean) |
+|---|---|---|---|---|---|---|---|---|
+| before fixes | 0.78 (14/18) | 1.00 (18/18) | 0.98 (16/18) | 0.97 (15/18) | 0.99 (17/18) | 0.94 | 10.0 | 0.201 |
+| after fixes | 1.00 (18/18) | 0.93 (16/18) | 0.99 (17/18) | 1.00 (18/18) | 0.96 (15/18) | 0.97 | 9.5 | 0.185 |
+
+- **The three targeted failures are gone or reduced.** Build 14 to 18 of 18: every agent's setter and ref now type-checks. Hit target 15 to 18 of 18: workspace-settings went from 0 to 3 of 3. Keyboard in crew-roster 1 to 2 of 3: one run copied the new example's pattern (override `finalFocus` only when Remove deletes the row); the other still pointed `finalFocus` at the search input on every close, so Escape did not return to the trigger.
+- **New misses, not from the fixed parts.** axe 2 runs and brand 3 runs (crew-roster 1, profile-settings 1, onboarding 3). The axe failures are colour contrast on the page heading in orrery dark and solar only; the brand failures are dark to solar changing 5 to 24% of the page. Inferred cause: those pages put their heading and text straight on the host page, which paints no background, so the dark brands draw light text on white. The first grid had one such brand miss.
+- **Total: orrery 0.97 vs bare 0.98 and shadcn 0.94**, inside the noise for n = 3 per cell. The first-grid points below are kept as written; they describe the kit before the fixes.
+
+### First grid (kit before the fixes)
 
 **On these checks, Orrery showed no improvement over plain React + CSS or over shadcn/ui.** It tied shadcn and scored slightly under bare.
 
@@ -221,3 +236,4 @@ n = 18 runs per condition (6 scenarios x 3 reps), Sonnet, one prompt for all thr
    - Hit-test corners are sampled 7px inside the 44px square, not 1px, so rounded 44px controls pass.
    - The keyboard scorer counts control roles only, not tablist or radiogroup containers.
 4. **The first grid's repo-unchanged check tripped.** It flagged `eval/lane2/browse.mjs`, `compare.mjs` and `report.mjs`, harness edits made in this session while it ran, not agent writes. The shadcn rerun finished with "repo unchanged". Agents run in temp workspaces outside the repo, with `--restricted` and file tools only.
+5. **The orrery rerun** used the same harness, prompt, model, concurrency and scorers as the first grid; only the kit changed. It finished with "repo unchanged". The bare and shadcn cells were not rerun.

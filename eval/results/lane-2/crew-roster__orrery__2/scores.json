@@ -10,11 +10,9 @@
     "details": []
   },
   "keyboard": {
-    "score": 0.8,
-    "pass": false,
-    "details": [
-      "overlay: focus did not return to \"Actions for Ada Okafor\""
-    ]
+    "score": 1,
+    "pass": true,
+    "details": []
   },
   "hit-target": {
     "score": 1,
@@ -28,18 +26,16 @@
     "details": [],
     "literals": 0,
     "ratios": {
-      "lightDark": 0.9999619140625,
-      "darkSolar": 0.5937392578125
+      "lightDark": 0.99994921875,
+      "darkSolar": 0.5374833984375
     }
   },
   "notes": [],
   "secondary": {
     "kit-only": {
-      "score": 0.9090909090909091,
-      "pass": false,
-      "details": [
-        "3 import \"./solution.css\" is not the kit or React; import UI from \"./kit\""
-      ]
+      "score": 1,
+      "pass": true,
+      "details": []
     },
     "literals": {
       "score": 1,
@@ -52,5 +48,5 @@
       "details": []
     }
   },
-  "total": 0.96
+  "total": 1
 }

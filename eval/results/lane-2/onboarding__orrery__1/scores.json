@@ -1,11 +1,8 @@
 {
   "build": {
-    "score": 0,
-    "pass": false,
-    "details": [
-      "solution.tsx(131,57): error TS2322: Type 'Dispatch<SetStateAction<string>>' is not assignable to type '(value: string | null, details: ChangeDetails<RadioGroupValueChangeReason>) => void'.",
-      "solution.tsx(189,25): error TS2322: Type 'Dispatch<SetStateAction<boolean>>' is not assignable to type '(checked: CheckedState, details: ChangeDetails<CheckboxCheckedChangeReason>) => void'."
-    ]
+    "score": 1,
+    "pass": true,
+    "details": []
   },
   "axe": {
     "score": 1,
@@ -30,7 +27,7 @@
     "literals": 0,
     "ratios": {
       "lightDark": 0.99998828125,
-      "darkSolar": 0.99754296875
+      "darkSolar": 0.9999970703125
     }
   },
   "notes": [],
@@ -51,5 +48,5 @@
       "details": []
     }
   },
-  "total": 0.8
+  "total": 1
 }

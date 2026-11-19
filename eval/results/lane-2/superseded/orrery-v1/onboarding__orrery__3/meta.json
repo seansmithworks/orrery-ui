@@ -1,0 +1,56 @@
+{
+  "scenario": "onboarding",
+  "condition": "orrery",
+  "rep": 3,
+  "wallMs": 33776,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 77,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 11,
+    "duration_ms": 33142,
+    "total_cost_usd": 0.22128579999999998,
+    "usage": {
+      "input_tokens": 12,
+      "cache_creation_input_tokens": 40532,
+      "cache_read_input_tokens": 139838,
+      "output_tokens": 4515,
+      "output_tokens_details": {
+        "thinking_tokens": 347
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 40532,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 457,
+          "cache_read_input_tokens": 43005,
+          "cache_creation_input_tokens": 2950,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2950
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I've written the sign-up flow to `./solution.tsx`. I haven't run it or type-checked it, because I can't run code here.\n\n- **Step indicator:** each step shows \"Step N of 3\" above its title.\n- **Step 1:** a \"Full name\" and an \"Email\" field, both required. \"Continue\" shows \"Enter your name.\" for an empty name and \"Enter a valid email.\" for an email without an @, each next to its field. The flow stays on step 1 until both are fixed.\n- **Step 2:** a choice of exactly one of \"Solo\", \"Small crew (2 to 10)\" and \"Large crew (11 or more)\", with \"Back\" and \"Continue\".\n- **Step 3:** a summary of name, email and team, an \"I agree to the terms\" checkbox and a primary \"Create account\" button. The button is disabled until the box is ticked, then \"Account created.\" appears.\n\nThe layout uses the kit's Card,"
+  }
+}

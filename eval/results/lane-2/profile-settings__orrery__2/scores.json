@@ -26,16 +26,18 @@
     "details": [],
     "literals": 0,
     "ratios": {
-      "lightDark": 0.9999755859375,
-      "darkSolar": 0.9999658203125
+      "lightDark": 0.9999677734375,
+      "darkSolar": 0.9999736328125
     }
   },
   "notes": [],
   "secondary": {
     "kit-only": {
-      "score": 1,
-      "pass": true,
-      "details": []
+      "score": 0.9473684210526315,
+      "pass": false,
+      "details": [
+        "3 import \"./solution.css\" is not the kit or React; import UI from \"./kit\""
+      ]
     },
     "literals": {
       "score": 1,

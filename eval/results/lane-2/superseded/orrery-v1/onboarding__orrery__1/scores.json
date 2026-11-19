@@ -1,0 +1,55 @@
+{
+  "build": {
+    "score": 0,
+    "pass": false,
+    "details": [
+      "solution.tsx(131,57): error TS2322: Type 'Dispatch<SetStateAction<string>>' is not assignable to type '(value: string | null, details: ChangeDetails<RadioGroupValueChangeReason>) => void'.",
+      "solution.tsx(189,25): error TS2322: Type 'Dispatch<SetStateAction<boolean>>' is not assignable to type '(checked: CheckedState, details: ChangeDetails<CheckboxCheckedChangeReason>) => void'."
+    ]
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 6
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.99998828125,
+      "darkSolar": 0.99754296875
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 0.8
+}

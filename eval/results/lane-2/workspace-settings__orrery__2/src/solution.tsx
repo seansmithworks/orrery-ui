@@ -16,10 +16,9 @@ export default function WorkspaceSettings() {
   return (
     <main
       style={{
-        ...stack("var(--space-24)"),
-        boxSizing: "border-box",
         minHeight: "100vh",
-        padding: "var(--space-40) var(--space-24)",
+        boxSizing: "border-box",
+        padding: "var(--space-32)",
         background: "var(--page)",
         color: "var(--text)",
       }}
@@ -27,12 +26,11 @@ export default function WorkspaceSettings() {
       <div
         style={{
           ...stack("var(--space-24)"),
-          width: "100%",
           maxWidth: "var(--layout-measure)",
           margin: "0 auto",
         }}
       >
-        <h1 id="settings-title" style={{ margin: 0, textWrap: "balance" }}>
+        <h1 id="settings-title" style={{ margin: 0 }}>
           Workspace settings
         </h1>
         <Tabs.Root defaultValue="general">
@@ -42,10 +40,10 @@ export default function WorkspaceSettings() {
             <Tabs.Tab value="danger">Danger zone</Tabs.Tab>
           </Tabs.List>
 
-          <Tabs.Panel value="general" keepMounted>
+          <Tabs.Panel value="general">
             <form
               onSubmit={save}
-              style={{ ...stack("var(--space-20)"), paddingTop: "var(--space-24)" }}
+              style={{ ...stack("var(--space-20)"), paddingTop: "var(--space-20)" }}
             >
               <Field.Root name="workspaceName">
                 <Field.Label>Workspace name</Field.Label>
@@ -81,9 +79,9 @@ export default function WorkspaceSettings() {
             </form>
           </Tabs.Panel>
 
-          <Tabs.Panel value="notifications" keepMounted>
+          <Tabs.Panel value="notifications">
             <div
-              style={{ ...stack("var(--space-20)"), paddingTop: "var(--space-24)" }}
+              style={{ ...stack("var(--space-20)"), paddingTop: "var(--space-20)" }}
             >
               <Field.Root>
                 <Field.Label>
@@ -102,7 +100,7 @@ export default function WorkspaceSettings() {
 
           <Tabs.Panel value="danger">
             <div
-              style={{ ...stack("var(--space-16)"), paddingTop: "var(--space-24)" }}
+              style={{ ...stack("var(--space-16)"), paddingTop: "var(--space-20)" }}
             >
               <p style={{ margin: 0 }}>
                 Deleting this workspace is permanent and cannot be reversed.

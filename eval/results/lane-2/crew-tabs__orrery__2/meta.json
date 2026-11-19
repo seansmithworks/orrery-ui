@@ -2,11 +2,11 @@
   "scenario": "crew-tabs",
   "condition": "orrery",
   "rep": 2,
-  "wallMs": 20763,
+  "wallMs": 18215,
   "exit": 0,
   "limited": false,
   "timedOut": false,
-  "workspaceFiles": 77,
+  "workspaceFiles": 78,
   "written": [
     "solution.tsx"
   ],
@@ -14,14 +14,14 @@
   "run": {
     "is_error": false,
     "subtype": "success",
-    "num_turns": 9,
-    "duration_ms": 20079,
-    "total_cost_usd": 0.17677079999999998,
+    "num_turns": 8,
+    "duration_ms": 15959,
+    "total_cost_usd": 0.17074700000000004,
     "usage": {
-      "input_tokens": 12,
-      "cache_creation_input_tokens": 35721,
-      "cache_read_input_tokens": 131828,
-      "output_tokens": 2068,
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 36261,
+      "cache_read_input_tokens": 96030,
+      "output_tokens": 1608,
       "output_tokens_details": {
         "thinking_tokens": 0
       },
@@ -31,19 +31,19 @@
       },
       "service_tier": "standard",
       "cache_creation": {
-        "ephemeral_1h_input_tokens": 35721,
+        "ephemeral_1h_input_tokens": 36261,
         "ephemeral_5m_input_tokens": 0
       },
       "inference_geo": "global",
       "iterations": [
         {
           "input_tokens": 2,
-          "output_tokens": 317,
-          "cache_read_input_tokens": 40148,
-          "cache_creation_input_tokens": 870,
+          "output_tokens": 269,
+          "cache_read_input_tokens": 40747,
+          "cache_creation_input_tokens": 811,
           "cache_creation": {
             "ephemeral_5m_input_tokens": 0,
-            "ephemeral_1h_input_tokens": 870
+            "ephemeral_1h_input_tokens": 811
           },
           "type": "message"
         }
@@ -51,6 +51,6 @@
       "speed": "standard",
       "fallback_credit": null
     },
-    "result": "I wrote the crew card to `./solution.tsx`. I haven't run or rendered it, so it's untested.\n\n- **Card:** it's an `<article>` named by its heading, \"Ada Okafor\". \"Flight engineer, Orbit 7\" sits under the heading in muted text.\n- **Tabs:** Overview, Passes and History each show the text you gave. Overview is selected first. The tab list is named by the heading.\n- **Footer:** \"Remove from crew\" is a quiet button and \"Save changes\" is the primary button.\n\nI built it from the kit's `Card`, `Tabs` and `Button`, following the kit's own card and tabs examples. I added no custom CSS, so it takes its colours and spacing from whichever brand is active. I didn't open the kit's tab and card stylesheets, and I didn't check the design rules in `tokens/rules/`. The kit catalog covers the components, but I "
+    "result": "I wrote the card to `./solution.tsx`. I couldn't run it, so it hasn't been rendered or tested.\n\n- **Card:** it's an `<article>` named by its heading, \"Ada Okafor\". \"Flight engineer, Orbit 7\" sits under the heading in muted text.\n- **Tabs:** the tabs are Overview, Passes and History, with Overview selected first. Each tab shows its own line of text.\n- **Footer:** a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n\nI used only the kit's `Card`, `Tabs` and `Button`, following their catalog examples, so it should follow whichever brand is active. I didn't add a CSS file or any custom colours or spacing.\n\nI also didn't read the second half of `kit/catalog.json` or the token rule files."
   }
 }
