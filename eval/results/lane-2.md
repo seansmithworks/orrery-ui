@@ -204,7 +204,7 @@ The first orrery grid exposed three kit problems, fixed on `fix/kit-agent-ergono
 
 - **The three targeted failures are gone or reduced.** Build 14 to 18 of 18: every agent's setter and ref now type-checks. Hit target 15 to 18 of 18: workspace-settings went from 0 to 3 of 3. Keyboard in crew-roster 1 to 2 of 3: one run copied the new example's pattern (override `finalFocus` only when Remove deletes the row); the other still pointed `finalFocus` at the search input on every close, so Escape did not return to the trigger.
 - **New misses, not from the fixed parts.** axe 2 runs and brand 3 runs (crew-roster 1, profile-settings 1, onboarding 3). The axe failures are colour contrast on the page heading in orrery dark and solar only; the brand failures are dark to solar changing 5 to 24% of the page. Inferred cause: those pages put their heading and text straight on the host page, which paints no background, so the dark brands draw light text on white. The first grid had one such brand miss.
-- **Orrery now ties bare and leads shadcn on the total**, inside the noise for n = 3 per cell. The first-grid points below are kept as written; they describe the kit before the fixes.
+- **Total: orrery 0.97 vs bare 0.98 and shadcn 0.94**, inside the noise for n = 3 per cell. The first-grid points below are kept as written; they describe the kit before the fixes.
 
 ### First grid (kit before the fixes)
 
