@@ -1,0 +1,56 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 0.8,
+    "pass": false,
+    "details": [
+      "overlay: focus did not return to \"Actions for Ada Okafor\""
+    ]
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 18
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.99994921875,
+      "darkSolar": 0.4999833984375
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 0.9090909090909091,
+      "pass": false,
+      "details": [
+        "3 import \"./solution.css\" is not the kit or React; import UI from \"./kit\""
+      ]
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 0.96
+}

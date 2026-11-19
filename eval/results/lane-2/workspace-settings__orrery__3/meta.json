@@ -1,0 +1,56 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "orrery",
+  "rep": 3,
+  "wallMs": 30747,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 78,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 16,
+    "duration_ms": 28066,
+    "total_cost_usd": 0.1369647,
+    "usage": {
+      "input_tokens": 12,
+      "cache_creation_input_tokens": 21821,
+      "cache_read_input_tokens": 87967,
+      "output_tokens": 4086,
+      "output_tokens_details": {
+        "thinking_tokens": 302
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 21821,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 409,
+          "cache_read_input_tokens": 25292,
+          "cache_creation_input_tokens": 2003,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 2003
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I've written the settings page to `./solution.tsx`. I couldn't run it, so it's untested.\n\n- **Layout:** The \"Workspace settings\" heading sits above kit Tabs for General, Notifications and Danger zone, with General showing first. The General panel stays mounted when you switch tabs, so your edits aren't lost.\n- **General:** It has the \"Workspace name\" field prefilled with \"Orbit Lab\" and the role choice with Editor selected. \"Save changes\" shows \"Settings saved.\", and that status clears if you edit either field afterwards.\n- **Notifications:** \"Weekly summary email\" starts on and \"Mentions\" starts off.\n- **Danger zone:** It has a one-sentence warning and a \"Delete workspace\" button. The button opens the \"Delete Orbit Lab?\" modal. \"Cancel\" closes it. The modal's \"Delete workspace\" closes it "
+  }
+}

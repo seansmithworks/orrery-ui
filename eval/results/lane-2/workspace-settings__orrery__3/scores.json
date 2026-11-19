@@ -1,0 +1,52 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 22
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999697265625,
+      "darkSolar": 0.99996875
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 1
+}

@@ -1,0 +1,56 @@
+{
+  "scenario": "confirm-delete",
+  "condition": "orrery",
+  "rep": 2,
+  "wallMs": 17563,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 78,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 7,
+    "duration_ms": 15289,
+    "total_cost_usd": 0.1609421,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 33818,
+      "cache_read_input_tokens": 93901,
+      "output_tokens": 1626,
+      "output_tokens_details": {
+        "thinking_tokens": 84
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 33818,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 392,
+          "cache_read_input_tokens": 38794,
+          "cache_creation_input_tokens": 296,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 296
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the page to `./solution.tsx`. I couldn't run it, so I haven't checked it in a browser.\n\n- **Trigger:** a secondary `Dialog.Trigger` labelled \"Delete project\".\n- **Dialog:** the title is \"Delete this project?\" and the description is \"Its files and history are removed. This cannot be undone.\"\n- **Actions:** \"Keep project\" is a secondary `Dialog.Close` that only closes the dialog. \"Delete\" is a primary `Dialog.Close` that closes the dialog and sets the status text \"Project deleted.\"\n- **Status text:** it sits in a `role=\"status\"` span next to the trigger. The span is always on the page and empty until you confirm, so screen readers announce the change.\n- **Kit behaviour:** I used the kit's `Dialog`, so focus trapping, Escape to close and focus returning to the trigger come from the ki"
+  }
+}

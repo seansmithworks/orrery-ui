@@ -1,0 +1,54 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 8
+  },
+  "brand": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999677734375,
+      "darkSolar": 0.9999736328125
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 0.9473684210526315,
+      "pass": false,
+      "details": [
+        "3 import \"./solution.css\" is not the kit or React; import UI from \"./kit\""
+      ]
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 1
+}

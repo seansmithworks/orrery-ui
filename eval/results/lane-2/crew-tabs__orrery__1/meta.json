@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "orrery",
+  "rep": 1,
+  "wallMs": 22294,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 78,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 8,
+    "duration_ms": 17748,
+    "total_cost_usd": 0.17293530000000001,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 36803,
+      "cache_read_input_tokens": 95533,
+      "output_tokens": 1615,
+      "output_tokens_details": {
+        "thinking_tokens": 35
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 36803,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 240,
+          "cache_read_input_tokens": 40749,
+          "cache_creation_input_tokens": 847,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 847
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the crew card to `./solution.tsx`. I haven't run it, since I can't run code here.\n\n- **Header:** \"Ada Okafor\" is an `h3`, with \"Flight engineer, Orbit 7\" under it in the muted text colour. The card is an `<article>` named by that heading.\n- **Tabs:** Overview, Passes and History sit in the card body, with Overview selected first. Each tab shows its own line of text. The tab list takes its accessible name from the heading.\n- **Footer:** \"Remove from crew\" is a quiet button and \"Save changes\" is a primary button.\n\nIt uses only kit components and brand variables (`--text-muted`), so it follows whichever brand is active. There's no extra CSS file."
+  }
+}

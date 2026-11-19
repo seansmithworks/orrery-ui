@@ -1,0 +1,59 @@
+{
+  "build": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "axe": {
+    "score": 0.3333333333333333,
+    "pass": false,
+    "details": [
+      "orrery-dark: axe color-contrast (serious): 5 node(s), e.g. #profile-title",
+      "orrery-dark: after steps: axe color-contrast (serious): 5 node(s), e.g. #profile-title",
+      "solar: axe color-contrast (serious): 5 node(s), e.g. #profile-title",
+      "solar: after steps: axe color-contrast (serious): 5 node(s), e.g. #profile-title"
+    ]
+  },
+  "keyboard": {
+    "score": 1,
+    "pass": true,
+    "details": []
+  },
+  "hit-target": {
+    "score": 1,
+    "pass": true,
+    "details": [],
+    "total": 8
+  },
+  "brand": {
+    "score": 0.75,
+    "pass": false,
+    "details": [
+      "only 5% of the page changes between orrery dark and solar (needs 30%)"
+    ],
+    "literals": 0,
+    "ratios": {
+      "lightDark": 0.9999677734375,
+      "darkSolar": 0.053390625
+    }
+  },
+  "notes": [],
+  "secondary": {
+    "kit-only": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "literals": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    },
+    "catalog": {
+      "score": 1,
+      "pass": true,
+      "details": []
+    }
+  },
+  "total": 0.8166666666666667
+}

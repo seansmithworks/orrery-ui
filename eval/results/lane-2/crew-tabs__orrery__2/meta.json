@@ -1,0 +1,56 @@
+{
+  "scenario": "crew-tabs",
+  "condition": "orrery",
+  "rep": 2,
+  "wallMs": 18215,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 78,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 8,
+    "duration_ms": 15959,
+    "total_cost_usd": 0.17074700000000004,
+    "usage": {
+      "input_tokens": 10,
+      "cache_creation_input_tokens": 36261,
+      "cache_read_input_tokens": 96030,
+      "output_tokens": 1608,
+      "output_tokens_details": {
+        "thinking_tokens": 0
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 36261,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 269,
+          "cache_read_input_tokens": 40747,
+          "cache_creation_input_tokens": 811,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 811
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the card to `./solution.tsx`. I couldn't run it, so it hasn't been rendered or tested.\n\n- **Card:** it's an `<article>` named by its heading, \"Ada Okafor\". \"Flight engineer, Orbit 7\" sits under the heading in muted text.\n- **Tabs:** the tabs are Overview, Passes and History, with Overview selected first. Each tab shows its own line of text.\n- **Footer:** a quiet \"Remove from crew\" button and a primary \"Save changes\" button.\n\nI used only the kit's `Card`, `Tabs` and `Button`, following their catalog examples, so it should follow whichever brand is active. I didn't add a CSS file or any custom colours or spacing.\n\nI also didn't read the second half of `kit/catalog.json` or the token rule files."
+  }
+}

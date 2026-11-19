@@ -1,0 +1,56 @@
+{
+  "scenario": "workspace-settings",
+  "condition": "orrery",
+  "rep": 1,
+  "wallMs": 30784,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 78,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 11,
+    "duration_ms": 27587,
+    "total_cost_usd": 0.20501309999999998,
+    "usage": {
+      "input_tokens": 12,
+      "cache_creation_input_tokens": 39198,
+      "cache_read_input_tokens": 140971,
+      "output_tokens": 3410,
+      "output_tokens_details": {
+        "thinking_tokens": 198
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 39198,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 497,
+          "cache_read_input_tokens": 42142,
+          "cache_creation_input_tokens": 1849,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1849
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I wrote the settings page to `./solution.tsx`. I couldn't run it, so it hasn't been rendered or tested in any of the three brands.\n\n- **Layout:** The \"Workspace settings\" heading sits above three tabs, General, Notifications and Danger zone, with General showing first. The page sets its own `--page` background and `--text` colour, because the host adds none. It is centred and capped at `--layout-measure`.\n- **Tokens:** All spacing, colour and width come from brand tokens, so the page should follow whichever brand is active.\n- **General:**\n  - \"Workspace name\" starts as \"Orbit Lab\".\n  - \"Default role for new members\" is a Viewer/Editor/Admin radio group with Editor chosen.\n  - \"Save changes\" is the primary button. It shows \"Settings saved.\" beside it, and the message clears when any field i"
+  }
+}

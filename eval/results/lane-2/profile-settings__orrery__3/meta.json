@@ -1,0 +1,56 @@
+{
+  "scenario": "profile-settings",
+  "condition": "orrery",
+  "rep": 3,
+  "wallMs": 25136,
+  "exit": 0,
+  "limited": false,
+  "timedOut": false,
+  "workspaceFiles": 78,
+  "written": [
+    "solution.tsx"
+  ],
+  "changed": [],
+  "run": {
+    "is_error": false,
+    "subtype": "success",
+    "num_turns": 10,
+    "duration_ms": 23351,
+    "total_cost_usd": 0.1887201,
+    "usage": {
+      "input_tokens": 12,
+      "cache_creation_input_tokens": 37520,
+      "cache_read_input_tokens": 137561,
+      "output_tokens": 2486,
+      "output_tokens_details": {
+        "thinking_tokens": 123
+      },
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 37520,
+        "ephemeral_5m_input_tokens": 0
+      },
+      "inference_geo": "global",
+      "iterations": [
+        {
+          "input_tokens": 2,
+          "output_tokens": 375,
+          "cache_read_input_tokens": 41501,
+          "cache_creation_input_tokens": 1300,
+          "cache_creation": {
+            "ephemeral_5m_input_tokens": 0,
+            "ephemeral_1h_input_tokens": 1300
+          },
+          "type": "message"
+        }
+      ],
+      "speed": "standard",
+      "fallback_credit": null
+    },
+    "result": "I've written the profile settings form to `./solution.tsx`. I haven't run it, since I can't run code here.\n\nIt uses the Orrery kit (`Card`, `Field`, `Input`, `Select`, `Switch`, `Button`), so it follows whichever brand is active. Colours and spacing come from the brand variables.\n\n- **Display name:** a text field with the hint \"Shown to your crew.\"\n- **Time zone:** a select with UTC, Berlin and Tokyo and the placeholder \"Choose a time zone\".\n- **Email switch:** a switch labelled \"Email me about new orbits\".\n- **Save profile:** a primary submit button. After a save, the status text \"Profile saved.\" appears next to it, and it clears again when you edit any field.\n\nI set the page background and text colour myself on the root element, because the host page doesn't provide either. Without that,"
+  }
+}
